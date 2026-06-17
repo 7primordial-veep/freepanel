@@ -42,6 +42,17 @@ class HttpHeadersProbe
             return $result;
         }
 
+        // SSRF guard: resolve the host to every A/AAAA and refuse if ANY address
+        // sits in a private/loopback/link-local/CGNAT range. We refuse on the
+        // any-private rule (not majority) so a hostile DNS record that maps a
+        // public name to a mix of public + 127.0.0.1 still gets blocked.
+        $sshError = $this->ssrfGuard((string) $parsed['host']);
+        if (null !== $sshError) {
+            $result['error'] = $sshError;
+            $result['securityChecklist'] = $this->buildChecklist([]);
+            return $result;
+        }
+
         if (false === function_exists('curl_init')) {
             $result['error'] = 'PHP curl extension is not available.';
             $result['securityChecklist'] = $this->buildChecklist([]);
@@ -72,10 +83,16 @@ class HttpHeadersProbe
             curl_setopt($ch, CURLOPT_NOBODY, true);
             curl_setopt($ch, CURLOPT_TIMEOUT, 8);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            // Redirects disabled — every redirect target would need a fresh SSRF
+            // check, and the tester's job is to inspect this URL's headers, not
+            // the headers of whatever it redirects to. The first Location: header
+            // is still surfaced in the response.
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+            if (defined('CURLOPT_PROTOCOLS') && defined('CURLPROTO_HTTP') && defined('CURLPROTO_HTTPS')) {
+                @curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+            }
             curl_setopt($ch, CURLOPT_USERAGENT, 'CloudPanel-HeadersTester/1.0');
             @curl_setopt($ch, CURLOPT_HTTP_VERSION, $httpVersion);
 
@@ -108,6 +125,70 @@ class HttpHeadersProbe
         $result['error'] = sprintf('curl error (%d): %s', $lastErrno, $lastError ?? 'request failed');
         $result['securityChecklist'] = $this->buildChecklist([]);
         return $result;
+    }
+
+    /**
+     * Returns null if the host is safe to fetch, or a human-readable reason string
+     * if any resolved IP sits in a private / loopback / link-local / CGNAT range.
+     * We refuse on ANY match (not majority) so a hostile DNS record that returns
+     * both a public and a private IP is still blocked.
+     */
+    private function ssrfGuard(string $host): ?string
+    {
+        $host = trim($host, '[]'); // bracketed IPv6 literal
+        if ('' === $host) {
+            return 'empty host';
+        }
+        // Collect candidate IPs: literal, or DNS A/AAAA lookups.
+        $ips = [];
+        if (false !== filter_var($host, FILTER_VALIDATE_IP)) {
+            $ips[] = $host;
+        } else {
+            $a = @gethostbynamel($host); // IPv4
+            if (is_array($a)) {
+                $ips = array_merge($ips, $a);
+            }
+            // IPv6
+            $aaaa = @dns_get_record($host, DNS_AAAA);
+            if (is_array($aaaa)) {
+                foreach ($aaaa as $r) {
+                    if (!empty($r['ipv6'])) {
+                        $ips[] = $r['ipv6'];
+                    }
+                }
+            }
+        }
+        if (0 === count($ips)) {
+            return sprintf('could not resolve host %s', $host);
+        }
+        foreach ($ips as $ip) {
+            if (false === filter_var($ip, FILTER_VALIDATE_IP)) {
+                continue;
+            }
+            if ($this->isPrivateIp($ip)) {
+                return sprintf('refusing to fetch — %s resolves to private/loopback/link-local address %s', $host, $ip);
+            }
+        }
+        return null;
+    }
+
+    private function isPrivateIp(string $ip): bool
+    {
+        // PHP's reserved+private flags cover RFC1918, loopback, link-local, etc.
+        // The combined filter blocks: 0.0.0.0/8, 10.0.0.0/8, 127.0.0.0/8, 169.254.0.0/16,
+        // 172.16.0.0/12, 192.0.0.0/24 (mostly), 192.168.0.0/16, 224.0.0.0/4, 240.0.0.0/4,
+        // ::1/128, ::ffff:0:0/96 (IPv4-mapped), fc00::/7, fe80::/10, etc.
+        if (false === filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+            return true;
+        }
+        // Catch 100.64.0.0/10 (CGNAT) explicitly — PHP's filter doesn't.
+        if (false !== filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            $long = ip2long($ip);
+            if (false !== $long && ($long & 0xFFC00000) === (ip2long('100.64.0.0') & 0xFFC00000)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function parseHeaders(string $headerBlock): array

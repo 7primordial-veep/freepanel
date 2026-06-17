@@ -98,13 +98,24 @@ class MailcowClient
             throw new RuntimeException('Failed to decrypt Mailcow API key: ' . $e->getMessage());
         }
 
+        // TLS verification defaults to ON. Operators running Mailcow with a
+        // self-signed cert can either point mailcow_api_ca to a CA bundle they
+        // trust, or (last resort) set mailcow_api_verify_tls to "0".
+        $verify = true;
+        $caBundle = (string) $this->configManager->get('mailcow_api_ca');
+        if ('' !== $caBundle && is_file($caBundle)) {
+            $verify = $caBundle;
+        } elseif ('0' === (string) $this->configManager->get('mailcow_api_verify_tls')) {
+            $verify = false;
+        }
+
         $options = [
             'headers' => [
                 'X-API-Key' => $apiKey,
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
             ],
-            'verify' => false,
+            'verify' => $verify,
             'http_errors' => false,
         ];
 

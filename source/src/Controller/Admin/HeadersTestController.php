@@ -21,6 +21,7 @@ class HeadersTestController extends Controller
 
     public function index(Request $request): Response
     {
+        $this->requireAdmin();
         return $this->render('Admin/Tools/headers-test.html.twig', [
             'result' => null,
             'url' => '',
@@ -30,6 +31,7 @@ class HeadersTestController extends Controller
 
     public function probe(Request $request): Response
     {
+        $this->requireAdmin();
         $this->checkCsrfToken($request, 'headers-test-probe');
         $url = trim((string) $request->request->get('url', ''));
         $result = null;
@@ -51,5 +53,13 @@ class HeadersTestController extends Controller
             'url' => $url,
             'active' => 'tools-headers',
         ]);
+    }
+
+    private function requireAdmin(): void
+    {
+        $user = $this->getUser();
+        if (null === $user || (method_exists($user, 'getRoles') && false === in_array('ROLE_ADMIN', (array) $user->getRoles(), true))) {
+            throw $this->createAccessDeniedException();
+        }
     }
 }
