@@ -68,16 +68,31 @@
     <div class="card mb-3">
       <div class="card-header">{% trans %}Install Mailcow{% endtrans %}</div>
       <div class="card-body">
-        <p>{% trans %}Provide the hostname under which Mailcow will be reachable (must resolve to this server).{% endtrans %}</p>
+        <div class="alert alert-info">
+          <strong>{% trans %}System requirements{% endtrans %}:</strong>
+          {% trans %}≥1 CPU core, ≥6 GB RAM, ≥20 GB free disk.{% endtrans %}
+        </div>
+        <p>{% trans %}The installer follows the official CloudPanel Mailcow guide:{% endtrans %}</p>
+        <ol>
+          <li>{% trans %}Stops and disables the system Postfix service so port 25 is free.{% endtrans %}</li>
+          <li>{% trans %}Clones mailcow-dockerized to /opt/mailcow-dockerized and runs generate_config.sh.{% endtrans %}</li>
+          <li>{% trans %}Rebinds Mailcow to 127.0.0.1:7080 / 127.0.0.1:7443 so it does not collide with CloudPanel's nginx on 80/443.{% endtrans %}</li>
+          <li>{% trans %}docker compose pull and up -d (takes several minutes the first time).{% endtrans %}</li>
+        </ol>
+        <p>{% trans %}After install you must:{% endtrans %}</p>
+        <ol>
+          <li>{% trans %}Create a Reverse Proxy site in CloudPanel with this hostname pointing at https://127.0.0.1:7443 and issue an SSL/TLS certificate.{% endtrans %}</li>
+          <li>{% trans %}Publish DNS records (A for the hostname, MX, SPF, DKIM, DMARC — Mailcow generates the DKIM key once domains are added).{% endtrans %}</li>
+          <li>{% trans %}Log in at https://&lt;hostname&gt; with admin / moohoo and change the default password immediately.{% endtrans %}</li>
+        </ol>
         <form method="post" action="{{ path('clp_admin_mailcow_install') }}">
           <input type="hidden" name="_token" value="{{ csrf_token('mailcow-install') }}">
           <div class="form-group mb-3">
-            <label for="mailHostname" class="form-label">{% trans %}Mail Hostname{% endtrans %}</label>
+            <label for="mailHostname" class="form-label">{% trans %}Mail Hostname (FQDN){% endtrans %}</label>
             <input type="text" id="mailHostname" name="mailHostname" class="form-control" placeholder="mail.example.com" required>
           </div>
           <button type="submit" class="btn btn-blue">{% trans %}Install Mailcow{% endtrans %}</button>
         </form>
-        <p class="mt-3 mb-0"><small>{% trans %}Installation can take several minutes. The page will return once the docker images are pulled and started.{% endtrans %}</small></p>
       </div>
     </div>
     {% endif %}
