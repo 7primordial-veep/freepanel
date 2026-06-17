@@ -12,11 +12,11 @@
       {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
       <div class="site-content">
         {% if mailcowNotConfigured %}
-          <div class="callout callout-warning">
+          <div class="alert alert-warning">
             <p>{% trans %}Mailcow not configured. An admin needs to set the API URL/key in Admin → Mailcow → Settings.{% endtrans %}</p>
           </div>
         {% elseif not domainEnabled %}
-          <div class="callout callout-info">
+          <div class="alert alert-info">
             <p>{% trans %}Email is not yet enabled for this domain.{% endtrans %}</p>
           </div>
           <form action="{{ path('clp_site_email_enable', {'domainName': site.domainName}) }}" method="post">

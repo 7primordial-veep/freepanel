@@ -19,9 +19,12 @@ class HeadersTestController extends Controller
         parent::__construct($translator, $logger);
     }
 
+    // Note: ROLE_ADMIN enforcement is handled by security.yaml's
+    //   - { path: ^/admin, roles: [ ROLE_ADMIN ] }
+    // No in-controller role check needed (a previous attempt at one tripped a
+    // getUser()-returns-null edge case and bounced authed admins to /login).
     public function index(Request $request): Response
     {
-        $this->requireAdmin();
         return $this->render('Admin/Tools/headers-test.html.twig', [
             'result' => null,
             'url' => '',
@@ -31,7 +34,6 @@ class HeadersTestController extends Controller
 
     public function probe(Request $request): Response
     {
-        $this->requireAdmin();
         $this->checkCsrfToken($request, 'headers-test-probe');
         $url = trim((string) $request->request->get('url', ''));
         $result = null;
@@ -55,11 +57,4 @@ class HeadersTestController extends Controller
         ]);
     }
 
-    private function requireAdmin(): void
-    {
-        $user = $this->getUser();
-        if (null === $user || (method_exists($user, 'getRoles') && false === in_array('ROLE_ADMIN', (array) $user->getRoles(), true))) {
-            throw $this->createAccessDeniedException();
-        }
-    }
 }
