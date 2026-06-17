@@ -46,12 +46,20 @@ class HttpHeadersProbe
         // sits in a private/loopback/link-local/CGNAT range. We refuse on the
         // any-private rule (not majority) so a hostile DNS record that maps a
         // public name to a mix of public + 127.0.0.1 still gets blocked.
-        $sshError = $this->ssrfGuard((string) $parsed['host']);
-        if (null !== $sshError) {
-            $result['error'] = $sshError;
+        // Returns the validated IP we will pin via CURLOPT_RESOLVE so curl
+        // doesn't re-resolve (DNS rebinding TOCTOU).
+        $host = (string) $parsed['host'];
+        [$validatedIp, $ssrfError] = $this->ssrfGuard($host);
+        if (null !== $ssrfError) {
+            $result['error'] = $ssrfError;
             $result['securityChecklist'] = $this->buildChecklist([]);
             return $result;
         }
+        $scheme = strtolower((string) ($parsed['scheme'] ?? 'http'));
+        $port = (int) ($parsed['port'] ?? ('https' === $scheme ? 443 : 80));
+        // Bracket IPv6 literals for CURLOPT_RESOLVE.
+        $resolveIp = (false !== strpos($validatedIp, ':')) ? '[' . $validatedIp . ']' : $validatedIp;
+        $hostForResolve = trim($host, '[]');
 
         if (false === function_exists('curl_init')) {
             $result['error'] = 'PHP curl extension is not available.';
@@ -78,6 +86,9 @@ class HttpHeadersProbe
                 return $result;
             }
             curl_setopt($ch, CURLOPT_URL, $url);
+            // Pin the validated IP so curl doesn't re-resolve (DNS rebinding).
+            // The URL still carries the hostname so SNI + Host header are correct.
+            curl_setopt($ch, CURLOPT_RESOLVE, [sprintf('%s:%d:%s', $hostForResolve, $port, $resolveIp)]);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HEADER, true);
             curl_setopt($ch, CURLOPT_NOBODY, true);
@@ -128,18 +139,23 @@ class HttpHeadersProbe
     }
 
     /**
-     * Returns null if the host is safe to fetch, or a human-readable reason string
-     * if any resolved IP sits in a private / loopback / link-local / CGNAT range.
-     * We refuse on ANY match (not majority) so a hostile DNS record that returns
-     * both a public and a private IP is still blocked.
+     * Returns [$validatedIp, null] if the host is safe to fetch, or
+     * [null, $errorMessage] if any resolved IP sits in a private / loopback /
+     * link-local / CGNAT range. We refuse on ANY match (not majority) so a
+     * hostile DNS record that mixes public + private IPs is still blocked.
+     *
+     * The returned IP is what the caller MUST pin via CURLOPT_RESOLVE so curl
+     * doesn't re-resolve the host between our check and the actual request
+     * (DNS rebinding TOCTOU).
+     *
+     * @return array{0: ?string, 1: ?string}
      */
-    private function ssrfGuard(string $host): ?string
+    private function ssrfGuard(string $host): array
     {
         $host = trim($host, '[]'); // bracketed IPv6 literal
         if ('' === $host) {
-            return 'empty host';
+            return [null, 'empty host'];
         }
-        // Collect candidate IPs: literal, or DNS A/AAAA lookups.
         $ips = [];
         if (false !== filter_var($host, FILTER_VALIDATE_IP)) {
             $ips[] = $host;
@@ -148,7 +164,6 @@ class HttpHeadersProbe
             if (is_array($a)) {
                 $ips = array_merge($ips, $a);
             }
-            // IPv6
             $aaaa = @dns_get_record($host, DNS_AAAA);
             if (is_array($aaaa)) {
                 foreach ($aaaa as $r) {
@@ -159,17 +174,29 @@ class HttpHeadersProbe
             }
         }
         if (0 === count($ips)) {
-            return sprintf('could not resolve host %s', $host);
+            return [null, sprintf('could not resolve host %s', $host)];
         }
+        // Refuse on the FIRST private hit so we never return one validated-public
+        // IP when others are private. Keep the first public IP we see for pinning.
+        $firstPublic = null;
         foreach ($ips as $ip) {
             if (false === filter_var($ip, FILTER_VALIDATE_IP)) {
                 continue;
             }
             if ($this->isPrivateIp($ip)) {
-                return sprintf('refusing to fetch — %s resolves to private/loopback/link-local address %s', $host, $ip);
+                return [null, sprintf(
+                    'refusing to fetch — %s resolves to private/loopback/link-local address %s',
+                    $host, $ip
+                )];
+            }
+            if (null === $firstPublic) {
+                $firstPublic = $ip;
             }
         }
-        return null;
+        if (null === $firstPublic) {
+            return [null, sprintf('no usable public IP for %s', $host)];
+        }
+        return [$firstPublic, null];
     }
 
     private function isPrivateIp(string $ip): bool
