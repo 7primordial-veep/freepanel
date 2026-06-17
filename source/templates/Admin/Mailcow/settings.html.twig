@@ -3,49 +3,47 @@
 {% block pageTitle %}{% trans %}Mailcow Settings{% endtrans %}{% endblock %}
 
 {% block sidebar -%}
-  {{ include('Admin/Partial/sidebar.html.twig', {'active': active|default('mailcow')}) }}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'mailcow'}) }}
 {% endblock %}
 
 {% block body %}
-<div class="page-container">
+<div class="mailcow-container">
   <div class="page-header">
-    <h1>{% trans %}Mailcow Settings{% endtrans %}</h1>
-    <p class="text-muted">{% trans %}Configure the API endpoint that CloudPanel will use to talk to Mailcow.{% endtrans %}</p>
-  </div>
-
-  {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
-
-  <div class="card">
-    <div class="card-header">
-      <strong>{% trans %}API Connection{% endtrans %}</strong>
+    <div class="page-title">
+      <h1>{% trans %}Mailcow Settings{% endtrans %}</h1>
     </div>
-    <div class="card-body">
-      <form method="post" action="{{ path('clp_admin_mailcow_save_settings') }}">
-        <input type="hidden" name="_token" value="{{ csrf_token('mailcow-save-settings') }}">
+  </div>
+  <div class="page-content">
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
 
-        <div class="form-group">
-          <label for="apiUrl">{% trans %}API URL{% endtrans %}</label>
-          <input type="text" id="apiUrl" name="apiUrl" class="form-control" placeholder="https://mail.example.com" value="{{ apiUrl }}" required>
-          <small class="form-text text-muted">{% trans %}Base URL of your Mailcow installation (without trailing slash).{% endtrans %}</small>
-        </div>
+    <div class="card">
+      <div class="card-header">{% trans %}API Connection{% endtrans %}</div>
+      <div class="card-body">
+        <form method="post" action="{{ path('clp_admin_mailcow_save_settings') }}">
+          <input type="hidden" name="_token" value="{{ csrf_token('mailcow-save-settings') }}">
 
-        <div class="form-group">
-          <label for="apiKey">{% trans %}API Key{% endtrans %}</label>
-          <input type="password" id="apiKey" name="apiKey" class="form-control" placeholder="{% if hasKey %}{% trans %}leave blank to keep current{% endtrans %}{% else %}{% trans %}Paste your Mailcow API key{% endtrans %}{% endif %}" autocomplete="new-password">
-          <small class="form-text text-muted">
-            {% if hasKey %}
-              {% trans %}An API key is currently stored. Leave blank to keep it, or enter a new key to replace it.{% endtrans %}
-            {% else %}
-              {% trans %}Create a read/write API key in Mailcow under System -> Configuration -> Access -> API.{% endtrans %}
-            {% endif %}
-          </small>
-        </div>
+          <div class="form-group mb-3">
+            <label for="apiUrl" class="form-label">{% trans %}API URL{% endtrans %}</label>
+            <input type="text" id="apiUrl" name="apiUrl" class="form-control" placeholder="https://mail.example.com" value="{{ apiUrl }}" required>
+            <small class="form-text">{% trans %}Base URL of your Mailcow installation (without trailing slash).{% endtrans %}</small>
+          </div>
 
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">{% trans %}Save Settings{% endtrans %}</button>
+          <div class="form-group mb-3">
+            <label for="apiKey" class="form-label">{% trans %}API Key{% endtrans %}</label>
+            <input type="password" id="apiKey" name="apiKey" class="form-control" placeholder="{% if hasKey %}{% trans %}leave blank to keep current{% endtrans %}{% else %}{% trans %}Paste your Mailcow API key{% endtrans %}{% endif %}" autocomplete="new-password">
+            <small class="form-text">
+              {% if hasKey %}
+                {% trans %}An API key is currently stored. Leave blank to keep it, or enter a new key to replace it.{% endtrans %}
+              {% else %}
+                {% trans %}Create a read/write API key in Mailcow under System -> Configuration -> Access -> API.{% endtrans %}
+              {% endif %}
+            </small>
+          </div>
+
+          <button type="submit" class="btn btn-blue">{% trans %}Save Settings{% endtrans %}</button>
           <a href="{{ path('clp_admin_mailcow') }}" class="btn btn-link">{% trans %}Back{% endtrans %}</a>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
 </div>
