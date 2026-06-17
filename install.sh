@@ -767,8 +767,24 @@ setupCloudPanelApp()
   su -s /bin/bash -c "APP_ENV=dev /usr/bin/php8.1 -c /home/clp/services/php-fpm/cli/php.ini /home/clp/htdocs/app/files/bin/console doctrine:fixtures:load -n" clp
   su -s /bin/bash -c "/usr/bin/php8.1 -c /home/clp/services/php-fpm/cli/php.ini /home/clp/htdocs/app/files/bin/console doctrine:migrations:sync-metadata-storage -n" clp
   su -s /bin/bash -c "/usr/bin/php8.1 -c /home/clp/services/php-fpm/cli/php.ini /home/clp/htdocs/app/files/bin/console doctrine:migrations:version --add --all -n" clp
-  su -s /bin/bash -c "/usr/bin/clpctl vhost-templates:import" clp 2>/dev/null || true
-  su -s /bin/bash -c "/usr/bin/clpctl cloudflare:update:ips" clp 2>/dev/null || true
+  # vhost-templates:import populates the vhost_template table from
+  # /home/clp/htdocs/app/files/vhost-templates/v2-http3/. If this is silent-failed,
+  # the panel reports "Vhost Template WordPress does not exist." on every site
+  # create. Retry a few times (db / service settle), and on persistent failure
+  # leave a clear marker instead of swallowing the error.
+  imported=0
+  for attempt in 1 2 3; do
+    if su -s /bin/bash -c "/usr/bin/clpctl vhost-templates:import" clp >>/tmp/install.log 2>&1; then
+      imported=1
+      break
+    fi
+    sleep 3
+  done
+  if [ "$imported" -ne 1 ]; then
+    echo "WARNING: vhost-templates:import failed after 3 attempts — sites cannot be created until you run:" | tee -a /tmp/install.log
+    echo "  su -s /bin/bash -c '/usr/bin/clpctl vhost-templates:import' clp" | tee -a /tmp/install.log
+  fi
+  su -s /bin/bash -c "/usr/bin/clpctl cloudflare:update:ips" clp >>/tmp/install.log 2>&1 || true
 
   echo "${CLOUD:-}" > /home/clp/.cloud
   if [ -n "$CLOUD" ]; then
