@@ -1,0 +1,85 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Firewall{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'security'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Security{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="firewall-rules-container">
+      {{ include('Admin/Security/Partial/tab-container.html.twig', {'active': 'firewall'}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Rules{% endtrans %}
+          <a href="{{ path('clp_admin_firewall_rule_add') }}" class="btn btn-md btn-blue">{% trans %}Add Rule{% endtrans %}</a>
+        </div>
+        {% if rules|length %}
+          <div class="card-body card-body-no-padding">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>
+                    {% trans %}Type{% endtrans %}
+                  </th>
+                  <th>
+                    {% trans %}Port Range{% endtrans %}
+                  </th>
+                  <th>
+                    {% trans %}IP Version{% endtrans %}
+                  </th>
+                  <th>
+                    {% trans %}Source{% endtrans %}
+                  </th>
+                  <th>
+                    {% trans %}Description{% endtrans %}
+                  </th>
+                  <th width="200" class="text-end">
+                    {% trans %}Actions{% endtrans %}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for rule in rules %}
+                <tr>
+                  <td>
+                    <a href="{{ path('clp_admin_firewall_rule_edit', {'id': rule.id}) }}">{{ rule.type }}</a>
+                  </td>
+                  <td>
+                    {{ rule.portRange }}
+                  </td>
+                  <td>
+                    {{ rule.ipVersion }}
+                  </td>
+                  <td>
+                    {{ rule.source }}
+                  </td>
+                  <td>
+                    {{ rule.description }}
+                  </td>
+                  <td class="text-end table-actions">
+                    <a class="delete" href="{{ path('clp_admin_firewall_rule_delete', {'id': rule.id, 'token': csrf_token('delete-firewall-rule')}) }}" onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="card-body">
+            {% trans %}No rules found.{% endtrans %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

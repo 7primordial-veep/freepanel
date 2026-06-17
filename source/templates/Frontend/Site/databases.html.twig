@@ -1,0 +1,136 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Databases{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/site.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'databases', 'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      <div class="site-content">
+        <div class="card card-table">
+          <div class="card-header d-flex justify-content-between">
+            <div>
+              {% trans %}Databases{% endtrans %}
+              <span class="database-server-information">
+                <ul>
+                  <li>
+                    <strong>{% trans %}Host{% endtrans %}</strong>: {{ databaseServer.host }}
+                  </li>
+                  <li>
+                    <strong>{% trans %}Port{% endtrans %}</strong>: {{ databaseServer.port }}
+                  </li>
+                </ul>
+              </span>
+            </div>
+            <a href="{{ path('clp_site_database_new', {'domainName': site.domainName}) }}" class="btn btn-md btn-blue">{% trans %}Add Database{% endtrans %}</a>
+          </div>
+          {% if databases|length %}
+            <div class="card-body card-body-no-padding">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>
+                      {% trans %}Database{% endtrans %}
+                    </th>
+                    <th width="100" class="text-end">
+                      {% trans %}Action{% endtrans %}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for database in databases %}
+                  <tr>
+                    <td>
+                      {{ database.name }}
+                    </td>
+                    <td class="text-start table-actions">
+                      <a class="delete" href="{{ path('clp_site_database_delete', {'domainName': site.domainName, 'databaseName': database.name, 'token': csrf_token('database-delete')}) }}" onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+               </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="card-body">
+              {% trans %}No databases found.{% endtrans %}
+            </div>
+          {% endif %}
+        </div>
+        <div class="card card-table">
+          <div class="card-header d-flex justify-content-between">
+            <div>
+              {% trans %}Database Users{% endtrans %}
+            </div>
+            <a href="{{ path('clp_site_database_user_new', {'domainName': site.domainName}) }}" class="btn btn-md btn-blue">{% trans %}Add Database User{% endtrans %}</a>
+          </div>
+          {% if numberOfDatabaseUsers %}
+            <div class="card-body card-body-no-padding">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>
+                      {% trans %}User Name{% endtrans %}
+                    </th>
+                    <th width="300">
+                      {% trans %}Database{% endtrans %}
+                    </th>
+                    <th width="250">
+                      phpMyAdmin
+                    </th>
+                    <th width="250">
+                      {% trans %}Permissions{% endtrans %}
+                    </th>
+                    <th width="100" class="text-end">
+                      {% trans %}Action{% endtrans %}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for database in databases %}
+                  {% for databaseUser in database.users %}
+                    <tr>
+                      <td>
+                        <a href="{{ path('clp_site_database_user_edit', {'domainName': site.domainName, 'databaseUserName': databaseUser.userName}) }}">{{ databaseUser.userName }}</a>
+                      </td>
+                      <td>
+                        {{ databaseUser.database.name }}
+                      </td>
+                      <td>
+                        <a target="_blank" href="{{ path('clp_database_phpmyadmin', {'domainName': site.domainName, 'databaseUserName': databaseUser.userName}) }}">{% trans %}Manage{% endtrans %}</a>
+                      </td>
+                      <td>
+                        {% if databaseUser.permissions == constant('App\\Entity\\DatabaseUser::PERMISSIONS_READ_WRITE') %}
+                          {% trans %}Read and Write{% endtrans %}
+                        {% else %}
+                          {% trans %}Read Only{% endtrans %}
+                        {% endif %}
+                      </td>
+                      <td class="text-start table-actions">
+                        <a class="delete" href="{{ path('clp_site_database_user_delete', {'domainName': site.domainName, 'databaseUserName': databaseUser.userName, 'token': csrf_token('database-user-delete')}) }}" onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="card-body">
+              {% trans %}No database users found.{% endtrans %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

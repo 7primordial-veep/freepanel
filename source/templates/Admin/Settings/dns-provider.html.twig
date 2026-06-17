@@ -1,0 +1,39 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block title %}{{ 'DNS Provider'|trans }}{% endblock %}
+
+{% block content %}
+  <div class="page-header">
+    <h1>{{ 'DNS Provider (ACME DNS-01)'|trans }}</h1>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      {% for type, messages in app.flashes %}
+        {% for message in messages %}
+          <div class="alert alert-{{ type }}">{{ message }}</div>
+        {% endfor %}
+      {% endfor %}
+      <p class="text-muted">
+        {{ 'Required for issuing wildcard certificates (e.g. *.example.com).'|trans }}
+      </p>
+      <form method="post">
+        <input type="hidden" name="_token" value="{{ csrf_token('dns_provider_settings') }}">
+        <div class="form-group">
+          <label for="dns_provider">{{ 'Provider'|trans }}</label>
+          <select name="dns_provider" id="dns_provider" class="form-control">
+            <option value="" {{ provider == '' ? 'selected' : '' }}>-- {{ 'disabled'|trans }} --</option>
+            <option value="cloudflare" {{ provider == 'cloudflare' ? 'selected' : '' }}>Cloudflare</option>
+            <option value="route53" {{ provider == 'route53' ? 'selected' : '' }}>Route53 (stub)</option>
+            <option value="digitalocean" {{ provider == 'digitalocean' ? 'selected' : '' }}>DigitalOcean (stub)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="api_token">{{ 'API Token / Key'|trans }}</label>
+          <input type="password" name="api_token" id="api_token" class="form-control" autocomplete="off" placeholder="{{ 'leave blank to keep current'|trans }}">
+          <small class="form-text text-muted">{{ 'For Cloudflare, use a token scoped to Zone:DNS:Edit.'|trans }}</small>
+        </div>
+        <button type="submit" class="btn btn-blue">{{ 'Save'|trans }}</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

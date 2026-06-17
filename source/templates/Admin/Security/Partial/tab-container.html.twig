@@ -1,0 +1,16 @@
+{% if active is not defined %}
+  {% set active = 'settings' %}
+{% endif %}
+<div class="tab-container">
+  <ul>
+    <li {% if active == 'firewall' %}class="active"{% endif %}>
+      <a href="{{ path('clp_admin_firewall') }}">{% trans %}Firewall{% endtrans %}</a>
+    </li>
+    <li {% if active == 'basic-auth' %}class="active"{% endif %}>
+      <a href="{{ path('clp_admin_basic_auth') }}">{% trans %}Basic Auth{% endtrans %}</a>
+    </li>
+    <li {% if active == 'malware-scan' %}class="active"{% endif %}>
+      <a href="{{ path('clp_admin_malware_scan') }}">{% trans %}Malware Scan{% endtrans %}</a>
+    </li>
+  </ul>
+</div>

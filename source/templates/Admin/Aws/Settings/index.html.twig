@@ -1,0 +1,88 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}Amazon Web Services{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'aws'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>Amazon Web Services</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    {{ include('Admin/Aws/Partial/tab-container.html.twig', {'active': 'settings'}) }}
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+    {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+    <div class="aws-settings-container">
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}AWS Credentials{% endtrans %}
+        </div>
+        {{ form_start(accessKeysForm) }}
+        <div class="card-body card-body-no-padding">
+          <div class="card-form">
+            <div class="row">
+              <div class="col-6 {{ (form_errors(accessKeysForm.accessKey) ? 'has-error' : '') }}">
+                {{ form_label(accessKeysForm.accessKey, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(accessKeysForm.accessKey) }}
+              </div>
+              <div class="col-6 {{ (form_errors(accessKeysForm.secretAccessKey) ? 'has-error' : '') }}">
+                {{ form_label(accessKeysForm.secretAccessKey, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(accessKeysForm.secretAccessKey) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col text-end">
+                {{ form_widget(accessKeysForm.submit) }}
+              </div>
+            </div>
+          </div>
+        </div>
+        {{ form_end(accessKeysForm) }}
+      </div>
+    </div>
+    <div class="aws-backup-settings-container">
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Images Settings{% endtrans %}
+        </div>
+        {{ form_start(imagesSettingsForm) }}
+        <div class="card-body card-body-no-padding">
+          <div class="card-form">
+            <div class="row">
+              <div class="col">
+                <div class="col-12 {{ (form_errors(imagesSettingsForm.automaticImages) ? 'has-error' : '') }}">
+                  <div class="form-check form-switch mb-2">
+                  {{ form_label(imagesSettingsForm.automaticImages, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                  {{ form_widget(imagesSettingsForm.automaticImages) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 {{ (form_errors(imagesSettingsForm.frequency) ? 'has-error' : '') }}">
+                {{ form_label(imagesSettingsForm.frequency, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(imagesSettingsForm.frequency) }}
+              </div>
+              <div class="col-6 {{ (form_errors(imagesSettingsForm.retentionPeriod) ? 'has-error' : '') }}">
+                {{ form_label(imagesSettingsForm.retentionPeriod, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(imagesSettingsForm.retentionPeriod) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col text-end">
+                {{ form_widget(imagesSettingsForm.submit) }}
+              </div>
+            </div>
+          </div>
+        </div>
+        {{ form_end(imagesSettingsForm) }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

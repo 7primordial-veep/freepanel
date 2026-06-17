@@ -1,0 +1,21 @@
+### API Test
+
+POST http://cloudpanel-v2.clp/api/test
+Accept: application/json
+Authorization: Bearer stefan
+
+### Create User
+POST http://cloudpanel-v2.clp/api/users
+Authorization: Bearer stefan
+Content-Type: application/json
+
+{
+  "role": "user",
+  "userName": "stefan",
+  "firstName": "Stefan",
+  "lastName": "Wieczorek",
+  "email": "sw@clp.io",
+  "password": "stefan87",
+  "status": 1,
+  "timezone": "Europe/Berlin"
+}

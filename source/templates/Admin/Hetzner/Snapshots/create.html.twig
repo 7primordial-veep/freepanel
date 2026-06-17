@@ -1,0 +1,46 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}Hetzner{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'hetzner'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>Hetzner</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    {{ include('Admin/Hetzner/Partial/tab-container.html.twig', {'active': 'snapshots'}) }}
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+    {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+    <div class="hetzner-create-snapshot-container">
+      {{ form_start(form) }}
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Create Snapshot{% endtrans %}
+        </div>
+        <div class="card-body card-body-no-padding">
+          <div class="card-form">
+            <div class="row">
+              <div class="col {{ (form_errors(form.name) ? 'has-error' : '') }}">
+                {{ form_label(form.name, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.name) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col text-end">
+                {{ form_widget(form.submit) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{ form_end(form) }}
+    </div>
+  </div>
+</div>
+{% endblock %}

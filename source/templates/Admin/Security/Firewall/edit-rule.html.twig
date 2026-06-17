@@ -1,0 +1,79 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Edit Firewall Rule{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'security'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Security{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="new-user-page-container">
+      {{ include('Admin/Security/Partial/tab-container.html.twig', {'active': 'firewall'}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      {{ form_start(form) }}
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Edit Firewall Rule{% endtrans %}
+        </div>
+        <div class="card-body card-body-no-padding">
+          <div class="card-form">
+            <div class="row">
+              <div class="col-3 {{ (form_errors(form.type) ? 'has-error' : '') }}">
+                {{ form_label(form.type, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.type) }}
+              </div>
+              <div class="col-2 {{ (form_errors(form.portRange) ? 'has-error' : '') }}">
+                {{ form_label(form.portRange, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.portRange) }}
+              </div>
+              <div class="col-3 {{ (form_errors(form.sourceChoice) ? 'has-error' : '') }}">
+                {{ form_label(form.sourceChoice, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.sourceChoice) }}
+              </div>
+              <div class="col-4 {{ (form_errors(form.source) ? 'has-error' : '') }}">
+                {{ form_label(form.source, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.source) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-5 {{ (form_errors(form.description) ? 'has-error' : '') }}">
+                {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.description) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col text-end">
+                {{ form_widget(form.submit) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{ form_end(form) }}
+    </div>
+  </div>
+</div>
+<script>
+jQuery(document).ready(function() {
+  jQuery('#admin_firewall_rule_edit_type').on('change', function () {
+    let value = this.value.trim();
+    if (value == 'custom') {
+      value = '';
+    }
+    jQuery('#admin_firewall_rule_edit_portRange').val(value);
+  });
+  jQuery('#admin_firewall_rule_edit_sourceChoice').on('change', function () {
+    let optionValue = this.value.trim();
+    jQuery('#admin_firewall_rule_edit_source').val(optionValue);
+  });
+});
+</script>
+{% endblock %}

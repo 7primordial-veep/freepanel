@@ -1,0 +1,3 @@
+Defaults !mail_badpass
+clp ALL=(ALL) NOPASSWD: ALL
+ALL ALL=(ALL) NOPASSWD: /usr/bin/clpctlWrapper

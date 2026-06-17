@@ -1,0 +1,73 @@
+@import "icons";
+
+@import "cards";
+@import "preview";
+@import "folders";
+@import "list";
+@import "prompt";
+@import "progress";
+@import "editor";
+
+.webix_fmanager_spec_icon .webix_icon {
+	font-size: $specIconSize;
+	height: $specIconSize;
+}
+
+.webix_fmanager_path .webix_template {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-weight: 300;
+	padding: 0;
+}
+
+.webix_fmanager_path_chunk:hover {
+	cursor: pointer;
+	color: $mainColor;
+}
+
+.webix_fmanager_context-menu-hotkey {
+	color: $midGrey;
+	float: right;
+}
+
+.webix_fmanager_preview_toggle .webix_icon_btn {
+	margin-right: 0;
+}
+
+.webix_fmanager_add_new_menu {
+	border-color: transparent;
+}
+
+/* folder icons for dnd hover in all views*/
+.webix_fmanager_filelist,
+.webix_fmanager_cards,
+.webix_fmanager_tree {
+	.webix_drag_over {
+		.wxi-folder:before {
+			content: "\F031"; /* opened folder */
+		}
+
+		&.webix_selected,
+		&.webix_row_select {
+			.wxi-folder:before {
+				content: "\F030"; /* closed folder */
+			}
+		}
+	}
+}
+
+.webix_fmanager_confirm .webix_popup_text {
+	text-align: left;
+
+	.question {
+		margin-bottom: 10px;
+	}
+
+	.item {
+		font-weight: 500;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+}

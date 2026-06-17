@@ -1,0 +1,177 @@
+.webix_fmanager_preview_name .webix_el_box {
+	padding: 3px 12px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.webix_fmanager_preview {
+	border-top-color: transparent;
+}
+
+.webix_fmanager_preview .webix_template {
+	padding: 0px;
+
+	img {
+		display: inline-block;
+		width: 100%;
+		height: 100%;
+
+		&.webix_fmanager_preview_icon {
+			margin: 20px;
+			width: 90%;
+			height: 90%;
+		}
+	}
+}
+
+.webix_fmanager_info_tab .webix_item_tab.webix_selected {
+	cursor: default;
+
+	&:focus {
+		box-shadow: inset 0 -2px $mainColor;
+		color: $mainColor;
+	}
+}
+
+.webix_fmanager_preview_info {
+	&.extra {
+		border-color: #ebedf0 transparent transparent;
+	}
+
+	.webix_template {
+		padding: 0;
+	}
+
+	.key_col {
+		float: left;
+		width: 40%;
+		font-weight: 500;
+		text-align: right;
+	}
+
+	.value_col {
+		float: right;
+		width: 60%;
+		white-space: nowrap;
+	}
+
+	.key_value_cell {
+		padding: 6px;
+
+		&.key {
+			width: 160px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
+}
+
+.webix_fmanager_id3tags-unknown {
+	color: $midGrey;
+}
+
+.webix_fmanager_info_header {
+	margin: 8px 0;
+
+	.webix_fmanager_icon {
+		color: $midGrey;
+		line-height: 1.5;
+	}
+}
+
+.webix_fmanager_info_title {
+	color: $primeFontColor;
+	font-weight: 500;
+}
+
+/* plyr player style */
+$plyrProgressBufferColor: rgba(193, 201, 209, 0.66);
+
+.webix_fmanager_player {
+	.plyr--audio .plyr__controls {
+		background: $plyrBackground;
+	}
+	.plyr__video-wrapper {
+		background: $plyrBackground;
+	}
+	.plyr--video {
+		.plyr__controls {
+			background: linear-gradient(transparent, $plyrBackground);
+		}
+		.plyr__progress__buffer {
+			color: $plyrProgressBufferColor;
+			box-shadow: none;
+			background: $plyrProgressBufferColor;
+		}
+		.plyr__control.plyr__tab-focus,
+		.plyr__control--overlaid {
+			background: $mainColor;
+		}
+		.plyr__control--overlaid:hover {
+			background: darken($mainColor, 7%);
+		}
+		.plyr__control.plyr__tab-focus {
+			box-shadow: none;
+		}
+	}
+
+	.plyr__time--current {
+		color: $plyrTextColor;
+	}
+	.icon--not-pressed,
+	.icon--pressed {
+		fill: $plyrTextColor;
+	}
+
+	.plyr__controls__item {
+		&.plyr__control:hover .icon--not-pressed,
+		&.plyr__control:hover .icon--pressed,
+		&.plyr__volume .plyr__control:hover .icon--not-pressed,
+		&.plyr__volume .plyr__control:hover .icon--pressed,
+		&.plyr__control.plyr__tab-focus,
+		.plyr__control.plyr__tab-focus,
+		&.plyr__control:hover,
+		.plyr__control:hover,
+		.plyr__control[aria-expanded="true"],
+		&.plyr__control[aria-expanded="true"] {
+			fill: $mainColor;
+			background: transparent;
+
+			.icon--not-pressed,
+			.icon--pressed {
+				fill: $mainColor;
+			}
+		}
+
+		&.plyr__control.plyr__tab-focus,
+		.plyr__control.plyr__tab-focus {
+			box-shadow: none;
+		}
+	}
+
+	.plyr--full-ui input[type="range"] {
+		color: $mainColor;
+
+		&.plyr__tab-focus::-moz-range-track {
+			box-shadow: 0 0 0 2px rgba($mainColor, 50%);
+		}
+		&.plyr__tab-focus::-webkit-slider-runnable-track {
+			box-shadow: 0 0 0 2px rgba($mainColor, 50%);
+		}
+		&.plyr__tab-focus::-ms-track {
+			box-shadow: 0 0 0 2px rgba($mainColor, 50%);
+		}
+	}
+
+	.plyr--full-ui.plyr--video input[type="range"] {
+		&::-moz-range-track {
+			background-color: $plyrProgressBufferColor;
+		}
+		&::-webkit-slider-runnable-track {
+			background-color: $plyrProgressBufferColor;
+		}
+		&::-ms-track {
+			background-color: $plyrProgressBufferColor;
+		}
+	}
+}

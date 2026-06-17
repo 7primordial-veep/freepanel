@@ -1,0 +1,15 @@
+[Unit]
+Description=The CLP PHP 8.1 FastCGI Process Manager
+Documentation=man:php-fpm8.1(8)
+After=network.target
+
+[Service]
+Type=notify
+PIDFile=/run/php/clp-php-fpm.pid
+ExecStart=/usr/sbin/php-fpm8.1 -R -F -y /home/clp/services/php-fpm/fpm/php-fpm.conf -c /home/clp/services/php-fpm/fpm/php.ini
+ExecReload=/bin/kill -USR2 $MAINPID
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

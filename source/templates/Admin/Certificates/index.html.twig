@@ -1,0 +1,85 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Certificates{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'certificates'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="certificates-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Certificates{% endtrans %}</h1>
+    </div>
+    <div class="page-actions">
+      <a class="btn btn-blue"
+         href="{{ path('clp_admin_certificates_renew_all', {'token': csrf_token('admin-certificates-renew-all')}) }}"
+         onclick="return confirm('{% trans %}Renew all Let\\'s Encrypt certificates now?{% endtrans %}')">
+        {% trans %}Renew Now{% endtrans %}
+      </a>
+    </div>
+  </div>
+  <div class="page-content">
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+    <div class="card card-table">
+      <div class="card-body card-body-no-padding">
+        {% if rows|length %}
+          <table class="table">
+            <thead>
+              <tr>
+                <th>{% trans %}Domain{% endtrans %}</th>
+                <th width="140">{% trans %}Type{% endtrans %}</th>
+                <th width="220">{% trans %}Expires{% endtrans %}</th>
+                <th width="160">{% trans %}Days Left{% endtrans %}</th>
+                <th>{% trans %}Last Renew{% endtrans %}</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for row in rows %}
+              <tr>
+                <td>
+                  <a href="{{ path('clp_site_certificates', {'domainName': row.domainName}) }}">{{ row.domainName }}</a>
+                  {% if row.isDefault %}<span class="label-outline label-outline-blue">{% trans %}Default{% endtrans %}</span>{% endif %}
+                </td>
+                <td>{{ row.type }}</td>
+                <td>
+                  {% if row.expiresAt %}{{ row.expiresAt|date('M j, Y H:i', user.timezone) }}{% else %}-{% endif %}
+                </td>
+                <td>
+                  {% if row.status == 'expired' %}
+                    <span class="label-outline label-outline-red">{% trans %}Expired{% endtrans %}</span>
+                  {% elseif row.status == 'critical' %}
+                    <span class="label-outline label-outline-red">{{ row.daysToExpire }}</span>
+                  {% elseif row.status == 'warning' %}
+                    <span class="label-outline label-outline-orange">{{ row.daysToExpire }}</span>
+                  {% elseif row.status == 'unknown' %}
+                    <span class="label-outline">?</span>
+                  {% else %}
+                    <span class="label-outline label-outline-green">{{ row.daysToExpire }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if row.lastRenewAttemptAt %}
+                    {{ row.lastRenewAttemptAt|date('M j, Y H:i', user.timezone) }}
+                    {% if row.lastRenewError %}
+                      <div class="text-danger" style="font-size:12px">{{ row.lastRenewError|slice(0, 200) }}</div>
+                    {% else %}
+                      <span class="label-outline label-outline-green">{% trans %}OK{% endtrans %}</span>
+                    {% endif %}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="card-body">{% trans %}No certificates found.{% endtrans %}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

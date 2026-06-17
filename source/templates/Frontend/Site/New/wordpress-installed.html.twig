@@ -1,0 +1,40 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}WordPress Site has been created!{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/new-site.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width new-site-container-fix">
+  <div class="wordpress-site-created-container">
+    <div class="page-header">
+      <div class="page-title">
+        <h1>{% trans %}WordPress Site has been created!{% endtrans %}</h1>
+      </div>
+    </div>
+    <div class="page-content">
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      <div class="card">
+        <div class="card-body card-body-no-padding">
+          <div class="card-form">
+            <div class="row">
+              <div class="col">
+                <div class="site-credentials-text">{% trans %}Copy the credentials for your created WordPress site.{% endtrans %}</div>
+                <textarea id="site-credentials" name="site-credentials" class="form-control form-control-lg" rows="20">{{ siteCredentials }}</textarea>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <a href="{{ path('clp_sites') }}" class="btn btn-lg btn-gray">{% trans %}Back to Sites{% endtrans %}</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

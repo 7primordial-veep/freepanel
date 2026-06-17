@@ -1,0 +1,88 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}New Site{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/new-site.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width new-site-container-fix">
+  <div class="new-site-container">
+    <div class="page-header">
+      <div class="page-title">
+        <h1>{% trans %}What kind of site would you like to create?{% endtrans %}</h1>
+      </div>
+    </div>
+    <div class="page-content">
+      <div class="card">
+        <div class="card-body">
+          <div class="site-type-content-containers">
+            {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+            <div class="site-type-container">
+              <div class="application">
+                <div class="application-image">
+                  <img alt="{% trans %}Create a WordPress Site{% endtrans %}" width="160" height="160" src="{{ asset('/assets/images/new-site/wordpress.svg') }}">
+                </div>
+                <div class="deploy-application-container">
+                  <a href="{{ path('clp_site_wordpress_new') }}" class="btn btn-white">{% trans %}Create a WordPress Site{% endtrans %}</a>
+                </div>
+              </div>
+              <div class="application">
+                <div class="application-image">
+                  <img alt="{% trans %}Create a PHP Site{% endtrans %}" width="160" height="160" src="{{ asset('/assets/images/new-site/php.svg') }}">
+                </div>
+                <div class="deploy-application-container">
+                  <a href="{{ path('clp_site_php_new') }}" class="btn btn-white">{% trans %}Create a PHP Site{% endtrans %}</a>
+                </div>
+              </div>
+              <div class="application">
+                <div class="application-image">
+                  <img alt="{% trans %}Create a Node.js Site{% endtrans %}" width="160" height="160" src="{{ asset('/assets/images/new-site/nodejs.svg') }}">
+                </div>
+                <div class="deploy-application-container">
+                  <a href="{{ path('clp_site_nodejs_new') }}" class="btn btn-white">{% trans %}Create a Node.js Site{% endtrans %}</a>
+                </div>
+              </div>
+              <div class="application">
+                <div class="application-image">
+                  <img alt="{% trans %}Create a Static HTML Site{% endtrans %}" width="160" height="160" src="{{ asset('/assets/images/new-site/html_css_js.svg') }}">
+                </div>
+                <div class="deploy-application-container">
+                  <a href="{{ path('clp_site_static_new') }}" class="btn btn-white">{% trans %}Create a Static HTML Site{% endtrans %}</a>
+                </div>
+              </div>
+              <div class="application">
+                <div class="application-image">
+                  <img alt="{% trans %}Create a Python Site{% endtrans %}" width="160" height="160" src="{{ asset('/assets/images/new-site/python.svg') }}">
+                </div>
+                <div class="deploy-application-container">
+                  <a href="{{ path('clp_site_python_new') }}" class="btn btn-white">{% trans %}Create a Python Site{% endtrans %}</a>
+                </div>
+              </div>
+              <div class="application">
+                <div class="application-image">
+                  <img alt="{% trans %}Create a Reverse Proxy{% endtrans %}" width="160" height="160" src="{{ asset('/assets/images/new-site/reverse_proxy.svg') }}">
+                </div>
+                <div class="deploy-application-container">
+                  <a href="{{ path('clp_site_reverse_proxy_new') }}" class="btn btn-white">{% trans %}Create a Reverse Proxy{% endtrans %}</a>
+                </div>
+              </div>
+              {# ponytail: scaffold — reuses reverse_proxy.svg; ship docker.svg later #}
+              <div class="application">
+                <div class="application-image">
+                  <img alt="{% trans %}Create a Docker Site{% endtrans %}" width="160" height="160" src="{{ asset('/assets/images/new-site/reverse_proxy.svg') }}">
+                </div>
+                <div class="deploy-application-container">
+                  <a href="{{ path('clp_site_docker_new') }}" class="btn btn-white">{% trans %}Create a Docker Site{% endtrans %}</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

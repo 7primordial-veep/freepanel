@@ -1,0 +1,28 @@
+#!/bin/bash
+
+export TERM=xterm-256color
+RED_TEXT_COLOR=`tput setaf 1`
+GREEN_TEXT_COLOR=`tput setaf 2`
+YELLOW_TEXT_COLOR=`tput setaf 3`
+RESET_TEXT_COLOR=`tput sgr0`
+
+CLOUDPANEL_URL="https://$(curl -sk --connect-timeout 5 --retry 3 --retry-delay 0 https://d3qnd54q8gb3je.cloudfront.net/):8443"
+CUSTOM_CLP_DOMAIN=$(/usr/bin/cat /etc/.clp_custom_domain 2>/dev/null)
+
+if [ ! -z "$CUSTOM_CLP_DOMAIN" ]; then
+  CLOUDPANEL_URL="https://$CUSTOM_CLP_DOMAIN/"
+fi
+
+printf "\n${GREEN_TEXT_COLOR}"
+printf "########################################################\n"
+printf "###            Welcome to CloudPanel                 ###\n"
+printf "########################################################${RESET_TEXT_COLOR}\n\n"
+
+printf "* Website:         https://www.cloudpanel.io\n"
+printf "* Documentation:   https://www.cloudpanel.io/docs/v2/\n"
+printf "* Best Practices:  https://www.cloudpanel.io/docs/v2/best-practices/\n"
+
+printf "* CloudPanel:     ${YELLOW_TEXT_COLOR} $CLOUDPANEL_URL ${RESET_TEXT_COLOR}\n"
+printf "* CloudPanel CLI:  clpctl"
+
+printf "\n\n"

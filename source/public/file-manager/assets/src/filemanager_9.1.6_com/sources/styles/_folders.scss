@@ -1,0 +1,13 @@
+.webix_fmanager_tree .webix_tree_item {
+	&.webix_selected .webix_icon,
+	.webix_icon {
+		color: #ccc;
+		padding: 0 2px 0 0;
+		font-size: $folderIconSize;
+		vertical-align: top;
+	}
+}
+
+.webix_fmanager_fsstats .webix_template {
+	padding: 4px 14pt;
+}

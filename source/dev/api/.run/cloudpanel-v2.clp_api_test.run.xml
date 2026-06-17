@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="cloudpanel-v2.clp/api/test" type="PhpHttpRequestRunConfigurationType" factoryName="PHP HTTP Request" server_name="cloudpanel-v2.clp" url="/api/test">
+    <HttpRequestSettings request_method="POST" />
+    <method v="2" />
+  </configuration>
+</component>

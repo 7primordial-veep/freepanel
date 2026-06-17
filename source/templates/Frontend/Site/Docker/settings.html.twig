@@ -1,0 +1,63 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Docker Settings{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/site.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'docker-settings', 'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="site-content">
+        {{ form_start(form, {'action': path('clp_site_docker_settings', {'domainName': site.domainName})}) }}
+        <div class="card card-table">
+          <div class="card-header d-flex justify-content-between">
+            {% trans %}Docker Settings{% endtrans %}
+          </div>
+          <div class="card-body card-body-no-padding">
+            <div class="card-form">
+              <div class="row">
+                <div class="col-12 {{ (form_errors(form.dockerImage) ? 'has-error' : '') }}">
+                  {{ form_label(form.dockerImage, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.dockerImage) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 {{ (form_errors(form.dockerPort) ? 'has-error' : '') }}">
+                  {{ form_label(form.dockerPort, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.dockerPort) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 {{ (form_errors(form.dockerEnvRaw) ? 'has-error' : '') }}">
+                  {{ form_label(form.dockerEnvRaw, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.dockerEnvRaw) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 {{ (form_errors(form.dockerVolumesRaw) ? 'has-error' : '') }}">
+                  {{ form_label(form.dockerVolumesRaw, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.dockerVolumesRaw) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col text-end">
+                  {{ form_widget(form.submit) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{ form_end(form) }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

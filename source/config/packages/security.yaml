@@ -1,0 +1,37 @@
+security:
+    enable_authenticator_manager: true
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+    providers:
+        custom_user_provider:
+            id: App\Security\UserProvider
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        api:
+            pattern: ^/api
+            custom_authenticator: App\Security\ApiTokenAuthenticator
+            security: true
+        main:
+            lazy: false
+            provider: custom_user_provider
+            custom_authenticators:
+             - App\Security\LoginFormAuthenticator
+             - App\Security\AutoLoginAuthenticator
+            logout:
+                path: clp_logout
+                target: clp_login
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+        - { path: ^/admin/user/creation, roles: PUBLIC_ACCESS }
+        - { path: ^/autologin, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: [ ROLE_ADMIN ] }
+        - { path: ^/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/login/mfa$, roles: PUBLIC_ACCESS }
+        - { path: ^/locale/change$, roles: PUBLIC_ACCESS }
+        - { path: ^/pma$, roles: PUBLIC_ACCESS }
+        - { path: ^/pma/logout$, roles: PUBLIC_ACCESS }
+        - { path: ^/, role: IS_AUTHENTICATED_FULLY }

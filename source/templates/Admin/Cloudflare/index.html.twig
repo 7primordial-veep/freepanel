@@ -1,0 +1,76 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Cloudflare{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'settings'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Cloudflare{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+    <div class="settings-container">
+      <div class="card card-table">
+        <div class="card-header">{% trans %}Cloudflare API{% endtrans %}</div>
+        <form action="{{ path('clp_admin_cloudflare_settings') }}" method="POST">
+          <input type="hidden" name="_token" value="{{ csrf_token('cloudflare-settings') }}">
+          <div class="card-body card-body-no-padding">
+            <div class="card-form">
+              <div class="row">
+                <div class="col-12">
+                  <label class="col-form-label">{% trans %}API Token{% endtrans %}</label>
+                  <input type="password" name="api_token" class="form-control" placeholder="{% if hasToken %}{% trans %}(stored — leave blank to keep){% endtrans %}{% else %}{% trans %}Paste a scoped API token{% endtrans %}{% endif %}">
+                  <div class="form-text">{% trans %}Token needs Zone:Read, DNS:Edit, Cache Purge, and Zone Settings:Edit on the zones you manage.{% endtrans %}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <label class="col-form-label">{% trans %}WAF Security Level{% endtrans %}</label>
+                  <select name="security_level" class="form-select">
+                    {% for opt in ['off','essentially_off','low','medium','high','under_attack'] %}
+                      <option value="{{ opt }}"{% if opt == securityLevel %} selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="col-form-label">{% trans %}Site creation{% endtrans %}</label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="auto_dns" id="cf_auto_dns"{% if autoDns %} checked{% endif %}>
+                    <label class="form-check-label" for="cf_auto_dns">{% trans %}Auto-create A record on new sites (when domain falls under a managed zone){% endtrans %}</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="auto_proxied" id="cf_auto_proxied"{% if autoProxied %} checked{% endif %}>
+                    <label class="form-check-label" for="cf_auto_proxied">{% trans %}Proxy new records through Cloudflare{% endtrans %}</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col text-end">
+                  <button type="submit" class="btn btn-blue btn-lg">{% trans %}Save{% endtrans %}</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="card card-table mt-3">
+        <div class="card-header">{% trans %}Apply WAF{% endtrans %}</div>
+        <div class="card-body">
+          <p>{% trans %}Push the saved security level to every zone the token can see.{% endtrans %}</p>
+          <form action="{{ path('clp_admin_cloudflare_security_apply') }}" method="POST">
+            <input type="hidden" name="_token" value="{{ csrf_token('cloudflare-security-apply') }}">
+            <button type="submit" class="btn btn-orange"{% if not hasToken %} disabled{% endif %}>{% trans %}Apply to all zones{% endtrans %}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

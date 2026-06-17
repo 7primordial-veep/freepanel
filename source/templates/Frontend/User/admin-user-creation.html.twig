@@ -1,0 +1,74 @@
+{% extends 'Frontend/Login/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Admin User Creation{% endtrans %}{% endblock %}
+
+{% block body %}
+<div class="login-container admin-user-creation-container">
+  <div class="logo">
+    <a href="{{ path('clp_login') }}">
+      <img src="{{ asset('assets/images/cloudpanel-cloud.svg') }}" height="75">
+    </a>
+  </div>
+  <div class="login-form-container">
+    <h2 class="text-center">{% trans %}Admin User Creation{% endtrans %}</h2>
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+    {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+    <div class="form-container">
+      {{ form_start(form) }}
+      <div class="row">
+        <div class="col {{ (form_errors(form.firstName) ? 'has-error' : '') }}">
+          {{ form_label(form.firstName, null, {'label_attr': {'class': 'col-form-label'}}) }}
+          {{ form_widget(form.firstName) }}
+        </div>
+        <div class="col {{ (form_errors(form.lastName) ? 'has-error' : '') }}">
+          {{ form_label(form.lastName, null, {'label_attr': {'class': 'col-form-label'}}) }}
+          {{ form_widget(form.lastName) }}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col {{ (form_errors(form.userName) ? 'has-error' : '') }}">
+          {{ form_label(form.userName, null, {'label_attr': {'class': 'col-form-label'}}) }}
+          {{ form_widget(form.userName) }}
+        </div>
+        <div class="col {{ (form_errors(form.email) ? 'has-error' : '') }}">
+          {{ form_label(form.email, null, {'label_attr': {'class': 'col-form-label'}}) }}
+          {{ form_widget(form.email) }}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col {{ (form_errors(form.plainPassword) ? 'has-error' : '') }}">
+          {{ form_label(form.plainPassword, null, {'label_attr': {'class': 'col-form-label'}}) }}
+          {{ form_widget(form.plainPassword) }}
+        </div>
+        <div class="col {{ (form_errors(form.timezone) ? 'has-error' : '') }}">
+          {{ form_label(form.timezone, null, {'label_attr': {'class': 'col-form-label'}}) }}
+          {{ form_widget(form.timezone) }}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            <div class="form-check">
+              {{ form_widget(form.acceptLicenseTermsPrivacyPolicy) }}
+              <label class="form-check-label label-license-terms" for="user_admin_user_creation_acceptLicenseTermsPrivacyPolicy">
+                {% trans %}I agree to the license terms and acknowledge the privacy policy.{% endtrans %}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="form-group text-right">
+            {{ form_widget(form.submit) }}
+          </div>
+        </div>
+      </div>
+      {{ form_end(form) }}
+    </div>
+  </div>
+  {% block footer %}
+    {{ include('Frontend/Login/Partial/footer.html.twig') }}
+  {% endblock %}
+</div>
+{% endblock %}

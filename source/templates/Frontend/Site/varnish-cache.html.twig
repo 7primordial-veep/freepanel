@@ -1,0 +1,107 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Varnish Cache{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/site.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'varnish-cache', 'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="site-content">
+        <div class="card">
+          {{ form_start(settingsForm) }}
+          <div class="card-header d-flex justify-content-between">
+            <div class="card-header-switch">
+              <div class="form-check form-switch {{ (form_errors(settingsForm.isEnabled) ? 'has-error' : '') }}">
+                {{ form_label(settingsForm.isEnabled, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                {{ form_widget(settingsForm.isEnabled) }}
+              </div>
+            </div>
+          </div>
+          <div class="card-body card-body-no-padding">
+            <div class="card-form">
+              <div class="row">
+                <div class="col-6 {{ (form_errors(settingsForm.server) ? 'has-error' : '') }}">
+                  {{ form_label(settingsForm.server, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(settingsForm.server) }}
+                </div>
+                <div class="col-6 {{ (form_errors(settingsForm.cacheLifetime) ? 'has-error' : '') }}">
+                  {{ form_label(settingsForm.cacheLifetime, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(settingsForm.cacheLifetime) }}
+                  <div class="form-text">{% trans %}Cache Lifetime in seconds before being refreshed.{% endtrans %}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 {{ (form_errors(settingsForm.cacheTagPrefix) ? 'has-error' : '') }}">
+                  {{ form_label(settingsForm.cacheTagPrefix, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(settingsForm.cacheTagPrefix) }}
+                </div>
+                <div class="col-6 {{ (form_errors(settingsForm.excludedParams) ? 'has-error' : '') }}">
+                  {{ form_label(settingsForm.excludedParams, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(settingsForm.excludedParams) }}
+                  <div class="form-text">{% trans %}List of GET parameters, separated by a comma, to disable caching.{% endtrans %}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col {{ (form_errors(settingsForm.excludes) ? 'has-error' : '') }}">
+                  {{ form_label(settingsForm.excludes, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(settingsForm.excludes) }}
+                  <div class="form-text">{% trans %}Urls and files that Varnish Cache shouldn't cache.{% endtrans %}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col text-end">
+                  {{ form_widget(settingsForm.submit) }}
+                </div>
+              </div>
+            </div>
+          </div>
+          {{ form_end(settingsForm) }}
+        </div>
+
+        <div class="card">
+          {{ form_start(purgeCacheForm) }}
+          <div class="card-header d-flex justify-content-between">
+            <div class="card-header-switch">
+              {% trans %}Purge Cache{% endtrans %}
+            </div>
+            <button type="button" id="purge-entire-varnish-cache" class="btn btn-gray btn-lg">{% trans %}Purge Entire Cache{% endtrans %}</button>
+          </div>
+          <div class="card-body card-body-no-padding">
+            <div class="card-form">
+              <div class="row">
+                <div class="col {{ (form_errors(purgeCacheForm.value) ? 'has-error' : '') }}">
+                  {{ form_widget(purgeCacheForm.value) }}
+                  <div class="form-text">{% trans %}You can purge single urls or tags separated by comma.{% endtrans %}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col text-end">
+                  {{ form_widget(purgeCacheForm.submit) }}
+                </div>
+              </div>
+            </div>
+          </div>
+          {{ form_end(purgeCacheForm) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+jQuery(document).ready(function() {
+  jQuery('#purge-entire-varnish-cache').on('click', function () {
+    let purgeCacheUrl = '{{ path('clp_site_varnish_cache_purge', {'domainName': site.domainName}) }}';
+    window.location = purgeCacheUrl;
+  });
+});
+</script>
+{% endblock %}

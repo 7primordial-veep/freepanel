@@ -1,0 +1,16 @@
+<div class="information-box">
+  <h4>{% trans %}Operating System{% endtrans %}</h4>
+  {{ instance.operatingSystemName }} {{ instance.operatingSystemVersion }}
+</div>
+<div class="information-box">
+  <h4>{% trans %}Hostname{% endtrans %}</h4>
+  <a class="click-to-copy" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{% trans %}Click to Copy{% endtrans %}">{{ instance.hostname }}</a>
+</div>
+<div class="information-box">
+  <h4>{% trans %}IPv4 Public IP{% endtrans %}</h4>
+  <a class="click-to-copy" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{% trans %}Click to Copy{% endtrans %}">{{ instance.ipv4PublicIp }}</a>
+</div>
+<div class="information-box">
+  <h4>{% trans %}Size{% endtrans %}</h4>
+  {{ instance.processorCores }} {% trans %}Cores{% endtrans %}, {{ instance.memory }} {% trans %}Memory{% endtrans %}
+</div>

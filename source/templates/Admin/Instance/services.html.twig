@@ -1,0 +1,69 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Services{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'instance'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Instance{% endtrans %}</h1>
+    </div>
+    <div class="page-actions">
+      <a class="btn btn-lg btn-white" href="{{ path('clp_admin_instance_restart', {'token': csrf_token('instance-restart')}) }}" onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')">{% trans %}Reboot{% endtrans %}</a>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="instance-services-container">
+      {{ include('Admin/Instance/Partial/tab-container.html.twig', {'active': 'services'}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Services{% endtrans %}
+        </div>
+        <div class="card-body card-body-no-padding">
+          {% if services|length %}
+            <table class="table table-users">
+            <thead>
+              <tr>
+                <th width="150">
+                  {% trans %}Status{% endtrans %}
+                </th>
+                <th>
+                  {% trans %}Service{% endtrans %}
+                </th>
+                <th width="200" class="text-end">
+                  {% trans %}Action{% endtrans %}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for service in services %}
+              <tr>
+                <td>
+                  {% if service.isRunning() %}
+                    <span class="label-outline label-outline-green">{% trans %}Running{% endtrans %}</span>
+                  {% else %}
+                    <span class="label-outline label-outline-orange">{% trans %}Stopped{% endtrans %}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {{ service.name }}
+                </td>
+                <td class="text-end table-actions">
+                  <a href="{{ path('clp_admin_service_restart', {'name': service.serviceName, 'token': csrf_token('service-restart')}) }}" onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')">{% trans %}Restart{% endtrans %}</a>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Edit Database Server{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'settings'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Settings{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="database-servers-container">
+      {{ include('Admin/Settings/Partial/tab-container.html.twig', {'active': 'database-servers'}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      {{ form_start(form) }}
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Edit Database Server{% endtrans %}
+        </div>
+        <div class="card-body card-body-no-padding">
+          <div class="card-form">
+            <div class="row">
+              <div class="col-6 {{ (form_errors(form.host) ? 'has-error' : '') }}">
+                {{ form_label(form.host, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.host) }}
+              </div>
+              <div class="col-6 {{ (form_errors(form.userName) ? 'has-error' : '') }}">
+                {{ form_label(form.userName, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.userName) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 {{ (form_errors(form.password) ? 'has-error' : '') }}">
+                {{ form_label(form.password, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.password) }}
+              </div>
+              <div class="col-6 {{ (form_errors(form.port) ? 'has-error' : '') }}">
+                {{ form_label(form.port, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.port) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 {{ (form_errors(form.certificate) ? 'has-error' : '') }}">
+                {{ form_label(form.certificate, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.certificate) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                {% if databaseServer.isActive == false %}
+                  {% if databaseServer.isDefault == false %}
+                    <a href="{{ path('clp_admin_database_server_delete', {'id': databaseServer.id, 'token': csrf_token('delete-database-server')}) }}" onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')" class="btn btn-red btn-lg">{% trans %}Delete{% endtrans %}</a>
+                  {% endif %}
+                {% endif %}
+              </div>
+              <div class="col text-end">
+                {{ form_widget(form.submit) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{ form_end(form) }}
+    </div>
+  </div>
+</div>
+{% endblock %}

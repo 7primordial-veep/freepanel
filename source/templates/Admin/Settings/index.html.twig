@@ -1,0 +1,50 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Settings{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'settings'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Settings{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    {{ include('Admin/Settings/Partial/tab-container.html.twig', {'active': 'settings'}) }}
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+    {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+    <div class="settings-container">
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}CloudPanel Custom Domain{% endtrans %}
+        </div>
+        {{ form_start(customDomainForm) }}
+        <div class="card-body card-body-no-padding">
+          <div class="card-form">
+            <div class="row">
+              <div class="col-12 {{ (form_errors(customDomainForm.domainName) ? 'has-error' : '') }}">
+                {{ form_label(customDomainForm.domainName, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                <div class="input-group">
+                  <span class="input-group-text">https://</span>
+                  {{ form_widget(customDomainForm.domainName) }}
+                </div>
+                <div class="form-text">{% trans %}A DNS record pointing to this server is required to issue a Let's Encrypt Certificate.{% endtrans %}</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col text-end">
+                {{ form_widget(customDomainForm.submit) }}
+              </div>
+            </div>
+          </div>
+        </div>
+        {{ form_end(customDomainForm) }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

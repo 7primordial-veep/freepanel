@@ -1,0 +1,167 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}New WordPress Site{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/new-site.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block javascript %}
+  {{ parent() }}
+  <script defer type="text/javascript" src="{{ asset('/assets/js/domain-suffix-list.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width new-site-container-fix">
+  <div class="new-site-container">
+    <div class="page-header">
+      <div class="page-title">
+        <h1>{% trans %}New WordPress Site{% endtrans %}</h1>
+      </div>
+    </div>
+    <div class="page-content">
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      {{ form_start(form) }}
+      <div class="card">
+        <div class="card-body card-body-no-padding">
+          <div class="card-form">
+            <div class="row">
+              <div class="col-12 {{ (form_errors(form.domainName) ? 'has-error' : '') }}">
+                {{ form_label(form.domainName, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.domainName) }}
+              </div>
+            </div>
+            <div class="pre-install-container">
+              <div class="row">
+                <div class="col-12 {{ (form_errors(form.siteTitle) ? 'has-error' : '') }}">
+                  {{ form_label(form.siteTitle, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.siteTitle) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 {{ (form_errors(form.siteUser) ? 'has-error' : '') }}">
+                  {{ form_label(form.siteUser, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.siteUser) }}
+                  <div class="form-text d-flex">{% trans %}The main SSH User for the site.{% endtrans %}</div>
+                </div>
+                <div class="col-6 {{ (form_errors(form.siteUserPassword) ? 'has-error' : '') }}">
+                  {{ form_label(form.siteUserPassword, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.siteUserPassword) }}
+                  <a id="site-user-password" class="generate-new-password" data-input-element="site_new_word_press_siteUserPassword" href="javascript:void(0);">{% trans %}Generate new password{% endtrans %}</a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 {{ (form_errors(form.adminUserName) ? 'has-error' : '') }}">
+                  {{ form_label(form.adminUserName, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.adminUserName) }}
+                </div>
+                <div class="col-6 {{ (form_errors(form.adminPassword) ? 'has-error' : '') }}">
+                  {{ form_label(form.adminPassword, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.adminPassword) }}
+                  <a id="admin-password" class="generate-new-password" data-input-element="site_new_word_press_adminPassword" href="javascript:void(0);">{% trans %}Generate new password{% endtrans %}</a>
+                </div>
+               </div>
+              <div class="row">
+                <div class="col-6 {{ (form_errors(form.adminEmail) ? 'has-error' : '') }}">
+                  {{ form_label(form.adminEmail, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.adminEmail) }}
+                </div>
+                <div class="col-6 {{ (form_errors(form.multiSite) ? 'has-error' : '') }}">
+                  {{ form_label(form.multiSite, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.multiSite) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 {{ (form_errors(form.locale) ? 'has-error' : '') }}">
+                  {{ form_label(form.locale, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.locale) }}
+                  <div class="form-text d-flex">{% trans %}WordPress site language (WPLANG).{% endtrans %}</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 text-start">
+                <a href="{{ path('clp_site_new') }}" class="btn btn-lg btn-gray">{% trans %}Back{% endtrans %}</a>
+              </div>
+              <div class="col-6 text-end">
+                {{ form_widget(form.submit) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{ form_end(form) }}
+    </div>
+  </div>
+</div>
+<script>
+jQuery(document).ready(function() {
+  function showProgress() {
+    let i = 0;
+    let interval = setInterval(function(){
+      i += 1;
+      if(i === 100){
+        jQuery('#site_new_word_press_submit').text('{% trans %}Creating{% endtrans %}' +"...");
+        clearInterval(interval);
+      } else {
+        jQuery('#site_new_word_press_submit').text('{% trans %}Creating{% endtrans %}'+": "+i+"%");
+      }
+    }, 200);
+  }
+  jQuery('#site_new_word_press_preInstall').on('click', function () {
+    let preInstall = jQuery(this).is(':checked')
+    if (preInstall) {
+      jQuery('#pre-install-container').show();
+    } else {
+      jQuery('#pre-install-container').hide();
+    }
+  });
+  function setPassword(inputElement) {
+    inputElement.val(generatePassword(20));
+  }
+  let inputAdminPasswordElement = jQuery('#site_new_word_press_adminPassword');
+  if (inputAdminPasswordElement.val() === "") {
+    setPassword(inputAdminPasswordElement);
+  }
+  let inputSiteUserPasswordElement = jQuery('#site_new_word_press_siteUserPassword');
+  if (inputSiteUserPasswordElement.val() === "") {
+     setPassword(inputSiteUserPasswordElement);
+  }
+  jQuery('#admin-password').on('click', function () {
+    let inputElementId = jQuery(this).attr('data-input-element');
+    let inputElement = jQuery('#' + inputElementId);
+    setPassword(inputElement);
+  });
+  jQuery('#site-user-password').on('click', function () {
+    let inputElementId = jQuery(this).attr('data-input-element');
+    let inputElement = jQuery('#' + inputElementId);
+    setPassword(inputElement);
+  });
+  jQuery('#site_new_word_press_domainName').on('keyup',function(){
+    let domainName = jQuery(this).val();
+    let parsedDomain = psl.parse(domainName);
+    if (parsedDomain.domain) {
+      jQuery('#site_new_word_press_adminEmail').val('admin@'+parsedDomain.domain);
+    }
+    if (domainName.length > 3) {
+      let parsedDomain = psl.parse(domainName);
+      if (parsedDomain.domain) {
+        domainName = parsedDomain.sld;
+        if (parsedDomain.subdomain && parsedDomain.subdomain != 'www') {
+          domainName = parsedDomain.sld + "-" + parsedDomain.subdomain;
+          domainName = domainName.replace('.', '-');
+        }
+        jQuery('#site_new_word_press_siteUser').val(domainName);
+      }
+    }
+  });
+  jQuery('#new-wordpress-site-form').submit(function(e) {
+    e.preventDefault();
+    this.submit();
+    showProgress();
+  });
+});
+</script>
+{% endblock %}

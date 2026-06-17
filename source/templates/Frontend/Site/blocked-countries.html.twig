@@ -1,0 +1,41 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Blocked Countries{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/site.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'security', 'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="site-content">
+        {{ form_start(form) }}
+        <div class="card">
+          <div class="card-header">{% trans %}Blocked Countries (GeoIP){% endtrans %}</div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12 {{ (form_errors(form.blockedCountries) ? 'has-error' : '') }}">
+                {{ form_label(form.blockedCountries, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.blockedCountries) }}
+                <div class="form-text">{% trans %}Comma-separated ISO 3166-1 alpha-2 country codes (e.g. CN, RU, KP). Visitors from these countries receive a 403. Requires nginx GeoIP module and the geoip-database package.{% endtrans %}</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer text-end">
+            <a href="{{ path('clp_site_security', {'domainName': site.domainName}) }}" class="btn btn-light btn-lg">{% trans %}Cancel{% endtrans %}</a>
+            {{ form_widget(form.submit) }}
+          </div>
+        </div>
+        {{ form_end(form) }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

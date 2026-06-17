@@ -1,0 +1,99 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Users{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/admin/user.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'users'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="users-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Users{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="users-page-container">
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Users{% endtrans %}
+          <a href="{{ path('clp_admin_user_new') }}" class="btn btn-md btn-blue">{% trans %}Add User{% endtrans %}</a>
+        </div>
+        {% if users|length %}
+          <div class="card-body card-body-no-padding">
+            <table class="table table-users">
+              <thead>
+                <tr>
+                  <th>
+                    {% trans %}User Name{% endtrans %}
+                  </th>
+                  <th>
+                    {% trans %}E-Mail{% endtrans %}
+                  </th>
+                  <th>
+                    {% trans %}Sites{% endtrans %}
+                  </th>
+                  <th>
+                    {% trans %}Role{% endtrans %}
+                  </th>
+                  <th>
+                    {% trans %}Status{% endtrans %}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for user in users %}
+                <tr>
+                  <td>
+                    <a href="{{ path('clp_admin_user_edit', {'id': user.id}) }}">{{ user.userName }}</a>
+                  </td>
+                  <td>
+                    {{ user.email }}
+                  </td>
+                  <td>
+                    {% if user.role == constant('App\\Entity\\User::ROLE_USER') %}
+                      {% if user.sites|length %}
+                        <ul>
+                          {% for site in user.sites %}
+                            <li>
+                              {{ site.domainName }}
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      {% endif %}
+                    {% else %}
+                      {% trans %}All{% endtrans %}
+                    {% endif %}
+                  </td>
+                  <td>
+                    {{ user.roleName|trans }}
+                  </td>
+                  <td>
+                    {% if user.status %}
+                      {% trans %}Active{% endtrans %}
+                    {% else %}
+                      {% trans %}Not Active{% endtrans %}
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="card-body">
+            {% trans %}No users found.{% endtrans %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

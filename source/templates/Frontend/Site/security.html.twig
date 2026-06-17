@@ -1,0 +1,235 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Security{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/site.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'security', 'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="site-content">
+        <div class="card card-table">
+          <div class="card-header d-flex justify-content-between">
+            {% trans %}IP Blocking{% endtrans %}
+            <a href="{{ path('clp_site_security_blocked_ip_new', {'domainName': site.domainName}) }}" class="btn btn-md btn-blue">{% trans %}Add IP{% endtrans %}</a>
+          </div>
+          {% if blockedIps|length %}
+          <div class="card-body card-body-no-padding">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>
+                    {% trans %}IP{% endtrans %}
+                  </th>
+                  <th width="200" class="text-end">
+                    {% trans %}Action{% endtrans %}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for blockedIp in blockedIps %}
+                <tr>
+                  <td>
+                    {{ blockedIp.ip }}
+                  </td>
+                  <td class="text-end table-actions">
+                    <a class="delete" href="{{ path('clp_site_security_blocked_ip_delete', {'domainName': site.domainName, 'id': blockedIp.id, 'token': csrf_token('ip-delete')}) }}" onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+            <div class="card-body">
+              {% trans %}No ips found.{% endtrans %}
+            </div>
+          {% endif %}
+        </div>
+        <div class="card card-table">
+          <div class="card-header d-flex justify-content-between">
+            {% trans %}Bots Blocking{% endtrans %}
+            <a href="{{ path('clp_site_security_blocked_bot_new', {'domainName': site.domainName}) }}" class="btn btn-md btn-blue">{% trans %}Add Bot{% endtrans %}</a>
+          </div>
+          {% if blockedBots|length %}
+          <div class="card-body card-body-no-padding">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>
+                    {% trans %}Name{% endtrans %}
+                  </th>
+                  <th width="200" class="text-end">
+                    {% trans %}Action{% endtrans %}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for blockedBot in blockedBots %}
+                <tr>
+                  <td>
+                    {{ blockedBot.name }}
+                  </td>
+                  <td class="text-end table-actions">
+                    <a class="delete" href="{{ path('clp_site_security_blocked_bot_delete', {'domainName': site.domainName, 'id': blockedBot.id, 'token': csrf_token('bot-delete')}) }}" onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+            <div class="card-body">
+              {% trans %}No bots found.{% endtrans %}
+            </div>
+          {% endif %}
+        </div>
+        <div class="card">
+          <div class="card-header d-flex justify-content-between">
+            {% trans %}Country Blocking (GeoIP){% endtrans %}
+            <a href="{{ path('clp_site_security_blocked_countries', {'domainName': site.domainName}) }}" class="btn btn-md btn-blue">{% trans %}Edit{% endtrans %}</a>
+          </div>
+          <div class="card-body">
+            {% if site.blockedCountries is defined and site.blockedCountries %}
+              <div><strong>{% trans %}Blocked:{% endtrans %}</strong> {{ site.blockedCountries }}</div>
+              <div class="form-text">{% trans %}Visitors from listed countries receive HTTP 403.{% endtrans %}</div>
+            {% else %}
+              {% trans %}No countries blocked.{% endtrans %}
+            {% endif %}
+          </div>
+        </div>
+        {{ form_start(basicAuthForm) }}
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-switch">
+              <div class="form-check form-switch {{ (form_errors(basicAuthForm.isActive) ? 'has-error' : '') }}">
+                {{ form_label(basicAuthForm.isActive, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                {{ form_widget(basicAuthForm.isActive) }}
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+              <div class="row">
+                <div class="col-6 {{ (form_errors(basicAuthForm.userName) ? 'has-error' : '') }}">
+                  {{ form_label(basicAuthForm.userName, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(basicAuthForm.userName) }}
+                </div>
+                <div class="col-6 {{ (form_errors(basicAuthForm.password) ? 'has-error' : '') }}">
+                  {{ form_label(basicAuthForm.password, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(basicAuthForm.password) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 {{ (form_errors(basicAuthForm.whitelistedIps) ? 'has-error' : '') }}">
+                  {{ form_label(basicAuthForm.whitelistedIps, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(basicAuthForm.whitelistedIps) }}
+                  <div class="form-text">{% trans %}List of IPs to bypassing the basic authentication, comma separated.{% endtrans %}</div>
+                </div>
+              </div>
+          </div>
+          <div class="card-footer text-end">
+            {{ form_widget(basicAuthForm.submit) }}
+          </div>
+        </div>
+        {{ form_end(basicAuthForm) }}
+        {{ form_start(cloudflareForm) }}
+        <div class="card">
+          <div class="card-header">
+            Cloudflare
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12 {{ (form_errors(cloudflareForm.allowTrafficFromCloudflareOnly) ? 'has-error' : '') }}">
+                <div class="form-check form-switch {{ (form_errors(cloudflareForm.allowTrafficFromCloudflareOnly) ? 'has-error' : '') }}">
+                  {{ form_label(cloudflareForm.allowTrafficFromCloudflareOnly, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                  {{ form_widget(cloudflareForm.allowTrafficFromCloudflareOnly) }}
+                </div>
+                <div class="form-text">{% trans %}The name servers must point to Cloudflare, and the proxy needs to be enabled for your dns records.{% endtrans %}</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer text-end">
+            {{ form_widget(cloudflareForm.submit) }}
+          </div>
+        </div>
+        {{ form_end(cloudflareForm) }}
+        {{ form_start(securityHeadersForm) }}
+        <div class="card">
+          <div class="card-header">{% trans %}Security Headers{% endtrans %}</div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-6">
+                {{ form_label(securityHeadersForm.cspPreset, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(securityHeadersForm.cspPreset) }}
+              </div>
+              <div class="col-6">
+                {{ form_label(securityHeadersForm.permissionsPreset, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(securityHeadersForm.permissionsPreset) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                {{ form_label(securityHeadersForm.cspCustom, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(securityHeadersForm.cspCustom) }}
+                <div class="form-text">{% trans %}Used only when CSP preset is "Custom".{% endtrans %}</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                {{ form_label(securityHeadersForm.frameOptions, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(securityHeadersForm.frameOptions) }}
+              </div>
+              <div class="col-6">
+                {{ form_label(securityHeadersForm.referrerPolicy, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(securityHeadersForm.referrerPolicy) }}
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-12">
+                <div class="form-check form-switch">
+                  {{ form_widget(securityHeadersForm.nosniff) }}
+                  {{ form_label(securityHeadersForm.nosniff, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                </div>
+                <div class="form-check form-switch">
+                  {{ form_widget(securityHeadersForm.hsts) }}
+                  {{ form_label(securityHeadersForm.hsts, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-4">
+                {{ form_label(securityHeadersForm.hstsMaxAge, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(securityHeadersForm.hstsMaxAge) }}
+              </div>
+              <div class="col-4 align-self-end">
+                <div class="form-check form-switch">
+                  {{ form_widget(securityHeadersForm.hstsIncludeSubdomains) }}
+                  {{ form_label(securityHeadersForm.hstsIncludeSubdomains, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                </div>
+              </div>
+              <div class="col-4 align-self-end">
+                <div class="form-check form-switch">
+                  {{ form_widget(securityHeadersForm.hstsPreload) }}
+                  {{ form_label(securityHeadersForm.hstsPreload, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer text-end">
+            {{ form_widget(securityHeadersForm.submit) }}
+          </div>
+        </div>
+        {{ form_end(securityHeadersForm) }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Sites{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/sites.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="sites-container">
+    <div class="page-header">
+      <div class="page-title">
+        <h1>{% trans %}Sites{% endtrans %}</h1>
+      </div>
+      <div class="page-actions">
+        {% if user.role != constant('App\\Entity\\User::ROLE_USER') %}
+          <a class="btn btn-blue btn-lg text-uppercase" href="{{ path('clp_site_new') }}">{% trans %}+ Add Site{% endtrans %}</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="page-content">
+      <div class="sites-page-container">
+        {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+        <div class="card card-table">
+          {% if sites|length %}
+            <div class="card-body card-body-no-padding">
+              <table class="table table-sites">
+                <thead>
+                  <tr>
+                    <th>
+                      {% trans %}Domain{% endtrans %}
+                    </th>
+                    <th>
+                      {% trans %}Site User{% endtrans %}
+                    </th>
+                    <th>
+                      {% trans %}App{% endtrans %}
+                    </th>
+                    <th class="text-end">
+                      {% trans %}Action{% endtrans %}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for site in sites %}
+                  <tr>
+                    <td>
+                      <a href="{{ path('clp_site', {'domainName': site.domainName}) }}">{{ site.domainName }}</a>
+                    </td>
+                    <td>
+                      {{ site.user }}
+                    </td>
+                    <td>
+                      {{ site.type|upper }}
+                    </td>
+                    <td class="text-end">
+                      <a href="{{ path('clp_site', {'domainName': site.domainName}) }}">{% trans %}Manage{% endtrans %}</a>
+                      {% if site.type == 'php' %}
+                        &nbsp;|&nbsp;
+                        <a href="{{ path('clp_site_clone', {'domainName': site.domainName}) }}">{% trans %}Clone{% endtrans %}</a>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="card-body">
+              {% trans %}No sites found.{% endtrans %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

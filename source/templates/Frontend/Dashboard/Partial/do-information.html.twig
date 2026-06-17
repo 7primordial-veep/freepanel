@@ -1,0 +1,36 @@
+<div class="information-box">
+  <h4>{% trans %}Operating System{% endtrans %}</h4>
+  {{ instance.operatingSystemName }} {{ instance.operatingSystemVersion }}
+</div>
+<div class="information-box">
+  <h4>{% trans %}Hostname{% endtrans %}</h4>
+  <a class="click-to-copy" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{% trans %}Click to Copy{% endtrans %}">{{ instance.hostname }}</a>
+</div>
+<div class="information-box">
+  <h4>{% trans %}CPU{% endtrans %}</h4>
+  {{ instance.processorCores }}
+</div>
+<div class="information-box">
+  <h4>{% trans %}Memory{% endtrans %}</h4>
+  {{ instance.memory }}
+</div>
+<div class="information-box">
+  <h4>{% trans %}Cloud{% endtrans %}</h4>
+  Digital Ocean
+</div>
+<div class="information-box">
+  <h4>{% trans %}Droplet ID{% endtrans %}</h4>
+  <a class="click-to-copy" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{% trans %}Click to Copy{% endtrans %}">{{ instance.dropletId }}</a>
+</div>
+<div class="information-box">
+  <h4>{% trans %}Region{% endtrans %}</h4>
+  <a class="click-to-copy" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{% trans %}Click to Copy{% endtrans %}">{{ instance.region }}</a>
+</div>
+<div class="information-box">
+  <h4>{% trans %}IPv4 Public IP{% endtrans %}</h4>
+  {% if instance.floatingIp %}
+    <a class="click-to-copy" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{% trans %}Click to Copy{% endtrans %}">{{ instance.floatingIp }}</a>
+  {% else %}
+    <a class="click-to-copy" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{% trans %}Click to Copy{% endtrans %}">{{ instance.ipv4PublicIp }}</a>
+  {% endif %}
+</div>

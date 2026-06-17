@@ -1,0 +1,20 @@
+# Force LF for all text files — install.sh and all PHP/config are consumed on Linux.
+* text=auto eol=lf
+
+# Binary blobs — never CRLF-convert.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+*.gpg binary
+*.phar binary
+*.zip binary
+*.gz binary
+*.tar binary
+package-data/composer/composer binary

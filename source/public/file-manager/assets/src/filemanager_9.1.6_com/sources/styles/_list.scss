@@ -1,0 +1,78 @@
+%fileTypeIcon {
+	float: left;
+	height: $fileTypeIconHeight;
+}
+@mixin fmIcon($offset, $color, $size) {
+	position: relative;
+	top: $offset;
+	color: $color;
+	font-size: $size;
+	margin-right: $fmIconMarginRight;
+}
+
+.webix_fmanager_filelist {
+	.webix_dtable_colrow {
+		cursor: pointer;
+		background-color: $dataBackground;
+		border-bottom: 1px solid #edeff0;
+
+		&.webix_selected {
+			.webix_fmanager_back_icon {
+				@include fmIcon($backIconOffset, $selectColor, $fileIconSize);
+			}
+			.webix_fmanager_back {
+				color: $selectColor;
+				&:hover {
+					color: $selectColor;
+				}
+			}
+		}
+
+		.webix_fmanager_back_icon {
+			@include fmIcon($backIconOffset, $mainColor, $fileIconSize);
+		}
+
+		.webix_fmanager_back {
+			color: $midGrey;
+
+			&:hover {
+				color: $mainColor;
+			}
+		}
+	}
+
+	.wxi-folder {
+		@include fmIcon(2px, #ccc, $folderIconSize + 2);
+	}
+}
+
+.webix_fmanager_file-type-icon {
+	margin-top: 3px;
+	margin-right: 7px;
+	@extend %fileTypeIcon;
+}
+
+.webix_fmanager_grid_drag_zone_list {
+	padding: 4px 8px;
+	border: 1px solid #edeff0;
+	font-weight: 500;
+}
+
+.webix_fmanager_inner_drag_zone_list {
+	line-height: 28px;
+	max-width: 200px;
+	min-width: 100px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+
+	.webix_fmanager_file-type-icon {
+		margin-top: -2px;
+		margin-right: 8px;
+		@extend %fileTypeIcon;
+	}
+
+	.wxi-folder {
+		@include fmIcon(2px, #ccc, $folderIconSize + 2);
+	}
+}

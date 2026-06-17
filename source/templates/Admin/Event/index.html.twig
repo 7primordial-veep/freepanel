@@ -1,0 +1,162 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Events{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/jquery-ui.min.css') }}" rel="stylesheet">
+  <link href="{{ asset('/assets/css/jquery.datetimepicker.css') }}" rel="stylesheet">
+  <link href="{{ asset('/assets/css/admin/events.css') }}" rel="stylesheet">
+{% endblock %}
+
+{%- block javascript -%}
+  {{ parent() }}
+  <script type="text/javascript" src="{{ asset('/assets/js/jquery.min.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('/assets/js/jquery-ui.min.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('/assets/js/jquery.datetimepicker.full.min.js') }}"></script>
+{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'events'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="events-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Events{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="users-page-container">
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Events{% endtrans %}
+          <div class="custom-datetime-range-wrap-container">
+            <input type="text" class="form-control form-control-lg datetime-range-input" id="datetimeRange" readonly value="{{ datetimePicker.startTime|date('M j, Y H:i:s') }} - {{ datetimePicker.endTime|date('M j, Y H:i:s') }}">
+            <div class="custom-datetime-range-container" id="custom-datetime-range-container" style="display:none;">
+              <div class="custom-datetimepicker-container">
+                <div class="datetimepicker">
+                  <div id="datetimepicker-from"></div>
+                </div>
+                <div class="datetimepicker">
+                  <div id="datetimepicker-to"></div>
+                </div>
+              </div>
+              <div class="custom-datetime-apply">
+                <button class="btn btn-md btn-white" id="custom-datetime-cancel-button">Cancel</button>
+                <button class="btn btn-md btn-blue" id="custom-datetime-apply-button">Apply</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% if events|length %}
+          <div class="card-body card-body-no-padding">
+            <table class="table table-users">
+              <thead>
+                <tr>
+                  <th width="250">
+                    {% trans %}Event Time{% endtrans %}
+                  </th>
+                  <th width="200">
+                    {% trans %}User Name{% endtrans %}
+                  </th>
+                  <th>
+                    {% trans %}Event{% endtrans %}
+                  </th>
+                  <th width="100">
+                    {% trans %}Action{% endtrans %}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for event in events %}
+                <tr>
+                  <td>
+                    {{ event.eventData.eventTime }}
+                  </td>
+                  <td>
+                    {{ event.userName }}
+                  </td>
+                  <td>
+                    {{ event.eventName }}
+                  </td>
+                  <td class="table-actions">
+                    <a href="javascript:void(0);" onclick="toggleElement('event-{{ event.id }}');">{% trans %}View{% endtrans %}</a>
+                  </td>
+                </tr>
+                <tr id="event-{{ event.id }}" style="display:none;">
+                  <td colspan="5">
+                    <div class="event-data-container">
+                      <pre>{{ formatEventData(event.eventData) }}</pre>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="card-body">
+            {% trans %}No events found.{% endtrans %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function renderDatetimePickerFrom() {
+  jQuery('#datetimepicker-from').datetimepicker({
+    timepicker: true,
+    timepickerScrollbar: true,
+    lang: 'en',
+    inline: true,
+    useCurrent: false,
+    formatDate:'Y/m/d',
+    formatTime: 'H:i',
+    format:'Y/m/d H:i',
+    theme:'{% if isDarkMode %}dark{% endif %}',
+    value: '{{ datetimePicker.startTime }}'
+  });
+}
+
+function renderDatetimePickerTo() {
+  jQuery('#datetimepicker-to').datetimepicker({
+    timepicker: true,
+    timepickerScrollbar: true,
+    lang: 'en',
+    inline: true,
+    useCurrent: false,
+    formatDate:'Y/m/d',
+    formatTime: 'H:i',
+    format:'Y/m/d H:i',
+    theme:'{% if isDarkMode %}dark{% endif %}',
+    value: '{{ datetimePicker.endTime }}',
+    maxDate: '{{ datetimePicker.endTime }}'
+  });
+}
+
+jQuery(document).ready(function() {
+  var urlBuilder = new UrlBuilder();
+  jQuery('#custom-datetime-cancel-button').on('click', function(){
+    jQuery('#custom-datetime-range-container').hide();
+  });
+  jQuery('#custom-datetime-apply-button').on('click', function(){
+    var startTime = new Date(jQuery('#datetimepicker-from').val());
+    var startTimeTimestamp = convertDateToUnixTimestamp(startTime);
+    var endTime = new Date(jQuery('#datetimepicker-to').val());
+    var endTimeTimestamp = convertDateToUnixTimestamp(endTime);
+    urlBuilder.setParameter('startTime', startTimeTimestamp);
+    urlBuilder.setParameter('endTime', endTimeTimestamp);
+    var url = urlBuilder.getUrl();
+    window.location.replace(url);
+  });
+  jQuery('#datetimeRange').on('click', function(){
+    jQuery('#custom-datetime-range-container').toggle();
+    renderDatetimePickerFrom();
+    renderDatetimePickerTo();
+  });
+});
+</script>
+{% endblock %}

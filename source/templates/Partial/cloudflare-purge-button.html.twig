@@ -1,0 +1,7 @@
+{# Include this from a site page; expects 'domainName' in scope. #}
+<form action="{{ path('clp_site_cloudflare_purge', {'domainName': domainName}) }}" method="POST" class="d-inline">
+  <input type="hidden" name="_token" value="{{ csrf_token('cloudflare-purge') }}">
+  <button type="submit" class="btn btn-orange btn-sm" title="{% trans %}Purge Cloudflare cache for this domain{% endtrans %}">
+    {% trans %}Purge Cloudflare cache{% endtrans %}
+  </button>
+</form>

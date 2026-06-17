@@ -1,0 +1,643 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+
+#clp_api_test:
+#  path: /api/test
+#  controller: App\Controller\ApiController::test
+
+#clp_api_create_user:
+#  path: /api/users
+#  controller: App\Controller\ApiController::createUser
+#  methods: POST
+
+clp_dashboard:
+  path: /dashboard
+  controller: App\Controller\Frontend\DashboardController::index
+
+clp_admin_dns_provider:
+  path: /admin/settings/dns-provider
+  controller: App\Controller\Admin\DnsProviderController::index
+  methods: [GET, POST]
+
+clp_autologin:
+  path: /autologin
+  controller: App\Controller\AppController::autologin
+
+clp_sites:
+  path: /
+  controller: App\Controller\Frontend\SitesController::index
+
+clp_phpmyadmin:
+  path: /pma
+  controller: App\Controller\Frontend\SitesController::phpMyAdmin
+
+clp_database_phpmyadmin:
+  path: /pma/{domainName}/{databaseUserName}
+  controller: App\Controller\Frontend\SitesController::phpMyAdmin
+
+clp_phpmyadmin_logout:
+  path: /pma/logout
+  controller: App\Controller\Frontend\SitesController::phpMyAdminLogout
+
+clp_site_new:
+  path: /site/new
+  controller: App\Controller\Frontend\NewSiteController::index
+
+clp_site_wordpress_new:
+  path: /site/new/wordpress
+  controller: App\Controller\Frontend\NewSiteController::newWordPressSite
+
+clp_site_wordpress_installed:
+  path: /site/installed/wordpress
+  controller: App\Controller\Frontend\NewSiteController::installedWordPressSite
+
+clp_site_php_new:
+  path: /site/new/php
+  controller: App\Controller\Frontend\NewSiteController::newPhpSite
+
+clp_site_static_new:
+  path: /site/new/static
+  controller: App\Controller\Frontend\NewSiteController::newStaticSite
+
+clp_site_nodejs_new:
+  path: /site/new/nodejs
+  controller: App\Controller\Frontend\NewSiteController::newNodejsSite
+
+clp_site_python_new:
+  path: /site/new/python
+  controller: App\Controller\Frontend\NewSiteController::newPythonSite
+
+clp_site_reverse_proxy_new:
+   path: /site/new/reverse-proxy
+   controller: App\Controller\Frontend\NewSiteController::newReverseProxy
+
+clp_site:
+  path: /site/{domainName}
+  controller: App\Controller\Frontend\SitesController::view
+
+clp_site_settings:
+  path: /site/{domainName}/settings
+  controller: App\Controller\Frontend\SitesController::settings
+
+clp_site_clone:
+  path: /site/{domainName}/clone
+  controller: App\Controller\Frontend\SitesController::cloneSite
+  methods: [GET, POST]
+
+clp_site_vhost:
+  path: /site/{domainName}/vhost
+  controller: App\Controller\Frontend\SitesController::vhost
+
+clp_site_databases:
+  path: /site/{domainName}/databases
+  controller: App\Controller\Frontend\SitesController::databases
+
+clp_site_database_new:
+  path: /site/{domainName}/database/new
+  controller: App\Controller\Frontend\SitesController::newDatabase
+
+clp_site_database_delete:
+  path: /site/{domainName}/database/delete/{databaseName}
+  controller: App\Controller\Frontend\SitesController::deleteDatabase
+
+clp_site_database_user_new:
+  path: /site/{domainName}/database/user/new
+  controller: App\Controller\Frontend\SitesController::newDatabaseUser
+
+clp_site_database_user_edit:
+  path: /site/{domainName}/database/user/edit/{databaseUserName}
+  controller: App\Controller\Frontend\SitesController::editDatabaseUser
+
+clp_site_database_user_delete:
+  path: /site/{domainName}/database/user/delete/{databaseUserName}
+  controller: App\Controller\Frontend\SitesController::deleteDatabaseUser
+
+clp_site_varnish_cache:
+  path: /site/{domainName}/varnish-cache
+  controller: App\Controller\Frontend\SitesController::varnishCache
+
+clp_site_varnish_cache_purge:
+  path: /site/{domainName}/varnish-cache/purge
+  controller: App\Controller\Frontend\SitesController::purgeVarnishCache
+
+clp_site_certificates:
+  path: /site/{domainName}/certificates
+  controller: App\Controller\Frontend\SitesController::certificates
+
+clp_site_certificate_import:
+  path: /site/{domainName}/certificate/import
+  controller: App\Controller\Frontend\SitesController::importCertificate
+
+clp_site_lets_encrypt_certificate_new:
+  path: /site/{domainName}/lets-encrypt-certificate/new
+  controller: App\Controller\Frontend\SitesController::newLetsEncryptCertificate
+
+clp_site_certificate_install:
+  path: /site/{domainName}/certificate/install
+  controller: App\Controller\Frontend\SitesController::installCertificate
+
+clp_site_certificate_delete:
+  path: /site/{domainName}/certificate/delete/{uid}
+  controller: App\Controller\Frontend\SitesController::deleteCertificate
+
+clp_site_security:
+  path: /site/{domainName}/security
+  controller: App\Controller\Frontend\SitesController::security
+
+clp_site_security_blocked_ip_new:
+  path: /site/{domainName}/security/blocked/ip/new
+  controller: App\Controller\Frontend\SitesController::newBlockedIp
+
+clp_site_security_blocked_ip_delete:
+  path: /site/{domainName}/security/blocked/ip/delete/{id}
+  controller: App\Controller\Frontend\SitesController::deleteBlockedIp
+
+clp_site_security_blocked_bot_new:
+  path: /site/{domainName}/security/blocked/bot/new
+  controller: App\Controller\Frontend\SitesController::newBlockedBot
+
+clp_site_security_blocked_bot_delete:
+  path: /site/{domainName}/security/blocked/bot/delete/{id}
+  controller: App\Controller\Frontend\SitesController::deleteBlockedBot
+
+clp_site_users:
+  path: /site/{domainName}/users
+  controller: App\Controller\Frontend\SitesController::users
+
+clp_site_ssh_user_new:
+  path: /site/{domainName}/user/ssh/new
+  controller: App\Controller\Frontend\SitesController::newSshUser
+
+clp_site_ssh_user_edit:
+  path: /site/{domainName}/user/ssh/edit/{{userName}}
+  controller: App\Controller\Frontend\SitesController::editSshUser
+
+clp_site_ssh_user_delete:
+  path: /site/{domainName}/user/ssh/delete/{{userName}}
+  controller: App\Controller\Frontend\SitesController::deleteSshUser
+
+clp_site_ftp_user_new:
+  path: /site/{domainName}/user/ftp/new
+  controller: App\Controller\Frontend\SitesController::newFtpUser
+
+clp_site_ftp_user_edit:
+  path: /site/{domainName}/user/ftp/edit/{{userName}}
+  controller: App\Controller\Frontend\SitesController::editFtpUser
+
+clp_site_ftp_user_delete:
+  path: /site/{domainName}/user/ftp/delete/{{userName}}
+  controller: App\Controller\Frontend\SitesController::deleteFtpUser
+
+clp_site_cron_jobs:
+  path: /site/{domainName}/cron-jobs
+  controller: App\Controller\Frontend\SitesController::cronJobs
+
+clp_site_cron_job_new:
+  path: /site/{domainName}/cron-job/new
+  controller: App\Controller\Frontend\SitesController::newCronJob
+
+clp_site_cron_job_edit:
+  path: /site/{domainName}/cron-job/edit/{{id}}
+  controller: App\Controller\Frontend\SitesController::editCronJob
+
+clp_site_cron_job_delete:
+  path: /site/{domainName}/cron-job/delete/{{id}}
+  controller: App\Controller\Frontend\SitesController::deleteCronJob
+
+clp_site_logs:
+  path: /site/{domainName}/logs
+  controller: App\Controller\Frontend\SitesController::logs
+
+clp_site_file_manager:
+  path: /site/{domainName}/file-manager
+  controller: App\Controller\Frontend\SitesController::fileManager
+
+clp_site_file_manager_api_list:
+  path: /site/{domainName}/files/list
+  controller: App\Controller\Frontend\FileManagerApiController::listAction
+  methods: GET
+
+clp_site_file_manager_api_read:
+  path: /site/{domainName}/files/read
+  controller: App\Controller\Frontend\FileManagerApiController::readAction
+  methods: GET
+
+clp_site_file_manager_api_write:
+  path: /site/{domainName}/files/write
+  controller: App\Controller\Frontend\FileManagerApiController::writeAction
+  methods: POST
+
+clp_site_file_manager_api_delete:
+  path: /site/{domainName}/files/delete
+  controller: App\Controller\Frontend\FileManagerApiController::deleteAction
+  methods: POST
+
+clp_site_file_manager_api_upload:
+  path: /site/{domainName}/files/upload
+  controller: App\Controller\Frontend\FileManagerUploadController::uploadAction
+  methods: POST
+
+clp_site_file_manager_api_mkdir:
+  path: /site/{domainName}/files/mkdir
+  controller: App\Controller\Frontend\FileManagerMutateController::mkdirAction
+  methods: POST
+
+clp_site_file_manager_api_rename:
+  path: /site/{domainName}/files/rename
+  controller: App\Controller\Frontend\FileManagerMutateController::renameAction
+  methods: POST
+
+clp_site_file_manager_api_download:
+  path: /site/{domainName}/files/download
+  controller: App\Controller\Frontend\FileManagerDownloadController::downloadAction
+  methods: GET
+
+clp_site_docker_settings:
+  path: /site/{domainName}/docker-settings
+  controller: App\Controller\Frontend\SiteDockerSettingsController::edit
+
+clp_admin_marketplace_ghost:
+  path: /admin/marketplace/ghost
+  controller: App\Controller\Admin\MarketplaceController::ghost
+
+clp_admin_marketplace_nextcloud:
+  path: /admin/marketplace/nextcloud
+  controller: App\Controller\Admin\MarketplaceController::nextcloud
+
+clp_site_log_file_content:
+  path: /site/{domainName}/log-file-content
+  controller: App\Controller\Frontend\SitesController::logFileContent
+
+clp_site_load_logfiles_for_service:
+  path: /site/{domainName}/load-logfiles
+  controller: App\Controller\Frontend\SitesController::loadLogfilesForService
+
+clp_site_page_speed_cache_purge:
+  path: /site/{domainName}/page-speed/purge
+  controller: App\Controller\Frontend\SitesController::purgePageSpeedCache
+
+clp_site_wp_auto_update:
+  path: /site/{domainName}/wp-auto-update
+  controller: App\Controller\Frontend\WpAutoUpdateController::update
+  methods: [POST]
+
+clp_change_locale:
+  path: /locale/change
+  controller: App\Controller\AppController::changeLocale
+
+clp_announcement_read:
+  path: /announcement/read
+  controller: App\Controller\AppController::setAnnouncementRead
+
+clp_login:
+  path: /login
+  controller: App\Controller\Frontend\LoginController::login
+
+clp_logout:
+  path: /logout
+  controller: App\Controller\Frontend\LoginController::logout
+
+clp_admin_user_creation:
+  path: /admin/user/creation
+  controller: App\Controller\Frontend\UserController::adminUserCreation
+
+clp_user_settings:
+  path: /settings
+  controller: App\Controller\Frontend\UserController::settings
+
+clp_user_security:
+  path: /security
+  controller: App\Controller\Frontend\UserController::security
+
+clp_user_security_enable_mfa:
+  path: /security/enable/mfa
+  controller: App\Controller\Frontend\UserController::enableMfa
+
+clp_user_security_disable_mfa:
+  path: /user/security/disable/mfa
+  controller: App\Controller\Frontend\UserController::disableMfa
+
+clp_login_mfa:
+  path: /login/mfa
+  controller: App\Controller\Frontend\LoginController::loginMfa
+
+clp_admin_users:
+  path: /admin/users
+  controller: App\Controller\Admin\UserController::index
+
+clp_admin_user_new:
+  path: /admin/user/new
+  controller: App\Controller\Admin\UserController::new
+
+clp_admin_user_edit:
+  path: /admin/user/edit/{id}
+  controller: App\Controller\Admin\UserController::edit
+
+clp_admin_user_delete:
+  path: /admin/user/delete/{id}
+  controller: App\Controller\Admin\UserController::delete
+
+clp_admin_events:
+  path: /admin/events
+  controller: App\Controller\Admin\EventsController::index
+
+clp_admin_notifications:
+  path: /admin/notifications
+  controller: App\Controller\Admin\NotificationsController::index
+
+clp_admin_notification_mark_as_read:
+  path: /admin/notification/mark/read/{id}
+  controller: App\Controller\Admin\NotificationsController::markAsRead
+
+clp_admin_notification_mark_as_unread:
+  path: /admin/notification/mark/unread/{id}
+  controller: App\Controller\Admin\NotificationsController::markAsUnread
+
+clp_admin_notification_delete:
+  path: /admin/notification/delete/{id}
+  controller: App\Controller\Admin\NotificationsController::delete
+
+clp_admin_server_settings:
+  path: /admin/server/settings
+  controller: App\Controller\Admin\ServerController::settings
+
+clp_admin_remote_backup:
+  path: /admin/remote-backup
+  controller: App\Controller\Admin\RemoteBackupController::index
+
+clp_admin_remote_backup_new:
+  path: /admin/remote-backup/new/{provider}
+  controller: App\Controller\Admin\RemoteBackupController::new
+
+clp_admin_remote_backup_edit:
+  path: /admin/remote-backup/edit/{provider}
+  controller: App\Controller\Admin\RemoteBackupController::edit
+
+clp_admin_remote_backup_delete:
+  path: /admin/remote-backup/delete
+  controller: App\Controller\Admin\RemoteBackupController::delete
+
+clp_admin_remote_backup_create:
+  path: /admin/remote-backup/create
+  controller: App\Controller\Admin\RemoteBackupController::create
+
+clp_admin_firewall:
+  path: /admin/firewall
+  controller: App\Controller\Admin\FirewallController::index
+
+clp_admin_firewall_rule_add:
+  path: /admin/firewall/rule/add
+  controller: App\Controller\Admin\FirewallController::addRule
+
+clp_admin_firewall_rule_edit:
+  path: /admin/firewall/rule/edit/{id}
+  controller: App\Controller\Admin\FirewallController::editRule
+
+clp_admin_firewall_rule_delete:
+  path: /admin/firewall/rule/delete/{id}
+  controller: App\Controller\Admin\FirewallController::deleteRule
+
+clp_admin_basic_auth:
+  path: /admin/basic-auth
+  controller: App\Controller\Admin\BasicAuthController::index
+
+clp_admin_basic_auth_disable:
+  path: /admin/basic-auth/disable
+  controller: App\Controller\Admin\BasicAuthController::disable
+
+clp_admin_fail2ban:
+  path: /admin/security/fail2ban
+  controller: App\Controller\Admin\Fail2banController::index
+
+clp_admin_fail2ban_unban:
+  path: /admin/security/fail2ban/unban
+  controller: App\Controller\Admin\Fail2banController::unban
+
+clp_admin_malware_scan:
+  path: /admin/security/malware-scan
+  controller: App\Controller\Admin\MalwareScanController::index
+
+clp_admin_malware_scan_start:
+  path: /admin/security/malware-scan/start
+  controller: App\Controller\Admin\MalwareScanController::start
+  methods: POST
+
+clp_admin_malware_scan_view:
+  path: /admin/security/malware-scan/view/{id}
+  controller: App\Controller\Admin\MalwareScanController::view
+
+clp_admin_malware_scan_delete:
+  path: /admin/security/malware-scan/delete/{id}
+  controller: App\Controller\Admin\MalwareScanController::delete
+
+clp_admin_services:
+  path: /admin/services
+  controller: App\Controller\Admin\InstanceController::services
+
+clp_admin_service_restart:
+  path: /admin/service/restart/{name}
+  controller: App\Controller\Admin\InstanceController::restartService
+
+clp_admin_instance_settings:
+  path: /admin/instance/settings
+  controller: App\Controller\Admin\InstanceController::settings
+
+clp_admin_instance_restart:
+  path: /admin/instance/restart
+  controller: App\Controller\Admin\InstanceController::restart
+
+clp_admin_database_servers:
+  path: /admin/database-servers
+  controller: App\Controller\Admin\SettingsController::databaseServers
+
+clp_admin_database_server_add:
+  path: /admin/database-server/add
+  controller: App\Controller\Admin\SettingsController::addDatabaseServer
+
+clp_admin_database_server_edit:
+  path: /admin/database-server/edit/{id}
+  controller: App\Controller\Admin\SettingsController::editDatabaseServer
+
+clp_admin_database_server_delete:
+  path: /admin/database-server/delete/{id}
+  controller: App\Controller\Admin\SettingsController::deleteDatabaseServer
+
+clp_admin_database_server_set_active:
+  path: /admin/database-server/set-active/{id}
+  controller: App\Controller\Admin\SettingsController::setDatabaseServerActive
+
+clp_admin_settings:
+  path: /admin/settings
+  controller: App\Controller\Admin\SettingsController::settings
+
+clp_admin_aws_settings:
+  path: /admin/aws/settings
+  controller: App\Controller\Admin\AwsController::settings
+
+clp_admin_aws_images:
+  path: /admin/aws/images
+  controller: App\Controller\Admin\AwsController::images
+
+clp_admin_aws_image_create:
+  path: /admin/aws/image/create
+  controller: App\Controller\Admin\AwsController::createImage
+
+clp_admin_aws_images_load:
+  path: /admin/aws/images/load
+  controller: App\Controller\Admin\AwsController::loadImages
+
+clp_admin_aws_image_delete:
+  path: /admin/aws/image/delete/{id}
+  controller: App\Controller\Admin\AwsController::deleteImage
+
+clp_admin_do_settings:
+  path: /admin/do/settings
+  controller: App\Controller\Admin\DoController::settings
+
+clp_admin_do_snapshots:
+  path: /admin/do/snapshots
+  controller: App\Controller\Admin\DoController::snapshots
+
+clp_admin_do_snapshots_load:
+  path: /admin/do/snapshots/load
+  controller: App\Controller\Admin\DoController::loadSnapshots
+
+clp_admin_do_snapshot_create:
+  path: /admin/do/snapshot/create
+  controller: App\Controller\Admin\DoController::createSnapshot
+
+clp_admin_do_snapshot_delete:
+  path: /admin/do/snapshot/delete/{id}
+  controller: App\Controller\Admin\DoController::deleteSnapshot
+
+clp_admin_gce_settings:
+  path: /admin/gce/settings
+  controller: App\Controller\Admin\GceController::settings
+
+clp_admin_gce_snapshots:
+  path: /admin/gce/snapshots
+  controller: App\Controller\Admin\GceController::snapshots
+
+clp_admin_gce_snapshots_load:
+  path: /admin/gce/snapshots/load
+  controller: App\Controller\Admin\GceController::loadSnapshots
+
+clp_admin_gce_snapshot_create:
+  path: /admin/gce/snapshot/create
+  controller: App\Controller\Admin\GceController::createSnapshot
+
+clp_admin_gce_snapshot_delete:
+  path: /admin/gce/snapshot/delete/{id}
+  controller: App\Controller\Admin\GceController::deleteSnapshot
+
+clp_admin_hetzner_settings:
+  path: /admin/hetzner/settings
+  controller: App\Controller\Admin\HetznerController::settings
+
+clp_admin_hetzner_snapshots:
+  path: /admin/hetzner/snapshots
+  controller: App\Controller\Admin\HetznerController::snapshots
+
+clp_admin_hetzner_snapshots_load:
+  path: /admin/hetzner/snapshots/load
+  controller: App\Controller\Admin\HetznerController::loadSnapshots
+
+clp_admin_hetzner_snapshot_delete:
+  path: /admin/hetzner/snapshot/delete/{id}
+  controller: App\Controller\Admin\HetznerController::deleteSnapshot
+
+clp_admin_hetzner_snapshot_create:
+  path: /admin/hetzner/snapshot/create
+  controller: App\Controller\Admin\HetznerController::createSnapshot
+
+clp_admin_vultr_settings:
+  path: /admin/vultr/settings
+  controller: App\Controller\Admin\VultrController::settings
+
+clp_admin_vultr_snapshots:
+  path: /admin/vultr/snapshots
+  controller: App\Controller\Admin\VultrController::snapshots
+
+clp_admin_vultr_snapshot_create:
+  path: /admin/vultr/snapshot/create
+  controller: App\Controller\Admin\VultrController::createSnapshot
+
+clp_admin_vultr_snapshots_load:
+  path: /admin/vultr/snapshots/load
+  controller: App\Controller\Admin\VultrController::loadSnapshots
+
+clp_admin_vultr_snapshot_delete:
+  path: /admin/vultr/snapshot/delete/{id}
+  controller: App\Controller\Admin\VultrController::deleteSnapshot
+
+clp_admin_app_version_check:
+  path: /admin/app/version/check
+  controller: App\Controller\AppController::checkAppVersion
+
+clp_admin_marketplace:
+  path: /admin/marketplace
+  controller: App\Controller\Admin\MarketplaceController::index
+
+clp_admin_marketplace_install:
+  path: /admin/marketplace/install/{slug}
+  controller: App\Controller\Admin\MarketplaceController::install
+
+clp_admin_cloudflare_settings:
+  path: /admin/cloudflare/settings
+  controller: App\Controller\Admin\CloudflareController::settings
+
+clp_admin_cloudflare_security_apply:
+  path: /admin/cloudflare/security/apply
+  controller: App\Controller\Admin\CloudflareController::applySecurityLevel
+  methods: POST
+
+clp_site_cloudflare_purge:
+  path: /site/{domainName}/cloudflare/purge
+  controller: App\Controller\Admin\CloudflareController::purgeSiteCache
+  methods: POST
+
+clp_admin_certificates:
+  path: /admin/certificates
+  controller: App\Controller\Admin\CertificatesController::index
+
+clp_admin_certificates_renew_all:
+  path: /admin/certificates/renew-all
+  controller: App\Controller\Admin\CertificatesController::renewAll
+
+# ---- Security headers wizard (per-site) ----
+clp_site_security_headers:
+  path: /site/{domainName}/security/headers
+  controller: App\Controller\Frontend\SitesController::securityHeaders
+  methods: [POST]
+
+
+# ---- Per-site WordPress auto-updates: settings persisted via existing site-settings flow; no new route ----
+
+
+# ---- Site clone route already declared above (clp_site_clone) ----
+
+
+# ---- ClamAV on-demand malware scanner ----
+clp_site_security_blocked_countries:
+  path: /site/{domainName}/security/blocked-countries
+  controller: App\Controller\Frontend\SitesController::blockedCountries
+
+
+# ---- ACME DNS-01 wildcard certs via Cloudflare/Route53/DO ----
+clp_site_resource_quota:
+  path: /site/{domainName}/resource-quota
+  controller: App\Controller\Frontend\SitesController::updateResourceQuota
+
+
+# ---- Docker / container site type ----
+clp_site_docker_new:
+  path: /site/new/docker
+  controller: App\Controller\Frontend\NewSiteController::newDockerSite
+
+
+# ---- Web-based file manager with syntax-highlighted editor ----
+
+
+# ---- cgroup quotas ----
+# clp_site_resource_quota route already exists in routes.yaml — no additions required.

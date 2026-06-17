@@ -1,0 +1,21 @@
+{# Last automated test-restore status. Included from each storage-provider edit template. #}
+{% set lastTest = lastBackupTest|default(null) %}
+<div class="card card-table mt-3">
+  <div class="card-header d-flex justify-content-between">
+    {% trans %}Last Automated Test-Restore{% endtrans %}
+  </div>
+  <div class="card-body">
+    {% if lastTest %}
+      {% set badgeClass = lastTest.status == 'pass' ? 'badge bg-success' : (lastTest.status == 'fail' ? 'badge bg-danger' : 'badge bg-secondary') %}
+      <p><span class="{{ badgeClass }}">{{ lastTest.status|upper }}</span>
+        &nbsp;<strong>{{ lastTest.domainName }}</strong>
+        &nbsp;<small class="text-muted">{{ lastTest.createdAt|date('Y-m-d H:i') }} UTC</small>
+      </p>
+      {% if lastTest.backupFile %}<p><small>{% trans %}Backup{% endtrans %}: {{ lastTest.backupFile }}</small></p>{% endif %}
+      {% if lastTest.sizeBytes %}<p><small>{% trans %}Size{% endtrans %}: {{ (lastTest.sizeBytes / 1024 / 1024)|number_format(1) }} MB</small></p>{% endif %}
+      {% if lastTest.message %}<p class="text-muted"><small>{{ lastTest.message }}</small></p>{% endif %}
+    {% else %}
+      <p class="text-muted">{% trans %}No test-restore has run yet. The weekly cron will run automatically.{% endtrans %}</p>
+    {% endif %}
+  </div>
+</div>

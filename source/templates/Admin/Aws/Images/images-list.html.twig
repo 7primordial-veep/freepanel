@@ -1,0 +1,44 @@
+{% if images|length %}
+<div class="card-body card-body-no-padding">
+  <table class="table">
+    <thead>
+      <tr>
+        <th width="275">{% trans %}Created At{% endtrans %}</th>
+        <th>{% trans %}Image Name{% endtrans %}</th>
+        <th width="150">{% trans %}Status{% endtrans %}</th>
+        <th width="200" class="text-end">{% trans %}Action{% endtrans %}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for image in images %}
+      <tr>
+        <td>
+          {{ image.createdAt|date('M j, Y H:i:s', user.timezone) }}
+        </td>
+        <td>
+          {{ image.name }}
+        </td>
+        <td>
+          {% if image.state == constant('App\\Aws\\Ami::STATE_AVAILABLE') %}
+            {% trans %}Available{% endtrans %}
+          {% endif %}
+          {% if image.state == constant('App\\Aws\\Ami::STATE_PENDING') %}
+            {% trans %}Pending{% endtrans %}
+          {% endif %}
+          {% if image.state == constant('App\\Aws\\Ami::STATE_FAILED') %}
+            {% trans %}Failed{% endtrans %}
+          {% endif %}
+        </td>
+        <td class="text-end table-actions">
+          <a class="delete" href="{{ path('clp_admin_aws_image_delete', {'id': image.amiId, 'token': csrf_token('aws-image-delete') }) }}" onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card-body">
+  {% trans %}No images found.{% endtrans %}
+</div>
+{% endif %}

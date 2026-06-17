@@ -1,0 +1,39 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Two-Factor Authentication{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/account.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="account-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Account{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="account-content-container">
+      {{ include('Frontend/User/Account/Partial/tab-container.html.twig', {'active': 'security'}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      <div class="card">
+        <div class="card-header">
+          {% trans %}Two-Factor Authentication{% endtrans %}
+        </div>
+        <div class="card-body">
+          <p>
+            {% trans %}Two-Factor authentication adds an extra layer of security to your account. Whenever you sign in, you’ll need to enter both your password and also a security code.{% endtrans %}
+          </p>
+          {% if user.mfa == true %}
+            <a href="{{ path('clp_user_security_disable_mfa', {'token': csrf_token('disable-mfa')}) }}" class="btn btn-red btn-lg">{% trans %}Disable Two-Factor Authentication{% endtrans %}</a>
+          {% else %}
+            <a href="{{ path('clp_user_security_enable_mfa') }}" class="btn btn-blue btn-lg">{% trans %}Enable Two-Factor Authentication{% endtrans %}</a>
+          {% endif %}
+        </div>
+       </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+<!doctype html>
+<html id="html" {% if app.request.locale in ['ar', 'fa', 'he'] %}dir="rtl" class="rtl {% if isDarkMode %}dark{% endif %}"{% endif %} {% if isDarkMode %} class="dark"{% endif %} lang="{{ app.request.locale }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="CloudPanel">
+  <meta name="author" content="Stefan Wieczorek">
+  <title>{% block title %}CloudPanel{% endblock %}{% if block('pageTitle') %} | {% endif %}{% block pageTitle %}{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ asset('/assets/images/favicon.svg') }}">
+{% block stylesheets %}
+  <link href="{{ asset('/assets/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ asset('/assets/css/bootstrap-utilities.min.css') }}" rel="stylesheet">
+  <link href="{{ asset('/assets/css/style.css') }}" rel="stylesheet">
+  <link href="{{ asset('/assets/css/admin/style.css') }}" rel="stylesheet">
+  <link href="{{ asset('/assets/css/style-dark.css') }}" rel="stylesheet">
+  {% if app.request.locale == 'ko' %}<link href="{{ asset('/assets/css/style-korean.css') }}" rel="stylesheet">{% endif %}
+{%- endblock -%}
+{% block javascript %}
+  <script type="text/javascript" src="{{ asset('/assets/js/jquery.min.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('/assets/js/bootstrap.bundle.min.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('/assets/js/js.cookie.min.js') }}"></script>
+  <script defer type="text/javascript" src="{{ asset('/assets/js/common.js') }}"></script>
+{% endblock %}
+</head>
+<body>
+{% block header -%}
+  {{ include('Admin/Partial/header.html.twig') }}
+{% endblock %}
+<main id="main-container" class="main-container">
+  {% block sidebar -%}
+    {{ include('Admin/Partial/sidebar.html.twig', {'active': 'users'}) }}
+  {% endblock %}
+  <div class="container-fluid container-limited-width">
+    <div class="main-content">
+      {% block body %}{% endblock %}
+    </div>
+  </div>
+</main>
+{% block footer %}
+  {{ render(controller('App\\Controller\\AppController::footerNavigation')) }}
+{% endblock %}
+<script>
+jQuery(document).ready(function() {
+  jQuery('#close-announcement').on('click', function(){
+    let announcementId = jQuery(this).attr('data-announcement-id');
+    if (announcementId) {
+      jQuery.post("{{path('clp_announcement_read')}}", {'announcementId': announcementId});
+    }
+    jQuery('#announcement-container').hide();
+  });
+  jQuery('#localeSelector').on('change', function () {
+    document.forms['localeSelector'].submit();
+  });
+  jQuery('.click-to-copy').on('click', function () {
+    let textToCopy = jQuery(this).text();
+    let tooltip = bootstrap.Tooltip.getInstance(this);
+    jQuery(this).attr('data-bs-original-title', '{% trans %}Copied to Clipboard{% endtrans %}');
+    tooltip.show();
+    jQuery(this).attr('data-bs-original-title', '{% trans %}Click to Copy{% endtrans %}');
+    if (textToCopy) {
+      copyToClipboard(textToCopy);
+    }
+  });
+  jQuery('#theme-switch').on('click', function () {
+    let isDarkMode =  jQuery('#html').hasClass('dark');
+    if (isDarkMode) {
+      jQuery('#logo').attr('src', jQuery('#logo').attr('data-light-img-src'));
+      jQuery('#dark-mode').show();
+      jQuery('#light-mode').hide();
+      jQuery('#html').removeClass('dark');
+      Cookies.remove('theme', { path: '/' });
+    } else {
+      jQuery('#logo').attr('src', jQuery('#logo').attr('data-dark-img-src'));
+      jQuery('#light-mode').show();
+      jQuery('#dark-mode').hide();
+      jQuery('#html').addClass('dark');
+      Cookies.set('theme', 'dark', { expires: 180, secure: true });
+    }
+  });
+});
+</script>
+</body>
+</html>

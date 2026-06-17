@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# CloudPanel: per-site WordPress auto-updates driven by Site.wp_auto_update column.
+# Modes: none (skip), security (core minor only), all (core + plugins + themes).
+set -u
+DB="/home/clp/htdocs/app/data/db.sq3"
+WP="/home/clp/htdocs/app/files/bin/wp"
+if [ ! -x "$WP" ]; then
+    WP="/usr/bin/wp"
+fi
+if [ ! -x "$WP" ]; then
+    echo "clp-wp-updates: wp-cli binary not found, aborting" >&2
+    exit 0
+fi
+if [ ! -r "$DB" ]; then
+    echo "clp-wp-updates: clp database not readable at $DB" >&2
+    exit 0
+fi
+LOG="/var/log/clp-wp-updates.log"
+ts() { date '+%Y-%m-%dT%H:%M:%S%z'; }
+log() { echo "[$(ts)] $*" >>"$LOG"; }
+log "=== clp-wp-updates run starting ==="
+# Query: type=php sites with non-none mode. Columns: domain_name,user,root_directory,wp_auto_update.
+Q="SELECT domain_name||'|'||user||'|'||root_directory||'|'||COALESCE(wp_auto_update,'none') FROM site WHERE type='php' AND COALESCE(wp_auto_update,'none')!='none';"
+ROWS=$(sqlite3 "$DB" "$Q" 2>/dev/null || true)
+if [ -z "$ROWS" ]; then
+    log "no sites with wp auto-update enabled"
+    exit 0
+fi
+while IFS='|' read -r DOMAIN SYSUSER ROOTDIR MODE; do
+    [ -z "$DOMAIN" ] && continue
+    SITE_ROOT="/home/$SYSUSER/htdocs/$DOMAIN"
+    WP_PATH="$SITE_ROOT/$ROOTDIR"
+    if [ ! -f "$WP_PATH/wp-config.php" ]; then
+        # try site root fallback
+        if [ -f "$SITE_ROOT/wp-config.php" ]; then
+            WP_PATH="$SITE_ROOT"
+        else
+            log "skip $DOMAIN: no wp-config.php"
+            continue
+        fi
+    fi
+    log "updating $DOMAIN (user=$SYSUSER mode=$MODE path=$WP_PATH)"
+    case "$MODE" in
+        security)
+            su -s /bin/bash -c "$WP --path=$WP_PATH --skip-plugins --skip-themes core update --minor 2>&1" "$SYSUSER" >>"$LOG" 2>&1 || log "  core --minor failed for $DOMAIN"
+            su -s /bin/bash -c "$WP --path=$WP_PATH --skip-plugins --skip-themes core update-db 2>&1" "$SYSUSER" >>"$LOG" 2>&1 || true
+            ;;
+        all)
+            su -s /bin/bash -c "$WP --path=$WP_PATH --skip-plugins --skip-themes core update 2>&1" "$SYSUSER" >>"$LOG" 2>&1 || log "  core update failed for $DOMAIN"
+            su -s /bin/bash -c "$WP --path=$WP_PATH --skip-plugins --skip-themes core update-db 2>&1" "$SYSUSER" >>"$LOG" 2>&1 || true
+            su -s /bin/bash -c "$WP --path=$WP_PATH plugin update --all 2>&1" "$SYSUSER" >>"$LOG" 2>&1 || log "  plugin update failed for $DOMAIN"
+            su -s /bin/bash -c "$WP --path=$WP_PATH theme update --all 2>&1" "$SYSUSER" >>"$LOG" 2>&1 || log "  theme update failed for $DOMAIN"
+            ;;
+    esac
+done <<<"$ROWS"
+log "=== clp-wp-updates run done ==="
+exit 0

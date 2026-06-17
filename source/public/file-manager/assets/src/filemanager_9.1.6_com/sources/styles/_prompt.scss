@@ -1,0 +1,46 @@
+.webix_fmanager_prompt {
+	.webix_win_head {
+		border-color: $lightBackgroundColor;
+
+		.webix_toolbar {
+			background: $lightBackgroundColor;
+
+			.webix_el_label {
+				color: $primeFontColor;
+			}
+			.webix_icon_button {
+				.webix_icon {
+					color: $midGrey;
+				}
+
+				&:hover .webix_icon {
+					color: $primeFontColor;
+				}
+			}
+		}
+	}
+
+	.webix_fmanager_prompt_input {
+		input {
+			border-color: $allPromptBorder;
+			border-bottom-color: $bottomPromptBorder;
+
+			&:focus {
+				border-color: $allPromptBorderFocus;
+				border-bottom-color: $mainColor;
+			}
+		}
+
+		&.webix_invalid {
+			input {
+				border-color: $dangerColor;
+				border-bottom-color: $dangerColor;
+			}
+
+			&:focus {
+				border-color: $dangerColor;
+				border-bottom-color: $dangerColor;
+			}
+		}
+	}
+}

@@ -1,0 +1,120 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Certificates{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/site.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'certificates', 'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      <div class="site-content">
+        <div class="card card-table">
+          <div class="card-header d-flex justify-content-between">
+            {% trans %}Certificates{% endtrans %}
+            <div class="dropdown">
+              <button class="btn btn-md btn-blue dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">{% trans %}Actions{% endtrans %}</button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" href="{{ path('clp_site_lets_encrypt_certificate_new', {'domainName': site.domainName}) }}">{% trans %}New Let's Encrypt Certificate{% endtrans %}</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{{ path('clp_site_certificate_import', {'domainName': site.domainName}) }}">{% trans %}Import Certificate{% endtrans %}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          {% if certificates|length %}
+            <div class="card-body card-body-no-padding">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th width="180">
+                      {% trans %}Type{% endtrans %}
+                    </th>
+                    <th>
+                      {% trans %}Domains{% endtrans %}
+                    </th>
+                    <th width="200">
+                      {% trans %}Expiration Date{% endtrans %}
+                    </th>
+                    <th width="180">
+                      {% trans %}Installed{% endtrans %}
+                    </th>
+                    <th width="120" class="text-end">
+                      {% trans %}Action{% endtrans %}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for certificate in certificates %}
+                  <tr>
+                    <td data-uid="{{ certificate.uid }}">
+                      {% if certificate.type == constant('App\\Entity\\Certificate::TYPE_SELF_SIGNED') %}
+                        {% trans %}Self-Signed{% endtrans %}
+                      {% endif %}
+                      {% if certificate.type == constant('App\\Entity\\Certificate::TYPE_LETS_ENCRYPT') %}
+                        Let's Encrypt
+                      {% endif %}
+                      {% if certificate.type == constant('App\\Entity\\Certificate::TYPE_IMPORTED') %}
+                        {% trans %}Imported{% endtrans %}
+                      {% endif %}
+                    </td>
+                    <td>
+                      {{ certificate.domains|join(', ') }}
+                    </td>
+                    <td>
+                      {{ certificate.expiresAt|date('M j, Y') }}
+                    </td>
+                    <td>
+                      {% if certificate == installedCertificate %}
+                        {% trans %}Yes{% endtrans %}
+                      {% else %}
+                        {% trans %}No{% endtrans %}
+                      {% endif %}
+                    </td>
+                    <td class="text-center table-actions">
+                      {% if certificate != installedCertificate %}
+                        <div class="dropdown">
+                          <a class="btn btn-white btn-sm btn-action-dropdown" role="button" id="certificateActionMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
+                              <circle cx="16" cy="3.7" r="3.7"></circle>
+                              <circle cx="16" cy="15.9" r="3.7"></circle>
+                              <circle cx="16" cy="28.3" r="3.7"></circle>
+                            </svg>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="certificateActionMenu">
+                            <li>
+                              <a class="dropdown-item" href="{{ path('clp_site_certificate_install', {'domainName': site.domainName, 'uid': certificate.uid}) }}">{% trans %}Install{% endtrans %}</a>
+                            </li>
+                            {% if false == certificate.defaultCertificate %}
+                              <li>
+                                <a class="dropdown-item" href="{{ path('clp_site_certificate_delete', {'domainName': site.domainName, 'uid': certificate.uid, 'token': csrf_token('certificate-delete')}) }}" onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
+                              </li>
+                            {% endif %}
+                          </ul>
+                        </div>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="card-body">
+              {% trans %}No certificates found.{% endtrans %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

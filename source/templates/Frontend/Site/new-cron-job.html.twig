@@ -1,0 +1,90 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}New Cron Job{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/site.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'cron-jobs', 'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="site-content">
+        {{ form_start(form) }}
+        <div class="card card-table">
+          <div class="card-header d-flex justify-content-between">
+            {% trans %}New Cron Job{% endtrans %}
+          </div>
+          <div class="card-body card-body-no-padding">
+            <div class="card-form">
+              <div class="row">
+                <div class="col-12 {{ (form_errors(form.template) ? 'has-error' : '') }}">
+                  {{ form_label(form.template, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.template) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col {{ (form_errors(form.minute) ? 'has-error' : '') }}">
+                  {{ form_label(form.minute, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.minute) }}
+                </div>
+                <div class="col {{ (form_errors(form.hour) ? 'has-error' : '') }}">
+                  {{ form_label(form.hour, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.hour) }}
+                </div>
+                <div class="col {{ (form_errors(form.day) ? 'has-error' : '') }}">
+                  {{ form_label(form.day, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.day) }}
+                </div>
+                <div class="col {{ (form_errors(form.month) ? 'has-error' : '') }}">
+                  {{ form_label(form.month, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.month) }}
+                </div>
+                <div class="col {{ (form_errors(form.weekday) ? 'has-error' : '') }}">
+                  {{ form_label(form.weekday, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.weekday) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 {{ (form_errors(form.command) ? 'has-error' : '') }}">
+                  {{ form_label(form.command, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.command) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col text-end">
+                  {{ form_widget(form.submit) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{ form_end(form) }}
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+jQuery(document).ready(function() {
+  jQuery('#site_cron_job_template').on('change', function() {
+    let value = this.value;
+    if (value) {
+      let values = value.split(' ');
+      if (values) {
+        jQuery("#site_cron_job_minute").val(values[0]);
+        jQuery("#site_cron_job_hour").val(values[1]);
+        jQuery("#site_cron_job_day").val(values[2]);
+        jQuery("#site_cron_job_month").val(values[3]);
+        jQuery("#site_cron_job_weekday").val(values[4]);
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

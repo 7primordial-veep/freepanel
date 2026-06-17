@@ -1,0 +1,27 @@
+<!doctype html>
+<html {% if app.request.locale in ['ar', 'fa', 'he'] %}dir="rtl" class="rtl {% if app.request.cookies.get('theme') == "dark" %}dark{% endif %}" {% else %}{% if app.request.cookies.get('theme') == "dark" %}class="dark"{% endif %}{% endif %} lang="{{ app.request.locale }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="CloudPanel">
+  <meta name="author" content="Stefan Wieczorek">
+  <title>{% block title %}CloudPanel{% endblock %}{% if block('pageTitle') %} | {% endif %}{% block pageTitle %}{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ asset('/assets/images/favicon.svg') }}">
+  {% block stylesheets %}
+    <link href="{{ asset('/assets/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/css/bootstrap-utilities.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/css/style-dark.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/css/frontend/login.css') }}" rel="stylesheet">
+  {%- endblock -%}
+  {% block javascript %}
+  <script type="text/javascript" src="{{ asset('/assets/js/jquery.min.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('/assets/js/bootstrap.bundle.min.js') }}"></script>
+{% endblock %}
+</head>
+<body>
+{% block body %}
+Body
+{% endblock %}
+</body>
+</html>

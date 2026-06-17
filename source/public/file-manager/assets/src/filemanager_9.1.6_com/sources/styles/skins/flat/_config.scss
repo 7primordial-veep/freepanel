@@ -1,0 +1,79 @@
+$folderIconSize: 20px;
+$fileIconSize: 23px;
+$fileTypeIconHeight: 27px;
+$fmIconMarginRight: 10px;
+$backIconOffset: 3px;
+
+/* card sizes */
+$cardPreviewHeight: 112px;
+$cardPanelHeight: 36px;
+$cardFontIconSize: 90px;
+$cardFolderLabelSize: 12px;
+$cardFolderLabelLineHeight: 12px;
+$cardNameLabelLineHeight: 30px;
+$cardMenuIconRight: 12px;
+$cardMenuIconBottom: 10px;
+$cardNameWidth: 155px;
+$cardNameHeight: 29px;
+$cardNameTextWidth: 125px;
+$cardMenuIconSize: 20px;
+$modeIconOffset: -1px;
+$specIconSize: 20px;
+$bigFolderIconMarginLeft: 8px;
+
+$dangerColor: #fea5a8;
+$lightBackgroundColor: #ffffff;
+$mainColor: #3498db;
+$midGrey: #a4b4bf;
+$primeFontColor: #475466;
+$selectColor: #ffffff;
+$accentColor: #28b263;
+$dataBackground: #ffffff;
+$borderColor: #ccd7e6;
+$allPromptBorder: rgb(204, 204, 204);
+$bottomPromptBorder: $allPromptBorder;
+$allPromptBorderFocus: $mainColor;
+$plyrBackground: #ffffff;
+$plyrTextColor: rgb(74, 87, 100);
+
+@import "../../app";
+
+/* flat overrides */
+.webix_fmanager_path_chunk:hover {
+	cursor: pointer;
+	color: $selectColor;
+}
+.webix_fmanager_progress_head {
+	box-shadow: inset 0 4px $accentColor;
+}
+.webix_fmanager_info_tab .webix_item_tab.webix_selected:focus {
+	box-shadow: inset 0 -2px transparent;
+	color: $dataBackground;
+	outline-style: none;
+}
+
+.webix_fmanager_tree .webix_tree_item {
+	&.webix_selected .webix_icon,
+	.webix_icon {
+		vertical-align: text-top;
+	}
+}
+
+.webix_fmanager_mode_icon {
+	font-size: 17px;
+}
+
+/* editor tabs */
+.webix_fmanager_editor_tab.webix_item_tab .tab_content {
+	top: 3px;
+}
+
+.webix_tab_list .webix_list_item .tab_content .webix_icon {
+	font-size: 17px;
+}
+
+.webix_fmanager_editor_tab.webix_item_tab,
+.webix_fmanager_editor_tab.webix_item_tab.webix_selected,
+.webix_fmanager_editor_tab.webix_item_tab.webix_selected:focus {
+	border-color: #ffffff;
+}

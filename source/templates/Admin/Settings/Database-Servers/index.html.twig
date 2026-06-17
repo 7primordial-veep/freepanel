@@ -1,0 +1,81 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Database Servers{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'settings'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Settings{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="database-servers-container">
+      {{ include('Admin/Settings/Partial/tab-container.html.twig', {'active': 'database-servers'}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Database Servers{% endtrans %}
+          <a href="{{ path('clp_admin_database_server_add') }}" class="btn btn-md btn-blue">{% trans %}Add Database Server{% endtrans %}</a>
+        </div>
+        {% if databaseServers|length %}
+          <div class="card-body card-body-no-padding">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>
+                    {% trans %}Host{% endtrans %}
+                  </th>
+                  <th width="200">
+                    {% trans %}Engine{% endtrans %}
+                  </th>
+                  <th width="100">
+                    {% trans %}Port{% endtrans %}
+                  </th>
+                  <th width="100">
+                    {% trans %}Active{% endtrans %}
+                  </th>
+                  <th width="200" class="text-center">
+                    {% trans %}Action{% endtrans %}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for databaseServer in databaseServers %}
+                <tr>
+                  <td>
+                    <a href="{{ path('clp_admin_database_server_edit', {'id': databaseServer.id}) }}">{{ databaseServer.host }}</a>
+                  </td>
+                  <td>
+                    {{ databaseServer.engine }} {{ databaseServer.version }}
+                  </td>
+                  <td>
+                    {{ databaseServer.port }}
+                  </td>
+                  <td>
+                    {% if databaseServer.isActive == true %}
+                      {% trans %}Yes{% endtrans %}
+                    {% else %}
+                      {% trans %}No{% endtrans %}
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    {% if databaseServer.isActive == false %}
+                      <a href="{{ path('clp_admin_database_server_set_active', {'id': databaseServer.id, 'token': csrf_token('set-active-database-server')}) }}">{% trans %}Set Active{% endtrans %}</a>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

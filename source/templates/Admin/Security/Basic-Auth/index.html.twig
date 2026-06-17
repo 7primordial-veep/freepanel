@@ -1,0 +1,86 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Basic Auth{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'security'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Security{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="basic-auth-container">
+      {{ include('Admin/Security/Partial/tab-container.html.twig', {'active': 'basic-auth'}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ form_start(form) }}
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Basic Auth{% endtrans %}
+        </div>
+        <div class="card-body card-body-no-padding">
+          <div class="card-form">
+            <div class="row">
+              <div class="col">
+                <div class="form-check form-switch mb-2">
+                  <input class="form-check-input" type="checkbox" id="basic-auth-switch" {% if isBasicAuthEnabled == true %}checked{% endif %}>
+                  <label class="form-check-label" for="basic-auth-switch">{% trans %}Enable Basic Auth{% endtrans %}</label>
+                </div>
+                <div class="form-text">{% trans %}Basic Auth in front of CloudPanel adds an extra layer of security.{% endtrans %}</div>
+              </div>
+            </div>
+            <div id="basic-auth-credentials-container" style="display:none;">
+              <div class="row">
+                <div class="col-6 {{ (form_errors(form.userName) ? 'has-error' : '') }}">
+                  {{ form_label(form.userName, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.userName) }}
+                </div>
+                <div class="col-6 {{ (form_errors(form.password) ? 'has-error' : '') }}">
+                  {{ form_label(form.password, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(form.password) }}
+                  <a class="generate-new-password" data-input-element="admin_basic_auth_password" href="javascript:void(0);">{% trans %}Generate new password{% endtrans %}</a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col text-end">
+                  {{ form_widget(form.submit) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{ form_end(form) }}
+    </div>
+  </div>
+</div>
+<script>
+jQuery(document).ready(function() {
+  jQuery('#basic-auth-switch').on('click', function () {
+    let isEnabled = jQuery(this).prop('checked');
+    if (isEnabled) {
+      jQuery('#basic-auth-credentials-container').show();
+    } else {
+      jQuery('#basic-auth-credentials-container').hide();
+      jQuery.post("{{path('clp_admin_basic_auth_disable')}}");
+    }
+  });
+  function setPassword(inputElement) {
+    inputElement.val(generatePassword(20));
+  }
+  let inputElement = jQuery('#admin_basic_auth_password');
+  if (inputElement.val() === "") {
+    setPassword(inputElement);
+  }
+  jQuery('.generate-new-password').on('click', function () {
+    let inputElementId = jQuery(this).attr('data-input-element');
+    let inputElement = jQuery('#' + inputElementId);
+    setPassword(inputElement);
+  });
+});
+</script>
+{% endblock %}

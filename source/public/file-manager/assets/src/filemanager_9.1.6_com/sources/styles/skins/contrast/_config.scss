@@ -1,0 +1,99 @@
+$folderIconSize: 20px;
+$fileIconSize: 23px;
+$fileTypeIconHeight: 27px;
+$fmIconMarginRight: 10px;
+$backIconOffset: 4px;
+
+/* card sizes */
+$cardPreviewHeight: 112px;
+$cardPanelHeight: 36px;
+$cardFontIconSize: 90px;
+$cardFolderLabelSize: 12px;
+$cardFolderLabelLineHeight: 12px;
+$cardNameLabelLineHeight: 30px;
+$cardMenuIconRight: 12px;
+$cardMenuIconBottom: 10px;
+$cardNameWidth: 155px;
+$cardNameHeight: 29px;
+$cardNameTextWidth: 125px;
+$cardMenuIconSize: 20px;
+$modeIconOffset: -1px;
+$specIconSize: 20px;
+$bigFolderIconMarginLeft: 8px;
+
+$dangerColor: #fea5a8;
+$lightBackgroundColor: #393939;
+$mainColor: #cd00cc;
+$midGrey: darken(#ffffff, 20%);
+$primeFontColor: #ffffff;
+$selectColor: $primeFontColor;
+$accentColor: #28b263;
+$dataBackground: rgb(25, 25, 25);
+$borderColor: rgb(129, 129, 129);
+$allPromptBorder: #818181;
+$bottomPromptBorder: $allPromptBorder;
+$allPromptBorderFocus: $primeFontColor;
+$plyrBackground: rgb(25, 25, 25);
+$plyrTextColor: $primeFontColor;
+
+@import "../../app";
+
+.webix_fmanager_filelist .webix_dtable_colrow {
+	background-color: #393939;
+	border-bottom: 1px solid #4d4d4d;
+	.webix_fmanager_back,
+	.webix_fmanager_back:hover,
+	.webix_fmanager_back_icon {
+		color: #e2e2a7;
+	}
+}
+
+.webix_fmanager_cards,
+.webix_fmanager_menu_icon:hover,
+.webix_fmanager_cards .webix_dataview_item.tiles.webix_drag_over {
+	background-color: #393939;
+}
+
+.webix_fmanager_prompt_input input:focus {
+	border-bottom-color: $allPromptBorderFocus;
+}
+
+.webix_fmanager_progress_head {
+	box-shadow: inset 0 4px $accentColor;
+	background-color: #393939;
+}
+
+.webix_fmanager_info_tab .webix_item_tab.webix_selected:focus {
+	box-shadow: inset 0 -2px transparent;
+	color: $primeFontColor;
+	text-decoration: none;
+}
+
+.webix_fmanager_mode_icon {
+	font-size: 17px;
+}
+
+.webix_fmanager_tree .webix_tree_item {
+	&.webix_selected .webix_icon,
+	.webix_icon {
+		vertical-align: initial;
+	}
+}
+
+/* editor tabs */
+.webix_fmanager_editor_tab.webix_item_tab .tab_content {
+	top: 5px;
+}
+.webix_tab_list .webix_list_item {
+	&:hover {
+		background-color: #191919;
+	}
+
+	.tab_content .webix_icon {
+		font-size: 17px;
+	}
+}
+
+.webix_fmanager_editor_tabs .webix_after_all_tabs {
+	border-right-color: transparent;
+}

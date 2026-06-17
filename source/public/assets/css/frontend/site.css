@@ -1,0 +1,55 @@
+.site-info-container {
+  display: flex;
+  margin: 30px 0px;
+}
+
+.site-info-box {
+  margin: 0px 60px 0px 0px;
+  min-width: 200px;
+}
+
+.site-info-box h3 {
+  font-size: 14px;
+  color: #aaaaaa;
+  margin: 0px 0px 5px 0px;
+}
+
+.site-info-value {
+  font-size: 18px;
+}
+
+a.view-site-link svg {
+  margin: 0px 0px 0px 2px;
+  fill: #aaaaaa;
+}
+
+a.view-site-link:hover svg {
+  fill: #0078d4;
+}
+
+.site-content .card {
+  margin: 0px 0px 30px 0px;
+}
+
+.database-server-information {
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 5px 0px 0px 0px;
+}
+
+.database-server-information  ul li {
+  display: inline;
+  margin: 0px 30px 0px 0px;
+}
+
+.check-out-docs a {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.check-out-docs a:hover {
+  color: #0078d4;
+  text-decoration: underline;
+}
+

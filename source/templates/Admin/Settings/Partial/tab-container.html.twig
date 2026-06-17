@@ -1,0 +1,13 @@
+{% if active is not defined %}
+  {% set active = 'settings' %}
+{% endif %}
+<div class="tab-container">
+  <ul>
+    <li {% if active == 'settings' %}class="active"{% endif %}>
+      <a href="{{ path('clp_admin_settings') }}">{% trans %}General{% endtrans %}</a>
+    </li>
+    <li {% if active == 'database-servers' %}class="active"{% endif %}>
+      <a href="{{ path('clp_admin_database_servers') }}">{% trans %}Database Servers{% endtrans %}</a>
+    </li>
+  </ul>
+</div>

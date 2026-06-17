@@ -1,0 +1,6 @@
+MAILTO=""
+0 */1 * * * clp /usr/bin/bash -c "/usr/bin/clpctl aws:image:create --frequency=1" &> /dev/null
+0 */3 * * * clp /usr/bin/bash -c "/usr/bin/clpctl aws:image:create --frequency=3" &> /dev/null
+0 */6 * * * clp /usr/bin/bash -c "/usr/bin/clpctl aws:image:create --frequency=6" &> /dev/null
+0 */12 * * * clp /usr/bin/bash -c "/usr/bin/clpctl aws:image:create --frequency=12" &> /dev/null
+0 0 * * * clp /usr/bin/bash -c "/usr/bin/clpctl aws:image:create --frequency=24" &> /dev/null

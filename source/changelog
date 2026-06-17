@@ -1,0 +1,220 @@
+2.5.3 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Wed, 03 December 2025 08:08:08
+Fixed:
+ - #684 Cron Jobs interface do not accept a range of months
+ - #693 Unfortunately, there are problems installing from the cloud on Debian 13.
+Enhancements:
+ - Updated phpMyAdmin to 5.2.3
+ - Updated WP-CLI to 2.12.0
+
+2.5.2 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Tue, 05 August 2025 08:08:08
+New:
+ - MySQL 8.4 Support
+ - Translations: Finnish
+Fixed:
+ - #621 Manage link returns a 404 for .zip domains
+ - #638 Amazon S3 Backup Permissions Bug
+ - #661 File editing isn't working through File Manager in Cloudpanel UI
+ - #662 Hetzner Snapshot creation issues
+ - #669 Custom rule in Firewall adds ProFTPD rule at same time
+ - Translation Fixes
+Security:
+ - CloudPanel’s PHP-FPM Socket Misconfiguration (Aizat)
+ - Security improvements (Yell Phone Naing)
+
+2.5.1 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Mon, 03 March 2025 08:08:08
+Fixed:
+ - #542 Issue deleting subfolder named '0' causes browser freeze and deletes parent folder
+ - #558 Incorrect file permissions on new sites
+ - #582 Cron refuses a command which contains 'admin'
+ - Translation Fixes
+Enhancements:
+ - Updated phpMyAdmin to 5.2.1
+Security:
+ - Security improvements (Yell Phone Naing)
+
+2.5.0 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Mon, 25 Nov 2024 08:08:08
+New:
+ - PHP 8.4 Support
+ - MariaDB 11.4 Support
+ - Translations: Hungarian, Slovak, Thai
+Fixed:
+ - #471 username error
+ - #476 Shebang incorrect in /usr/bin/clpctl
+ - #484 Unexpected brackets at the beginning of files
+ - #500 Custom cron commands are not working
+ - #505 Web based File Manager does not upload files
+ - #511 .well-known directory deleted after certificate renew
+ - #527 Unable to login with site user via ssh key when ftp user is created (Thanks to ccMatrix)
+ - #530 File permissions revert to 0770 after file modification
+ - #535 "Additional Configuration Directives" doesn't allow for spaces in value
+ - #540 S3 backup - Region - Middle East (UAE) me-central-1 missing
+ - Translation Fixes
+Enhancements:
+ - Added new AWS regions for S3 remote backup
+Security:
+ - Privilege Escalation from `clpctlWrapper` command (Yell Phone Naing) (HIGH)
+ - Privilege Escalation: Site User Access Allows Linux Password Changes (HIGH) (Yell Phone Naing)
+ - Server IP disclosure despite using Cloudflare (Yell Phone Naing)
+ Thanks to:
+  - HHF (MariaDB 11.4
+  - Yell.PhoneNaing (Security)
+  - Serkan Küçüknarin (Review and fine tuning Turkish Translation)
+
+2.4.3 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Wed, 22 May 2024 08:08:08
+Fixed:
+ - #462 500 Error on Firewall Port Edit
+
+2.4.2 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Tue, 21 May 2024 08:08:08
+New:
+ - Node.js 22 LTS Support
+ - Translations: Serbian, Georgian
+Fixed:
+ - #427 Cannot rename files in file manager
+ - #430 Comma in cron jobs minute
+ - #434 I think this should be a bug
+ - Translation Fixes
+
+2.4.1 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Mon, 22 January 2024 08:08:08
+New:
+ - Translations: Bosnian
+Enhancements:
+ - The issuance of Let's Encrypt certificates is being tested against the staging environment first to avoid rate limit errors
+ - The performance of creating sites, especially Node.js sites, has been enhanced
+Fixed:
+ - #382 phpMyAdmin sorting not working
+ - #383 Instance Reboot at Admin/Instance/Setting doesn't reboot and block auto login from login pages
+ - #406 CloudPanel Dashboard doesn't when using the AWS EC2 installer.
+ - Translation Fixes
+Security:
+ - Vulnerability that allows a user with the lowest privilege to conduct a session hijacking, subsequently gaining unauthorized access to the admin and other user accounts. (Muhammad Aizat, datack.my)
+
+2.4.0 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Tue, 28 November 2023 08:08:08
+New:
+ - PHP 8.3 Support
+ - Node.js 20 LTS Support
+ - Translations: Danish, Czech
+Enhancements:
+ - The databases are backed up prior to executing remote backup
+ - The site settings and vhost are being included in the remote backup file
+ - Updated phpMyAdmin to 5.2.1
+Fixed:
+ - #329 duplicate settings key in file-manager.conf
+ - #338 The original certificate is not removed when you delete a web application
+ - #355 Login Page Autocomplete/Password Manager Issue
+ - #363 Custom v2-varnish vhost templates cause a 403 page and missing Varnish settings
+ - #359 When you delete a website the nodejs app started with PM2 is not deleted
+ - #367 phpMyAdmin basic auth doesn't work when CloudPanel basic auth is enabled
+
+Security:
+ - File Manager: CVE-2023-43880: New file chown issue
+ - File Manager: CVE-2023-43881: Zip symlink (BSDTAR)
+ - Command Injection (Yell Phone Naing)
+
+2.3.2 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Mon, 21 Aug 2023 08:08:08
+New:
+ - Translations: Korean, Persian
+Fixed:
+ - #298 Mask MySQL root password when throwing an exception
+Enhancements:
+ - Vietnamese Translation
+ - RTL stylesheet improvements, Thanks to @Yaser
+Security:
+ - MySQL Root Password Leak from site user
+ - Privilege Escalation to root from user (Yell Phone Naing)
+
+2.3.1 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Tue, 20 June 2023 08:08:08
+Fixed:
+ - #287 Colon in remote cloud backup breaks most filesystems
+ - #290 File Manager Extract not working since v2.3.0
+ - #293 Strange \n\n inside the certificate file used for custom domain.
+Enhancements:
+ - Russian Translation
+Security:
+ - Critical: Insecure file manager cookie authentication (Muhammad Aizat, datack.my)
+ - Insecure File Upload leads to Privilege Escalation and Authentication Bypass (Muhammad Zulfiqar)
+
+2.3.0 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Tue, 06 June 2023 08:08:08
+New:
+  - Translations: Bulgarian
+  - New CloudPanel CLI Root Commands:
+    - User:
+      - user:add
+      - user:delete
+      - user:list
+Enhancements:
+ - The site user name and password can be entered manually for new WordPress sites.
+Fixed:
+ - #278 CLI need normalize domain name field
+ - #284 CLPCTL - Problem with special characters in password result false error
+Security:
+ - Critical (CVE-2023-33747): Privilege Escalation to root from user (Muhammad Aizat, datack.my, host.sabily.info)
+ - OS Command Injection (Laurence, crowdsec.net)
+
+2.2.2 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Tue, 04 Apr 2023 08:08:08
+New:
+ - Translations: Japanese, Hebrew
+ - MariaDB 10.11 Support
+Fixed
+ - #245 New Reverse Proxy | root folder permission in htdocs
+ - #254 Site path / copy and paste issues
+
+2.2.1 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Mon, 27 Feb 2023 08:08:08
+New:
+ - Translations: Chinese (Simplified), Chinese (Taiwan)
+ - Reverse Proxy
+Fixed
+ - #210 Dark mode: Separating table borders missing
+ - #220 Hetzner Snapshot cleanup throws an exception when delete protection is enabled on a snapshot
+
+2.2.0 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Thu, 08 Dec 2022 08:08:08
+New:
+ - Add PHP 8.2 Support (https://feature-requests.cloudpanel.io/posts/15/support-for-php-8-2)
+ - Added Dark Mode (https://feature-requests.cloudpanel.io/posts/1/add-dark-theme)
+ - Add Node.js 18 LTS Support
+Improvements
+  - File Manager order Directories before Files (https://feature-requests.cloudpanel.io/posts/30/file-manager-order-directories-before-files)
+Fixed
+ - #208 Unable to create a WordPress site with a database server that doesn't use the default port 3306
+
+2.1.0 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Thu, 08 Nov 2022 08:08:08
+- Added Varnish Cache
+- Improvements:
+  - Generate Password Link for Site User Password Update
+- Fixed:
+   - #138 WordPress Admin login doesn't work with passwords which contains special characters like
+   - #150 Cron Job PHP version issue
+   - #153 Backup Custom Rclone Config Time
+
+2.0.4 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Thu, 08 Sep 2022 08:08:08
+- Added translations: Arabic, Ukrainian
+- Fixed:
+   - #137 Remote backups don't get deleted after configured retention period, it affects only the SFTP storage provider
+   - Translation Fixes
+
+2.0.3 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Wed, 24 Aug 2022 08:08:08
+- Added Remote Backup
+- Added translations for: Italian, Indonesian, Spanish, Russian, Polish, Vietnamese
+- Fixed:
+   - #115 - Using " in the additional directives configuration breaks CloudPanel
+   - #122 - Numeral in Domain Name Can't Install Wordpress
+   - #132 - 413 Request Entity Too Large, File Manager file upload over 512MB with custom domain
+
+2.0.2 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Tue, 05 Jul 2022 08:08:08
+- Remove WP settings:
+  - FS_CHMOD_FILE
+  - FS_CHMOD_DIR
+
+2.0.1 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Mon, 04 Jul 2022 08:08:08
+- Translations fixes
+- Added Portuguese (Brasil) translation
+- Added Turkish translation
+- MariaDB 10.8 support for Ubuntu and Debian
+- Fixed two level subdomain site user name generation (wp.blog.eu.org, 4you.cheap)
+- Add WP default settings:
+  - WP_MEMORY_LIMIT: 256M
+  - WP_MAX_MEMORY_LIMIT: 512M
+  - FS_CHMOD_FILE: 0644
+  - FS_CHMOD_DIR: 0755
+
+2.0.0 Stefan Wieczorek <stefan.wieczorek@cloudpanel.io> Mon, 20 Jun 2022 08:08:08
+- Initial Release

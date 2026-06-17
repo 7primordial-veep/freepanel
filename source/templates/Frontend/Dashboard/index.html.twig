@@ -1,0 +1,348 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Dashboard{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/dashboard.css') }}" rel="stylesheet">
+{% endblock %}
+
+{%- block javascript -%}
+  {{ parent() }}
+  <script type="text/javascript" src="{{ asset('/assets/js/highcharts.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+<div class="account-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Dashboard{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="dashboard-page-content-container">
+      <div class="card">
+        <div class="card-body">
+          <div class="information-box-container">
+            {% if cloud == "" %}
+              {{ include('Frontend/Dashboard/Partial/information.html.twig', {'instance': instance}) }}
+            {% endif %}
+            {% if cloud == constant('App\\CloudPanel\\Environment::CLOUD_PROVIDER_AWS') %}
+              {{ include('Frontend/Dashboard/Partial/aws-information.html.twig', {'instance': instance}) }}
+            {% endif %}
+            {% if cloud == constant('App\\CloudPanel\\Environment::CLOUD_PROVIDER_DO') %}
+              {{ include('Frontend/Dashboard/Partial/do-information.html.twig', {'instance': instance}) }}
+            {% endif %}
+            {% if cloud == constant('App\\CloudPanel\\Environment::CLOUD_PROVIDER_HETZNER') %}
+              {{ include('Frontend/Dashboard/Partial/hetzner-information.html.twig', {'instance': instance}) }}
+            {% endif %}
+            {% if cloud == constant('App\\CloudPanel\\Environment::CLOUD_PROVIDER_GCE') %}
+              {{ include('Frontend/Dashboard/Partial/gce-information.html.twig', {'instance': instance}) }}
+            {% endif %}
+            {% if cloud == constant('App\\CloudPanel\\Environment::CLOUD_PROVIDER_VULTR') %}
+              {{ include('Frontend/Dashboard/Partial/vultr-information.html.twig', {'instance': instance}) }}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="dashboard-charts-container">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between">
+            {% trans %}Monitoring{% endtrans %}
+            <select id="time-range" class="form-select form-select-sm form-select-period-of-time">
+              <option {% if timeRange == constant('App\\Controller\\Frontend\\DashboardController::TIME_RANGE_LAST_THIRTY_MINUTES') %}selected{%endif%} value="1">{% trans %}Last 30 Minutes{% endtrans %}</option>
+              <option {% if timeRange == constant('App\\Controller\\Frontend\\DashboardController::TIME_RANGE_LAST_HOUR') %}selected{%endif%} value="2">{% trans %}Last Hour{% endtrans %}</option>
+              <option {% if timeRange == constant('App\\Controller\\Frontend\\DashboardController::TIME_RANGE_LAST_THREE_HOURS') %}selected{%endif%} value="3">{% trans %}Last 3 Hours{% endtrans %}</option>
+              <option {% if timeRange == constant('App\\Controller\\Frontend\\DashboardController::TIME_RANGE_LAST_SIX_HOURS') %}selected{%endif%} value="4">{% trans %}Last 6 Hours{% endtrans %}</option>
+              <option {% if timeRange == constant('App\\Controller\\Frontend\\DashboardController::TIME_RANGE_LAST_TWELVE_HOURS') %}selected{%endif%} value="5">{% trans %}Last 12 Hours{% endtrans %}</option>
+            </select>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <div class="chart-row">
+                <div class="chart">
+                  <div class="chart-header">
+                    <h3>{{ cpuChart.name|trans }}</h3>
+                    {% if cpuChart.information %}
+                      <h3>{{ cpuChart.information }}</h3>
+                    {% endif %}
+                  </div>
+                  <div class="chart-content">
+                    <div id="cpuChart"></div>
+                  </div>
+                </div>
+                <div class="chart">
+                  <div class="chart-header">
+                    <h3>{{ diskChart.name|trans }}</h3>
+                  </div>
+                  <div class="chart-content">
+                    <div id="diskUsageChart"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-row">
+                <div class="chart">
+                  <div class="chart-header">
+                    <h3>{{ memoryChart.name|trans }}</h3>
+                    {% if memoryChart.information %}
+                      <h3>{{ memoryChart.information }}</h3>
+                    {% endif %}
+                  </div>
+                  <div class="chart-content">
+                    <div id="memoryChart"></div>
+                  </div>
+                </div>
+                <div class="chart">
+                  <div class="chart-header">
+                    <h3>{{ loadAverageChart.name|trans }}</h3>
+                    {% if loadAverageChart.information %}
+                      <h3>{{ loadAverageChart.information }}</h3>
+                    {% endif %}
+                  </div>
+                  <div class="chart-content">
+                    <div id="loadAverageChart"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+Highcharts.chart('cpuChart', {
+  chart: {
+    type: 'line',
+    height: '250px'
+  },
+  title: {
+    text: ''
+  },
+  xAxis: {
+    title: '',
+    labels: {
+        style: {
+            color: '{% if isDarkMode %}#ffffff{% else %}#666666{% endif %}'
+        }
+    },
+    categories: {{ cpuChart.categories|json_encode()|raw }}
+  },
+  yAxis: {
+    min: 0,
+    max: 100,
+    title: '',
+    labels: {
+      formatter: function() {
+        return this.value+"%";
+      },
+      style: {
+        color: '{% if isDarkMode %}#ffffff{% else %}#666666{% endif %}'
+      }
+    },
+  },
+  credits: {
+    enabled: false
+  },
+  tooltip: {
+    headerFormat: '<b>{{ cpuChart.name|trans }}: {point.y}%</b>',
+    pointFormat: ''
+  },
+  plotOptions: {
+    series: {
+      animation: false,
+      marker: {
+        radius: 2
+      }
+    },
+    line: {
+      lineWidth: 1,
+      color: '#0078d4'
+    },
+  },
+  series: [{
+    showInLegend: false,
+    data: {{ cpuChart.data|json_encode()|raw }}
+  }]
+});
+Highcharts.chart('memoryChart', {
+  chart: {
+    type: 'line',
+    height: '250px'
+  },
+  title: {
+    text: ''
+  },
+  xAxis: {
+    title: '',
+    labels: {
+      style: {
+        color: '{% if isDarkMode %}#ffffff{% else %}#666666{% endif %}'
+      }
+    },
+    categories: {{ memoryChart.categories|json_encode()|raw }}
+  },
+  yAxis: {
+    min: 0,
+    max: 100,
+    title: '',
+    labels: {
+      formatter: function() {
+        return this.value+"%";
+      },
+      style: {
+        color: '{% if isDarkMode %}#ffffff{% else %}#666666{% endif %}'
+      }
+    },
+  },
+  credits: {
+    enabled: false
+  },
+  tooltip: {
+    headerFormat: '<b>{{ memoryChart.name|trans }}: {point.y}%</b>',
+    pointFormat: ''
+  },
+  plotOptions: {
+    series: {
+      animation: false,
+      marker: {
+        radius: 2
+      }
+    },
+    line: {
+      lineWidth: 1,
+      color: '#ff7200'
+    },
+  },
+  series: [{
+    showInLegend: false,
+    data: {{ memoryChart.data|json_encode()|raw }}
+  }]
+});
+Highcharts.chart('diskUsageChart', {
+  chart: {
+    type: 'line',
+    height: '250px'
+  },
+  legend: {
+    itemStyle: {
+      color: '{% if isDarkMode %}#ffffff{% else %}#333333{% endif %}'
+    },
+    itemHoverStyle: {
+      color: '{% if isDarkMode %}#ffffff{% else %}#000000{% endif %}'
+    },
+  },
+  title: {
+    text: ''
+  },
+  xAxis: {
+    title: '',
+    labels: {
+      style: {
+        color: '{% if isDarkMode %}#ffffff{% else %}#666666{% endif %}'
+      }
+    },
+    categories: {{ diskChart.categories|json_encode()|raw }}
+  },
+  yAxis: {
+    min: 0,
+    max: 100,
+    title: '',
+    labels: {
+      formatter: function() {
+        return this.value+"%";
+      },
+      style: {
+        color: '{% if isDarkMode %}#ffffff{% else %}#666666{% endif %}'
+      }
+    },
+  },
+  credits: {
+    enabled: false
+  },
+  tooltip: {
+    headerFormat: '<b>{{ diskChart.name|trans }}: {point.y}%</b>',
+    pointFormat: ''
+  },
+  plotOptions: {
+    series: {
+      animation: false,
+      marker: {
+        radius: 2
+      }
+    },
+    line: {
+      lineWidth: 1
+    },
+  },
+  series: {{ diskChart.data|json_encode()|raw }}
+});
+Highcharts.chart('loadAverageChart', {
+  chart: {
+    type: 'line',
+    height: '250px'
+  },
+  legend: {
+    itemStyle: {
+      color: '{% if isDarkMode %}#ffffff{% else %}#333333{% endif %}'
+    },
+    itemHoverStyle: {
+      color: '{% if isDarkMode %}#ffffff{% else %}#000000{% endif %}'
+    },
+  },
+  title: {
+    text: ''
+  },
+  xAxis: {
+    title: '',
+    labels: {
+      style: {
+        color: '{% if isDarkMode %}#ffffff{% else %}#666666{% endif %}'
+      }
+    },
+    categories: {{ loadAverageChart.categories|json_encode()|raw }}
+  },
+  yAxis: {
+    min: 0,
+    max: {{ loadAverageChart.greatestValue }},
+    title: '',
+    labels: {
+      formatter: function() {
+        return this.value;
+      },
+      style: {
+        color: '{% if isDarkMode %}#ffffff{% else %}#666666{% endif %}'
+      }
+    },
+  },
+  credits: {
+    enabled: false
+  },
+  tooltip: {
+    headerFormat: '<b>{{ loadAverageChart.name|trans }}: {point.y}</b>',
+    pointFormat: ''
+  },
+  plotOptions: {
+    series: {
+      animation: false,
+      marker: {
+        radius: 2
+      }
+    },
+    line: {
+      lineWidth: 1
+    },
+  },
+  series: {{ loadAverageChart.data|json_encode()|raw }}
+});
+jQuery(document).ready(function() {
+  jQuery('#time-range').on('change', function () {
+    let dashboardUrl = '{{ absolute_url(path('clp_dashboard')) }}';
+    let selectedOptionValue = jQuery('#time-range option:selected').val();
+    let redirectUrl = dashboardUrl + "?timeRange="+selectedOptionValue;
+    window.location = redirectUrl;
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Clone Site{% endtrans %}{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Clone Site{% endtrans %}: {{ site.domainName }}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+    {% if formErrors|length %}
+      <div class="alert alert-danger">
+        <ul>{% for err in formErrors %}<li>{{ err|nl2br }}</li>{% endfor %}</ul>
+      </div>
+    {% endif %}
+    <div class="card">
+      <div class="card-body">
+        <p>{% trans %}This will create a new PHP site with a fresh user, rsync the htdocs of the source, and best-effort clone attached databases. The new site needs its own DNS / certificate.{% endtrans %}</p>
+        <form method="post">
+          <input type="hidden" name="_token" value="{{ csrf_token('site-clone') }}">
+          <div class="mb-3">
+            <label class="form-label">{% trans %}New Domain{% endtrans %}</label>
+            <input type="text" name="newDomain" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">{% trans %}New Site User{% endtrans %}</label>
+            <input type="text" name="newUser" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">{% trans %}New Site User Password{% endtrans %}</label>
+            <input type="password" name="newUserPassword" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-blue btn-lg">{% trans %}Clone Site{% endtrans %}</button>
+          <a href="{{ path('clp_sites') }}" class="btn btn-default btn-lg">{% trans %}Cancel{% endtrans %}</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

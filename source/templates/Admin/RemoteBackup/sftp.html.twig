@@ -1,0 +1,141 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Backups{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'remote-backups'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>SFTP</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="remote-backups-container">
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Settings{% endtrans %}
+        </div>
+        {{ form_start(form) }}
+        <div class="card-body card-body-no-padding">
+          <div class="card-form">
+            <div class="row">
+              <div class="col-12 {{ (form_errors(form.enableRemoteBackup) ? 'has-error' : '') }}">
+                <div class="form-check form-switch mb-2">
+                  {{ form_label(form.enableRemoteBackup, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                  {{ form_widget(form.enableRemoteBackup) }}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 {{ (form_errors(form.frequency) ? 'has-error' : '') }}">
+                {{ form_label(form.frequency, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.frequency) }}
+              </div>
+              <div id="executionTime" style="display:block;" class="col-6 {{ (form_errors(form.executionTime) ? 'has-error' : '') }}">
+                {{ form_label(form.executionTime, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.executionTime) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 {{ (form_errors(form.authenticationMethod) ? 'has-error' : '') }}">
+                {{ form_label(form.authenticationMethod, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.authenticationMethod) }}
+              </div>
+              <div class="col-6 {{ (form_errors(form.retentionPeriod) ? 'has-error' : '') }}">
+                {{ form_label(form.retentionPeriod, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.retentionPeriod) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 {{ (form_errors(form.host) ? 'has-error' : '') }}">
+                {{ form_label(form.host, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.host) }}
+              </div>
+              <div class="col-6 {{ (form_errors(form.user) ? 'has-error' : '') }}">
+                {{ form_label(form.user, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.user) }}
+              </div>
+            </div>
+            <div class="row">
+              <div id="password-input" {% if authenticationMethod != 'password' %}style="display:none;"{% endif %} class="col-6 {{ (form_errors(form.password) ? 'has-error' : '') }}">
+                {{ form_label(form.password, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.password) }}
+              </div>
+              <div id="key-input" {% if authenticationMethod != 'key' %}style="display:none;"{% endif %} class="col-6 {{ (form_errors(form.keyFile) ? 'has-error' : '') }}">
+                {{ form_label(form.keyFile, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.keyFile) }}
+              </div>
+              <div class="col-6 {{ (form_errors(form.port) ? 'has-error' : '') }}">
+                {{ form_label(form.port, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.port) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 {{ (form_errors(form.storageDirectory) ? 'has-error' : '') }}">
+                {{ form_label(form.storageDirectory, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.storageDirectory) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col {{ (form_errors(form.excludes) ? 'has-error' : '') }}">
+                {{ form_label(form.excludes, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.excludes) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col text-end">
+                {{ form_widget(form.submit) }}
+              </div>
+            </div>
+          </div>
+        </div>
+        {{ form_end(form) }}
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function showHideTime() {
+  let frequency = jQuery('#admin_remote_backup_sftp_frequency').val();
+  if (frequency == 'daily') {
+    jQuery('#executionTime').show();
+  } else {
+    jQuery('#executionTime').hide();
+  }
+}
+function setAuthenticationFields(authenticationMethod) {
+  if (authenticationMethod == 'password') {
+    jQuery('#admin_remote_backup_sftp_password').prev().addClass('required');
+    jQuery('#admin_remote_backup_sftp_password').attr('required', 'required');
+    jQuery('#admin_remote_backup_sftp_keyFile').prev().removeClass('required');
+    jQuery('#admin_remote_backup_sftp_keyFile').removeAttr('required');
+    jQuery('#key-input').hide();
+    jQuery('#password-input').show();
+  } else {
+    jQuery('#admin_remote_backup_sftp_password').prev().removeClass('required');
+    jQuery('#admin_remote_backup_sftp_password').removeAttr('required');
+    jQuery('#admin_remote_backup_sftp_keyFile').prev().addClass('required');
+    jQuery('#admin_remote_backup_sftp_keyFile').attr('required', 'required');
+    jQuery('#password-input').hide();
+    jQuery('#key-input').show();
+  }
+}
+jQuery(document).ready(function() {
+  showHideTime();
+  setAuthenticationFields('{{ authenticationMethod }}');
+  jQuery('#admin_remote_backup_sftp_frequency').on('change', function () {
+    showHideTime();
+  });
+  jQuery('#admin_remote_backup_sftp_authenticationMethod').on('change', function () {
+   let authenticationMethod = jQuery(this).val();
+   setAuthenticationFields(authenticationMethod);
+  });
+});
+</script>
+{% endblock %}

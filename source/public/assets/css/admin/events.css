@@ -1,0 +1,71 @@
+.event-data-container pre {
+  font-family: inherit;
+  font-size: 100%;
+  color: #707070;
+  margin: 0;
+}
+
+.custom-datetime-range-container {
+  position: absolute;
+  top: 75px;
+  right: 0px;
+  z-index: 10000;
+  width: 720px;
+  border: 1px solid #dee2e6;
+  background: #ffffff;
+  min-height: 215px;
+}
+
+.custom-datetimepicker-container {
+  display: flex;
+}
+
+.custom-datetimepicker-container .datetimepicker {
+  width: 360px;
+  text-align: center;
+  padding: 10px 10px 0px 10px;
+}
+
+.custom-datetimepicker-container .datetimepicker:first-child {
+  border-right: 1px dashed #dee2e6;
+}
+
+.custom-datetime-apply {
+  text-align: right;
+  padding: 0px 22px 10px 0px;
+}
+
+.custom-datetime-apply button {
+  margin: 0px 0px 0px 10px;
+}
+
+.custom-datetime-container {
+  font-size: 13px;
+  height: 21px;
+  padding: 2px 0px 0px 0px;
+}
+
+.custom-datetime-container a:hover {
+  text-decoration: underline;
+  color: #000000;
+}
+
+.custom-datetime-container a:before {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  vertical-align: middle;
+  content: "";
+  border-top: .3em solid;
+  border-right: .3em solid transparent;
+  border-left: .3em solid transparent;
+  float: right;
+  margin: 8px 0px 0px 5px;
+}
+
+.datetime-range-input {
+  width: 380px;
+  cursor: pointer;
+  margin: 0px 0px 0px 6px;
+  background: #ffffff !important;
+}

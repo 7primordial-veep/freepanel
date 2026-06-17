@@ -1,0 +1,28 @@
+.enable-mfa-container {
+  width: 850px;
+}
+
+.enable-mfa-container a {
+  color: #137ad1;
+}
+
+.enable-mfa-container a:hover {
+  text-decoration: underline;
+}
+
+.qr-code-container img {
+  margin: 0px 0px 10px 10px;
+  display: block;
+}
+
+.mfa-code-form-container {
+  padding: 20px 0px 0px 0px;
+}
+
+.mfa-code-form-container input.mfa-code {
+  width: 350px;
+}
+
+.btn-submit-mfa-code {
+  padding: 4px 30px;
+}

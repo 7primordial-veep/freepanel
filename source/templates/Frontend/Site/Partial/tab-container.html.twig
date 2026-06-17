@@ -1,0 +1,41 @@
+{% if active is not defined %}
+  {% set active = 'settings' %}
+{% endif %}
+<div class="tab-container">
+  <ul>
+    <li {% if active == 'settings' %}class="active"{% endif %}>
+      <a href="{{ path('clp_site_settings', {'domainName': site.domainName}) }}">{% trans %}Settings{% endtrans %}</a>
+    </li>
+    <li {% if active == 'vhost' %}class="active"{% endif %}>
+      <a href="{{ path('clp_site_vhost', {'domainName': site.domainName}) }}">{% trans %}Vhost{% endtrans %}</a>
+    </li>
+    {% if (site.type != constant('App\\Entity\\Site::TYPE_STATIC')) %}
+      <li {% if active == 'databases' %}class="active"{% endif %}>
+        <a href="{{ path('clp_site_databases', {'domainName': site.domainName}) }}">{% trans %}Databases{% endtrans %}</a>
+      </li>
+    {% endif %}
+    {% if (site.type == constant('App\\Entity\\Site::TYPE_PHP')) and (site.varnishCache == true) %}
+      <li {% if active == 'varnish-cache' %}class="active"{% endif %}>
+        <a href="{{ path('clp_site_varnish_cache', {'domainName': site.domainName}) }}">{% trans %}Varnish Cache{% endtrans %}</a>
+      </li>
+    {% endif %}
+    <li {% if active == 'certificates' %}class="active"{% endif %}>
+      <a href="{{ path('clp_site_certificates', {'domainName': site.domainName}) }}">{% trans %}SSL/TLS{% endtrans %}</a>
+    </li>
+    <li {% if active == 'security' %}class="active"{% endif %}>
+      <a href="{{ path('clp_site_security', {'domainName': site.domainName}) }}">{% trans %}Security{% endtrans %}</a>
+    </li>
+    <li {% if active == 'users' %}class="active"{% endif %}>
+      <a href="{{ path('clp_site_users', {'domainName': site.domainName}) }}">{% trans %}SSH/FTP{% endtrans %}</a>
+    </li>
+    <li {% if active == 'file-manager' %}class="active"{% endif %}>
+      <a href="{{ path('clp_site_file_manager', {'domainName': site.domainName}) }}">{% trans %}File Manager{% endtrans %}</a>
+    </li>
+    <li {% if active == 'cron-jobs' %}class="active"{% endif %}>
+      <a href="{{ path('clp_site_cron_jobs', {'domainName': site.domainName}) }}">{% trans %}Cron Jobs{% endtrans %}</a>
+    </li>
+    <li {% if active == 'logs' %}class="active"{% endif %}>
+      <a href="{{ path('clp_site_logs', {'domainName': site.domainName}) }}">{% trans %}Logs{% endtrans %}</a>
+    </li>
+  </ul>
+</div>

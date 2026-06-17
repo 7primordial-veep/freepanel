@@ -1,0 +1,36 @@
+table.table-notifications td.severity span {
+  padding: 4px 20px;
+}
+
+table.table-notifications td.message h4 {
+  font-size: 16px;
+  margin: 0px 0px 10px 0px;
+}
+
+table.table-notifications td.message p {
+  margin: 10px 0px 0px 0px;
+}
+
+table.table-notifications td.message a.more-information {
+  display: block;
+  margin: 5px 0px 0px 0px;
+  color: #0078d4;
+  text-decoration: underline;
+}
+
+table.table-notifications a.delete {
+  margin: 10px 0px 0px 0px;
+  display: block;
+}
+
+table.table-notifications td.unread-info {
+  border-left: 2px solid #73bf4c;
+}
+
+table.table-notifications td.unread-warning {
+  border-left: 2px solid #ff7200;
+}
+
+table.table-notifications td.unread-critical {
+  border-left: 2px solid #d84531;
+}

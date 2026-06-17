@@ -1,0 +1,99 @@
+$folderIconSize: 21px;
+$fileIconSize: 23px;
+$fileTypeIconHeight: 29px;
+$fmIconMarginRight: 10px;
+$backIconOffset: 3px;
+
+/* card sizes */
+$cardPreviewHeight: 112px;
+$cardPanelHeight: 36px;
+$cardFontIconSize: 90px;
+$cardFolderLabelSize: 12px;
+$cardFolderLabelLineHeight: 12px;
+$cardNameLabelLineHeight: 30px;
+$cardMenuIconRight: 12px;
+$cardMenuIconBottom: 10px;
+$cardNameWidth: 155px;
+$cardNameHeight: 29px;
+$cardNameTextWidth: 125px;
+$cardMenuIconSize: 20px;
+$modeIconOffset: -2px;
+$specIconSize: 20px;
+$bigFolderIconMarginLeft: 0px;
+
+$dangerColor: #ff8d82;
+$mainColor: #1ca1c1;
+$midGrey: #94a1b3;
+$primeFontColor: #475466;
+$lightBackgroundColor: #ffffff;
+$selectColor: $mainColor;
+$accentColor: $mainColor;
+$dataBackground: #ffffff;
+$borderColor: #ccd7e6;
+$allPromptBorder: transparent;
+$bottomPromptBorder: $borderColor;
+$allPromptBorderFocus: transparent;
+$plyrBackground: #ffffff;
+$plyrTextColor: rgb(74, 87, 100);
+
+@import "../../app";
+
+/* material overrides */
+.webix_fmanager_filelist .wxi-folder:before {
+	margin-left: -2px;
+}
+
+.webix_fmanager_mode_icon {
+	font-size: 18px;
+}
+
+.webix_fmanager_preview_toggle .webix_icon_btn {
+	vertical-align: middle;
+}
+.webix_fmanager_preview_toggle :-moz-any(.webix_icon_btn) {
+	vertical-align: text-bottom;
+}
+
+.webix_fmanager_editor_save .webix_fmanager_icon.fmi-circle {
+	vertical-align: initial;
+}
+
+.webix_fmanager_menu {
+	.webix_icon:before {
+		vertical-align: middle;
+	}
+
+	:-moz-any(.webix_list_icon) {
+		vertical-align: text-bottom;
+	}
+}
+
+/* making editor tabs less material-like */
+.webix_fmanager_editor_bar,
+.webix_view.webix_control.webix_el_tabbar.webix_fmanager_editor_tabs,
+.webix_fmanager_editor_tab {
+	background-color: #f4f5f9;
+}
+
+.webix_view.webix_control.webix_el_tabbar.webix_fmanager_editor_tabs {
+	border-right-color: #f4f5f9;
+}
+
+.webix_item_tab.webix_fmanager_editor_tab {
+	overflow: hidden;
+	white-space: nowrap;
+	border-radius: 0;
+	box-shadow: inset -1px 0 #e6e6e6;
+	max-width: 250px;
+
+	&.webix_selected,
+	&.webix_selected:focus {
+		background-color: #fbfcff;
+		box-shadow: inset -1px 0 #e6e6e6, inset 0 -2px #1ca1c1;
+	}
+
+	&:hover,
+	&.webix_selected:hover {
+		background-color: #edeff5;
+	}
+}

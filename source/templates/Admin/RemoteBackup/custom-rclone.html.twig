@@ -1,0 +1,90 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Backups{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'remote-backups'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Custom Rclone Config{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="remote-backups-container">
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Settings{% endtrans %}
+        </div>
+        {{ form_start(form) }}
+        <div class="card-body card-body-no-padding">
+          <div class="card-form">
+            <div class="row">
+              <div class="col-12 {{ (form_errors(form.enableRemoteBackup) ? 'has-error' : '') }}">
+                <div class="form-check form-switch mb-2">
+                  {{ form_label(form.enableRemoteBackup, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                  {{ form_widget(form.enableRemoteBackup) }}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 {{ (form_errors(form.frequency) ? 'has-error' : '') }}">
+                {{ form_label(form.frequency, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.frequency) }}
+              </div>
+              <div id="executionTime" style="display:block;" class="col-6 {{ (form_errors(form.executionTime) ? 'has-error' : '') }}">
+                {{ form_label(form.executionTime, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.executionTime) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 {{ (form_errors(form.storageDirectory) ? 'has-error' : '') }}">
+                {{ form_label(form.storageDirectory, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.storageDirectory) }}
+                <div class="form-text d-flex">{% trans %}Format for S3 compatible endpoints{% endtrans %}: $bucket/$storageDirectory</div>
+              </div>
+              <div class="col-6 {{ (form_errors(form.retentionPeriod) ? 'has-error' : '') }}">
+                {{ form_label(form.retentionPeriod, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.retentionPeriod) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col {{ (form_errors(form.excludes) ? 'has-error' : '') }}">
+                {{ form_label(form.excludes, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.excludes) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col text-end">
+                {{ form_widget(form.submit) }}
+              </div>
+            </div>
+          </div>
+        </div>
+        {{ form_end(form) }}
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function showHideTime() {
+  let frequency = jQuery('#admin_remote_backup_custom_rclone_frequency').val();
+  if (frequency == 'daily') {
+    jQuery('#executionTime').show();
+  } else {
+    jQuery('#executionTime').hide();
+  }
+}
+jQuery(document).ready(function() {
+  showHideTime();
+  jQuery('#admin_remote_backup_custom_rclone_frequency').on('change', function () {
+    showHideTime();
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,25 @@
+#!/usr/bin/env php8.1
+<?php
+
+use App\Kernel;
+use App\Console\Application;
+use Symfony\Component\Dotenv\Dotenv;
+
+set_time_limit(0);
+
+$_SERVER['argv'] = array_map(function ($a) { return str_replace("\\\\\\", '', $a); }, $_SERVER['argv']);
+
+if (!is_file(dirname(__DIR__).'/vendor/autoload_runtime.php')) {
+    throw new LogicException('Symfony Runtime is missing. Try running "composer require symfony/runtime".');
+}
+
+require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
+
+return function (array $context) {
+    $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
+    $customEnvFile = sprintf('%s/.env.custom',  getenv('HOME'));
+    if (true === file_exists($customEnvFile)) {
+        (new Dotenv())->bootEnv($customEnvFile);
+    }
+    return new Application($kernel);
+};

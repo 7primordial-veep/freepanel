@@ -1,0 +1,58 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Vhost{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/site.css') }}" rel="stylesheet">
+{% endblock %}
+
+{%- block javascript -%}
+  {{ parent() }}
+  <script type="text/javascript" src="{{ asset('/assets/js/ace.min.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'vhost', 'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      <div class="site-content">
+        <form name="vhost-update" id="vhost-update-form" method="post" action="{{ path('clp_site_vhost', {'domainName': site.domainName}) }}">
+          <div class="card">
+            <div class="card-header">
+              {% trans %}Vhost Editor{% endtrans %}
+            </div>
+            <div class="card-body card-body-no-padding">
+              <div id="editor">{{ site.vhostTemplate }}</div>
+              <textarea name="vhost-template" id="vhost-template" style="display:none;"></textarea>
+            </div>
+            <div class="card-footer text-end">
+              <input type="hidden" name="token" value="{{ csrf_token('vhost-update') }}">
+              <button class="btn btn-blue btn-lg" id="save-vhost-template" type="submit">{% trans %}Save{% endtrans %}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+var editor = ace.edit('editor');
+function loadVhostEditor() {
+  editor.session.setMode('ace/mode/text');
+  editor.clearSelection();
+  editor.setAutoScrollEditorIntoView(true);
+  editor.setOptions({minLines: 30, maxLines: Infinity});
+}
+jQuery(document).ready(function() {
+  loadVhostEditor();
+  jQuery('#save-vhost-template').on('click', function(){
+    let vhostTemplate = editor.getValue();
+    jQuery('#vhost-template').html(vhostTemplate);
+  });
+});
+</script>
+{% endblock %}

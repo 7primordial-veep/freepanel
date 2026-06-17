@@ -1,0 +1,28 @@
+# Runtime data (generated on target servers)
+source/var/
+source/public/bundles/
+source/public/phpmyadmin/tmp/
+
+# Database
+*.sq3
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code / agent config — user-private, never commit
+.claude/
+CLAUDE.md
+GEMINI.md
+AGENTS.md
+
+# GitHub project metadata (workflows, dependabot config) — not for this repo
+.github/
+
+# Local env files for tooling
+tools/.env
+.env

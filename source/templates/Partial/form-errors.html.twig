@@ -1,0 +1,9 @@
+{% if formErrors %}
+<div class="alert-container">
+  {% for formError in formErrors %}
+    <div class="alert alert-danger" role="alert">
+      {{ formError }}
+    </div>
+  {% endfor %}
+</div>
+{% endif %}

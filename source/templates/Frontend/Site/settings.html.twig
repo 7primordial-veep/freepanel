@@ -1,0 +1,387 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{{ site.domainName }}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/site.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'settings', 'site': site}) }}
+      {{ include('Frontend/Site/Partial/wp-auto-update-card.html.twig', {'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="site-content">
+        <div class="card">
+          <div class="card-header">
+            {% trans %}Domain Settings{% endtrans %}
+          </div>
+          {{ form_start(domainSettingsForm) }}
+          <div class="card-body card-body-no-padding">
+            <div class="card-form">
+              <div class="row">
+                <div class="col-6 {{ (form_errors(domainSettingsForm.domainName) ? 'has-error' : '') }}">
+                  {{ form_label(domainSettingsForm.domainName, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(domainSettingsForm.domainName) }}
+                </div>
+                <div class="col-6 {{ (form_errors(domainSettingsForm.rootDirectory) ? 'has-error' : '') }}">
+                  {{ form_label(domainSettingsForm.rootDirectory, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(domainSettingsForm.rootDirectory) }}
+                  <div class="form-text"><div class="d-inline">/home/{{ site.user }}/htdocs/<span id="root-directory">{{ site.rootDirectory }}</span></div></div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col text-end">
+                  {{ form_widget(domainSettingsForm.submit) }}
+                </div>
+              </div>
+            </div>
+          </div>
+          {{ form_end(domainSettingsForm) }}
+        </div>
+        <div class="card">
+          <div class="card-header">
+            {% trans %}Site User Settings{% endtrans %}
+          </div>
+          {{ form_start(siteUserSettingsForm) }}
+          <div class="card-body card-body-no-padding">
+            <div class="card-form">
+              <div class="row">
+                <div class="col-6 {{ (form_errors(siteUserSettingsForm.siteUser) ? 'has-error' : '') }}">
+                  {{ form_label(siteUserSettingsForm.siteUser, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(siteUserSettingsForm.siteUser) }}
+                </div>
+                <div class="col-6 {{ (form_errors(siteUserSettingsForm.password) ? 'has-error' : '') }}">
+                  {{ form_label(siteUserSettingsForm.password, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(siteUserSettingsForm.password) }}
+                  <a class="generate-new-password" data-input-element="site_user_settings_password" href="javascript:void(0);">{% trans %}Generate new password{% endtrans %}</a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col {{ (form_errors(siteUserSettingsForm.sshKeys) ? 'has-error' : '') }}">
+                  {{ form_label(siteUserSettingsForm.sshKeys, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(siteUserSettingsForm.sshKeys) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col text-end">
+                  {{ form_widget(siteUserSettingsForm.submit) }}
+                </div>
+              </div>
+            </div>
+          </div>
+          {{ form_end(siteUserSettingsForm) }}
+        </div>
+        {% if nodejsSettingsForm is defined %}
+          <div class="card">
+            <div class="card-header">
+              {% trans %}Node.js Settings{% endtrans %}
+            </div>
+            {{ form_start(nodejsSettingsForm) }}
+            <div class="card-body card-body-no-padding">
+              <div class="card-form">
+                <div class="row">
+                  <div class="col-6 {{ (form_errors(nodejsSettingsForm.nodejsVersion) ? 'has-error' : '') }}">
+                    {{ form_label(nodejsSettingsForm.nodejsVersion, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                    {{ form_widget(nodejsSettingsForm.nodejsVersion) }}
+                  </div>
+                  <div class="col-6 {{ (form_errors(nodejsSettingsForm.port) ? 'has-error' : '') }}">
+                    {{ form_label(nodejsSettingsForm.port, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                    {{ form_widget(nodejsSettingsForm.port) }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col text-end">
+                    {{ form_widget(nodejsSettingsForm.submit) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{ form_end(nodejsSettingsForm) }}
+          </div>
+        {% endif %}
+        {% if pythonSettingsForm is defined %}
+          <div class="card">
+            <div class="card-header">
+              {% trans %}Python Settings{% endtrans %}
+            </div>
+            {{ form_start(pythonSettingsForm) }}
+            <div class="card-body card-body-no-padding">
+              <div class="card-form">
+                <div class="row">
+                  <div class="col-6 {{ (form_errors(pythonSettingsForm.pythonVersion) ? 'has-error' : '') }}">
+                    {{ form_label(pythonSettingsForm.pythonVersion, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                    {{ form_widget(pythonSettingsForm.pythonVersion) }}
+                    <div class="form-text check-out-docs">{% trans %}Is another version needed?{% endtrans %} <a target="_blank" href="https://www.cloudpanel.io/docs/v2/python/guides/adding-a-python-version/">{% trans %}Check out the docs.{% endtrans %}</a></div>
+                  </div>
+                  <div class="col-6 {{ (form_errors(pythonSettingsForm.port) ? 'has-error' : '') }}">
+                    {{ form_label(pythonSettingsForm.port, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                    {{ form_widget(pythonSettingsForm.port) }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col text-end">
+                    {{ form_widget(pythonSettingsForm.submit) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{ form_end(pythonSettingsForm) }}
+          </div>
+        {% endif %}
+        {% if phpSettingsForm is defined %}
+          <div class="card">
+            <div class="card-header">
+              {% trans %}PHP Settings{% endtrans %}
+            </div>
+            {{ form_start(phpSettingsForm) }}
+            <div class="card-body card-body-no-padding">
+              <div class="card-form">
+                <div class="row">
+                  <div class="col-6 {{ (form_errors(phpSettingsForm.phpVersion) ? 'has-error' : '') }}">
+                    {{ form_label(phpSettingsForm.phpVersion, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                    {{ form_widget(phpSettingsForm.phpVersion) }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-6 {{ (form_errors(phpSettingsForm.memoryLimit) ? 'has-error' : '') }}">
+                    {{ form_label(phpSettingsForm.memoryLimit, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                    {{ form_widget(phpSettingsForm.memoryLimit) }}
+                    <div class="form-text">{% trans %}Sets the maximum amount of memory that a script is allowed to allocate.{% endtrans %}</div>
+                  </div>
+                  <div class="col-6 {{ (form_errors(phpSettingsForm.maxExecutionTime) ? 'has-error' : '') }}">
+                    {{ form_label(phpSettingsForm.maxExecutionTime, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                    {{ form_widget(phpSettingsForm.maxExecutionTime) }}
+                    <div class="form-text">{% trans %}Sets the maximum time a script is allowed to run before it is terminated by the parser.{% endtrans %}</div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-6 {{ (form_errors(phpSettingsForm.maxInputTime) ? 'has-error' : '') }}">
+                    {{ form_label(phpSettingsForm.maxInputTime, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                    {{ form_widget(phpSettingsForm.maxInputTime) }}
+                    <div class="form-text">{% trans %}Sets the maximum time a script is allowed to parse input data, like POST and GET.{% endtrans %}</div>
+                  </div>
+                  <div class="col-6 {{ (form_errors(phpSettingsForm.maxInputVars) ? 'has-error' : '') }}">
+                    {{ form_label(phpSettingsForm.maxInputVars, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                    {{ form_widget(phpSettingsForm.maxInputVars) }}
+                    <div class="form-text">{% trans %}Sets the limit of the number of inputs for posting forms.{% endtrans %}</div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-6 {{ (form_errors(phpSettingsForm.postMaxSize) ? 'has-error' : '') }}">
+                    {{ form_label(phpSettingsForm.postMaxSize, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                    {{ form_widget(phpSettingsForm.postMaxSize) }}
+                    <div class="form-text">{% trans %}Maximum size of POST data that PHP will accept.{% endtrans %}</div>
+                  </div>
+                  <div class="col-6 {{ (form_errors(phpSettingsForm.uploadMaxFilesize) ? 'has-error' : '') }}">
+                    {{ form_label(phpSettingsForm.uploadMaxFilesize, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                    {{ form_widget(phpSettingsForm.uploadMaxFilesize) }}
+                    <div class="form-text">{% trans %}The maximum size of an uploaded file.{% endtrans %}</div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col {{ (form_errors(phpSettingsForm.additionalConfiguration) ? 'has-error' : '') }}">
+                    {{ form_label(phpSettingsForm.additionalConfiguration, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                    {{ form_widget(phpSettingsForm.additionalConfiguration) }}
+                    <div class="form-text">{% trans %}You can define any PHP parameters like you would define in the php.ini.{% endtrans %}</div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col text-end">
+                    {{ form_widget(phpSettingsForm.submit) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{ form_end(phpSettingsForm) }}
+          </div>
+        {% endif %}
+        {% if reverseProxySettingsForm is defined %}
+          <div class="card">
+            <div class="card-header">
+              {% trans %}Reverse Proxy Settings{% endtrans %}
+            </div>
+            {{ form_start(reverseProxySettingsForm) }}
+            <div class="card-body card-body-no-padding">
+              <div class="card-form">
+                <div class="row">
+                  <div class="col {{ (form_errors(reverseProxySettingsForm.reverseProxyUrl) ? 'has-error' : '') }}">
+                    {{ form_label(reverseProxySettingsForm.reverseProxyUrl, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                    {{ form_widget(reverseProxySettingsForm.reverseProxyUrl) }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col text-end">
+                    {{ form_widget(reverseProxySettingsForm.submit) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{ form_end(reverseProxySettingsForm) }}
+          </div>
+        {% endif %}
+        {% if pageSpeedSettingsForm is defined %}
+          <div class="card">
+            {{ form_start(pageSpeedSettingsForm) }}
+            <div class="card-header d-flex justify-content-between">
+              <div class="card-header-switch">
+                <div class="form-check form-switch {{ (form_errors(pageSpeedSettingsForm.isEnabled) ? 'has-error' : '') }}">
+                  {{ form_label(pageSpeedSettingsForm.isEnabled, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                  {{ form_widget(pageSpeedSettingsForm.isEnabled) }}
+                </div>
+              </div>
+              <button type="button" id="purge-cache" class="btn btn-gray btn-lg">{% trans %}Purge Cache{% endtrans %}</button>
+            </div>
+            <div class="card-body card-body-no-padding">
+              <div class="card-form">
+                <div class="row">
+                  <div class="col {{ (form_errors(pageSpeedSettingsForm.settings) ? 'has-error' : '') }}">
+                    {{ form_label(pageSpeedSettingsForm.settings, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                    {{ form_widget(pageSpeedSettingsForm.settings) }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col text-end">
+                    {{ form_widget(pageSpeedSettingsForm.submit) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{ form_end(pageSpeedSettingsForm) }}
+          </div>
+        {% endif %}
+        <div class="card">
+          <div class="card-header">
+            {% trans %}Delete Site{% endtrans %}
+          </div>
+          <div class="card-body">
+            <p class="card-text">{% trans %}Deleting a site will permanently remove all site files, databases, users, and configs, and they will be non-recoverable.{% endtrans %}</p>
+            <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#delete-site-modal" class="btn btn-red btn-lg mt-2">
+              {% trans %}Delete Site{% endtrans %}
+            </a>
+          </div>
+        </div>
+        <div class="modal fade" id="delete-site-modal">
+          {{ form_start(siteDeleteForm) }}
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">{% trans %}Delete Site{% endtrans %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p>
+                  {% trans %}Deleting a site will permanently remove all site files, databases, users, and configs, and they will be non-recoverable.{% endtrans %}
+                </p>
+                <p>
+                  {% trans with {'%domain%': '<strong>'~ site.domainName ~'</strong>'} %}To confirm deletion, type %domain% into the field.{% endtrans %}
+                </p>
+                <div class="mb-3">
+                  {{ form_widget(siteDeleteForm.domainName) }}
+                </div>
+              </div>
+              <div class="modal-footer d-flex justify-content-between">
+                {{ form_widget(siteDeleteForm.cancel) }}
+                {{ form_widget(siteDeleteForm.submit) }}
+              </div>
+            </div>
+          </div>
+          {{ form_end(siteDeleteForm) }}
+        </div>
+        {% if resourceQuotaForm is defined %}
+        <div class="card">
+          <div class="card-header">{{ 'Resource Quotas'|trans }}</div>
+          {{ form_start(resourceQuotaForm) }}
+          <input type="hidden" name="_token" value="{{ csrf_token('default') }}">
+          <div class="card-body card-body-no-padding">
+            <div class="card-form">
+              <div class="row">
+                <div class="col-4 {{ (form_errors(resourceQuotaForm.cpuQuota) ? 'has-error' : '') }}">
+                  {{ form_label(resourceQuotaForm.cpuQuota, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(resourceQuotaForm.cpuQuota) }}
+                  <div class="form-text">{{ '100 = one full CPU core. Leave empty for unlimited.'|trans }}</div>
+                </div>
+                <div class="col-4 {{ (form_errors(resourceQuotaForm.memoryQuota) ? 'has-error' : '') }}">
+                  {{ form_label(resourceQuotaForm.memoryQuota, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(resourceQuotaForm.memoryQuota) }}
+                  <div class="form-text">{{ 'Hard cap enforced via systemd MemoryMax.'|trans }}</div>
+                </div>
+                <div class="col-4 {{ (form_errors(resourceQuotaForm.diskQuotaMb) ? 'has-error' : '') }}">
+                  {{ form_label(resourceQuotaForm.diskQuotaMb, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                  {{ form_widget(resourceQuotaForm.diskQuotaMb) }}
+                  {% if diskQuotaHardSupported is defined and diskQuotaHardSupported %}
+                    <div class="form-text text-success">{{ 'XFS project quotas detected — hard enforcement available.'|trans }}</div>
+                  {% else %}
+                    <div class="form-text text-warning">{{ 'XFS project quotas not available — disk value is a soft warning only.'|trans }}</div>
+                  {% endif %}
+                  {% if lastDiskUsageMb is defined and lastDiskUsageMb is not null %}
+                    <div class="form-text">
+                      {{ 'Last measured: %used% MB'|trans({'%used%': lastDiskUsageMb}) }}{% if lastDiskCheckAt is defined and lastDiskCheckAt %} ({{ lastDiskCheckAt|date('Y-m-d H:i') }}){% endif %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col text-end">
+                  {{ form_widget(resourceQuotaForm.submit) }}
+                </div>
+              </div>
+            </div>
+          </div>
+          {{ form_end(resourceQuotaForm) }}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+jQuery(document).ready(function() {
+  jQuery('#site_domain_settings_rootDirectory').on('keyup',function(){
+    let rootDirectory = jQuery(this).val();
+    jQuery('#root-directory').html(rootDirectory);
+  });
+  jQuery('#site_delete_cancel').on('click', function () {
+    jQuery('#site_delete_domainName').val("");
+    jQuery('#site_delete_submit').attr('disabled', 'disabled');
+  });
+  jQuery('#site_delete_domainName').on('keyup', function () {
+    let domainName = jQuery(this).attr('data-domain-name');
+    let typedDomainName = jQuery(this).val();
+    if (typedDomainName == domainName) {
+      jQuery('#site_delete_submit').removeAttr('disabled');
+    } else {
+      jQuery('#site_delete_submit').attr('disabled', 'disabled');
+    }
+  });
+  jQuery('.generate-new-password').on('click', function () {
+    let inputElementId = jQuery(this).attr('data-input-element');
+    let inputElement = jQuery('#' + inputElementId);
+    inputElement.val(generatePassword(20));
+  });
+  jQuery('#nodejs-settings-form').submit(function(e) {
+    e.preventDefault();
+    this.submit();
+    let i = 0;
+    let interval = setInterval(function(){
+      i += 1;
+      if(i === 100){
+        jQuery('#site_nodejs_settings_submit').text('{% trans %}Saving{% endtrans %}' +"...");
+        clearInterval(interval);
+      } else {
+        jQuery('#site_nodejs_settings_submit').text('{% trans %}Saving{% endtrans %}'+": "+i+"%");
+      }
+    }, 100);
+  });
+  jQuery('#purge-cache').on('click', function () {
+    let purgeCacheUrl = '{{ path('clp_site_page_speed_cache_purge', {'domainName': site.domainName}) }}';
+    window.location = purgeCacheUrl;
+  });
+});
+</script>
+{% endblock %}

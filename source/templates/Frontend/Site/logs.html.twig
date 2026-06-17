@@ -1,0 +1,100 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Logs{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/site.css') }}" rel="stylesheet">
+  <link href="{{ asset('/assets/css/frontend/logs.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'logs', 'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="site-content">
+        <div class="card card-table">
+          <div class="card-header d-flex justify-content-between">
+            {% trans %}Logs{% endtrans %}
+          </div>
+          <div class="card-body">
+            <div class="logs-container">
+              <div class="log-selection-container">
+                {{ form_start(form) }}
+                <div class="row g-0">
+                  <div class="col">
+                    {{ form_widget(form.service) }}
+                  </div>
+                  <div class="col">
+                    {{ form_widget(form.logFile) }}
+                  </div>
+                  <div class="col">
+                    {{ form_widget(form.numberOfLines) }}
+                  </div>
+                  <div class="col">
+                    {{ form_widget(form.update) }}
+                  </div>
+                </div>
+                {{ form_end(form) }}
+              </div>
+              <div class="log-messages-container">
+                <div class="bordered-box">
+                  <div id="log-messages-container" class="log-messages-scrollable-container"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function loadLogs() {
+  let service = jQuery('#site_logs_service option:selected').val();
+  let logFile = jQuery('#site_logs_logFile option:selected').val();
+  let numberOfLines = jQuery('#site_logs_numberOfLines option:selected').val();
+  jQuery.getJSON('{{path("clp_site_log_file_content", {domainName: site.domainName})}}', {'service': service, 'logFile': logFile, 'numberOfLines': numberOfLines}, function() {})
+    .done(function(data) {
+      if (typeof data.logMessagesHtml !== 'undefined') {
+        jQuery('#log-messages-container').html(data.logMessagesHtml);
+        let logMessagesContainer = jQuery('.log-messages-scrollable-container');
+        let logMessagesContainerHeight = logMessagesContainer.get(0).scrollHeight;
+        logMessagesContainer.scrollTop(logMessagesContainerHeight);
+      }
+    }
+  );
+}
+function loadLogFilesForService() {
+  let service = jQuery('#site_logs_service option:selected').val();
+  jQuery.getJSON('{{path("clp_site_load_logfiles_for_service", {domainName: site.domainName})}}', {'service': service}, function() {})
+    .done(function(data) {
+      if (data.logfiles) {
+        jQuery('#site_logs_logFile').find('option').remove();
+        data.logfiles.forEach(function (item, index) {
+          jQuery('#site_logs_logFile').append('<option value="'+item+'">'+item+'</option>');
+        });
+      }
+    }
+  );
+}
+jQuery(document).ready(function() {
+  loadLogs();
+  loadLogFilesForService();
+  jQuery('#site_logs_update').on('click', function(){
+    loadLogs();
+  });
+  jQuery('#site_logs_service').on('change', function(){
+    loadLogFilesForService();
+  });
+});
+$(document).on('click', "#log-messages-container table.log-messages tr", function(){
+  jQuery('#log-messages-container table.log-messages tr').removeClass('log-message-active');
+  jQuery(this).addClass('log-message-active');
+});
+</script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% if logMessages|length %}
+<table class="table log-messages">
+  <tbody>
+    {% for logMessage in logMessages %}
+      <tr class="log-message">
+        <td width="16">
+          <div class="status-bar-column status-bar-column-bg-red"></div>
+        </td>
+        <td>
+          <div class="log-message-full">
+            <span class="color-light-black">{{ logMessage.logLine }}</span>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}

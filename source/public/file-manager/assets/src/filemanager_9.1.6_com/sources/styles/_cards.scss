@@ -1,0 +1,112 @@
+.webix_fmanager_cards {
+	background-color: #ebedf0;
+
+	.webix_dataview_item.tiles {
+		padding: 0;
+		border-radius: 3px;
+		background-color: $dataBackground;
+		border-color: $borderColor;
+
+		&.webix_selected {
+			border-color: $accentColor;
+		}
+
+		&.webix_drag_over {
+			background-color: #f4f5f9;
+
+			&.webix_selected {
+				background-color: $dataBackground;
+			}
+		}
+
+		.webix_fmanager_folder_icon {
+			margin-left: 4px;
+			color: $accentColor;
+			font-size: $cardFontIconSize;
+
+			&:before {
+				margin-left: $bigFolderIconMarginLeft;
+			}
+		}
+	}
+}
+
+.webix_fmanager_card_label {
+	color: rgb(130, 141, 156);
+	font-size: $cardFolderLabelSize;
+	line-height: $cardFolderLabelLineHeight;
+	display: block;
+}
+.webix_fmanager_card_preview {
+	position: relative;
+	height: $cardPreviewHeight + 7px;
+
+	&.file {
+		background-color: lighten($dataBackground, 3%);
+		height: $cardPreviewHeight + 12px;
+
+		&:before {
+			content: "";
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(transparent 80%, rgba(134, 134, 134, 0.3));
+		}
+	}
+}
+.webix_fmanager_card_panel {
+	position: relative;
+	padding: 10px 12px;
+	height: $cardPanelHeight;
+
+	&.file {
+		height: $cardPanelHeight - 6px;
+		border-top: 1px solid $borderColor;
+	}
+}
+.webix_fmanager_card_name {
+	display: inline-block;
+	white-space: nowrap;
+	font-weight: 500;
+	width: $cardNameWidth;
+	height: $cardNameHeight;
+	line-height: $cardNameLabelLineHeight;
+	color: $primeFontColor;
+
+	&.folder {
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.webix_fmanager_file-type-icon {
+		margin: 0;
+		height: $fileTypeIconHeight;
+	}
+}
+.webix_fmanager_menu_icon {
+	position: absolute;
+	padding: 4px;
+	width: 20px;
+	border-radius: 100px;
+	right: $cardMenuIconRight;
+	bottom: $cardMenuIconBottom;
+	color: $primeFontColor;
+	font-size: $cardMenuIconSize;
+
+	&:hover {
+		background-color: #ebedf0;
+	}
+}
+
+.file_name_text {
+	margin-left: 8px;
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: $cardNameTextWidth;
+}
+
+.webix_fmanager_search_mark {
+	background: yellow;
+	color: #313131;
+}

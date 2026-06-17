@@ -1,0 +1,22 @@
+{
+	"env": {
+		"browser": true,
+		"es6": true
+	},
+	"extends": ["eslint:recommended", "prettier"],
+	"parserOptions": {
+		"sourceType": "module",
+		"ecmaVersion": 2018
+	},
+	"globals": {
+		"webix": "readonly",
+		"DEBUG": "readonly",
+		"VERSION": "readonly",
+		"CodeMirror": "readonly"
+	},
+	"rules": {
+		"indent": 0,
+		"quotes": ["error", "double"],
+		"semi": ["error", "always"]
+	}
+}

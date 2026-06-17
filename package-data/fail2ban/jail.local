@@ -1,0 +1,21 @@
+# CloudPanel default fail2ban configuration
+# Shipped by the CloudPanel fork installer. Edit and run `systemctl reload fail2ban` to apply changes.
+
+[DEFAULT]
+bantime  = 1h
+findtime = 10m
+maxretry = 5
+backend  = systemd
+banaction = ufw
+banaction_allports = ufw
+
+[sshd]
+enabled  = true
+port     = ssh
+logpath  = %(sshd_log)s
+backend  = %(sshd_backend)s
+
+[nginx-http-auth]
+enabled  = true
+port     = http,https
+logpath  = /var/log/nginx/*error.log

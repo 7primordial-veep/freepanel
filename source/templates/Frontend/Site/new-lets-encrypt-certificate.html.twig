@@ -1,0 +1,113 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}New Let's Encrypt Certificate{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/site.css') }}" rel="stylesheet">
+  <link href="{{ asset('/assets/css/frontend/certificate.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'certificates', 'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="site-content">
+        {{ form_start(form) }}
+        <div class="card card-table">
+          <div class="card-header d-flex justify-content-between">
+            {% trans %}New Let's Encrypt Certificate{% endtrans %}
+          </div>
+          <div class="card-body card-body-no-padding">
+            <div class="card-form card-certificate-form" id="new-lets-encrypt-certificate-form">
+              <div class="row">
+                <div class="col-12">
+                  <p>
+                    {% trans %}Enter domain names you want to secure with a Let's Encrypt SSL Certificate.{% endtrans %}
+                  </p>
+                  <div class="alert alert-danger mb-3" role="alert">
+                    {% trans %}A DNS record pointing to this server is required to issue a Let's Encrypt Certificate.{% endtrans %}
+                  </div>
+                  <label class="form-label"><strong>{% trans %}Domain Names{% endtrans %}</strong></label>
+                  {% if domains|length %}
+                    <div id="certificate-domains-container" class="certificate-domains-container">
+                      {% for domain in domains %}
+                        <div class="certificate-domain">
+                          <div class="domain-input">
+                            <input type="text" class="form-control form-control-lg" name="domains[]" value="{{ domain }}">
+                          </div>
+                          <div class="domain-action">
+                            <button class="btn btn-outline-red delete-domain">X</button>
+                          </div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                    <div class="add-certificate-domain">
+                      <button id="add-domain-name" type="button" class="btn btn-white">+ {% trans %}Add Domain{% endtrans %}</button>
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+              <div class="row">
+                <div class="col text-end">
+                  <div id="new-domain-input" style="display:none;">
+                    <div class="certificate-domain">
+                      <div class="domain-input">
+                        <input type="text" class="form-control form-control-lg" name="domains[]" placeholder="www.domain.com">
+                      </div>
+                      <div class="domain-action">
+                        <button class="btn btn-outline-red delete-domain">X</button>
+                      </div>
+                    </div>
+                  </div>
+                  {{ form_widget(form.submit) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{ form_end(form) }}
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+jQuery(document).ready(function() {
+  jQuery('#add-domain-name').on('click', function() {
+    jQuery('#certificate-domains-container').append(jQuery('#new-domain-input').html());
+  });
+  jQuery('#cancel-new-lets-encrypt-certificate').on('click', function() {
+    jQuery('#new-lets-encrypt-certificate-form').hide();
+  });
+  jQuery('#import-certificate-button').on('click', function() {
+    jQuery('.card-certificate-form').hide();
+    jQuery('#import-certificate-form').show();
+  });
+  jQuery('#cancel-import-certificate').on('click', function() {
+    jQuery('#import-certificate-form').hide();
+  });
+  jQuery('#create-lets-encrypt-certificate-form').submit(function(e) {
+    e.preventDefault();
+    this.submit();
+    let i = 0;
+    let interval = setInterval(function(){
+      i += 1;
+      if(i === 100){
+        jQuery('#site_lets_encrypt_certificate_submit').text('{% trans %}Creating{% endtrans %}' +"...");
+        clearInterval(interval);
+      } else {
+        jQuery('#site_lets_encrypt_certificate_submit').text('{% trans %}Creating{% endtrans %}'+": "+i+"%");
+      }
+    }, 200);
+  });
+  jQuery(document).on('click', '.delete-domain', function() {
+    var domainElement = jQuery(this).parent().parent();
+    domainElement.remove();
+  });
+});
+</script>
+{% endblock %}

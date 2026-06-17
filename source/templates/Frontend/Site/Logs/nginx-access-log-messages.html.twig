@@ -1,0 +1,37 @@
+{% if logMessages|length %}
+<table class="table log-messages">
+  <tbody>
+    {% for logMessage in logMessages %}
+      {% if logMessage.httpStatusCode == 200 or logMessage.httpStatusCode == 301 or logMessage.httpStatusCode == 302 %}
+        {% set statusCodeColor = 'green' %}
+      {% elseif logMessage.httpStatusCode == 403 or logMessage.httpStatusCode == 404 %}
+        {% set statusCodeColor = 'yellow' %}
+      {% elseif logMessage.httpStatusCode == 500 or logMessage.httpStatusCode == 502 or logMessage.httpStatusCode == 503 or logMessage.httpStatusCode == 504 %}
+        {% set statusCodeColor = 'red' %}
+      {% else %}
+        {% set statusCodeColor = 'black' %}
+      {% endif %}
+      <tr class="log-message">
+        <td width="16">
+          <div class="status-bar-column status-bar-column-bg-{{ statusCodeColor }}"></div>
+        </td>
+        <td width="155">
+          {{ logMessage.date }}
+        </td>
+        <td>
+          <div class="log-message-full">
+            <span class="color-dark-purple">{{ logMessage.networkClientIp }}</span>
+            <span class="color-light-grey">- - [{{ logMessage.dateRaw }}]</span>
+            "{{ logMessage.httpMethod }} <span class="color-light-blue">{{ logMessage.url }}</span>
+            {{ logMessage.httpVersion }}"
+            <span class="color-{{ statusCodeColor }}">{{ logMessage.httpStatusCode }}</span>
+            <span class="color-light-grey">{{ logMessage.networkBytes }}</span>
+            "{{ logMessage.httpReferer }}"
+            <span class="color-light-grey">"{{ logMessage.httpUserAgent }}"</span>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}

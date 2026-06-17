@@ -1,0 +1,23 @@
+#!/bin/bash
+addslashes(){
+  local input="$1"
+  local escaped="${input//\\/\\\\}"
+  escaped="${escaped//\`/\\\`}"
+  escaped="${escaped//\(/\\\(}"
+  escaped="${escaped//\)/\\\)}"
+  escaped="${escaped//\$/\\\$}"
+  escaped="${escaped//\\\"/\\\\\"}"
+  echo "$escaped"
+}
+if [ "$#" -eq 0 ]; then
+  COMMAND="/usr/bin/php8.1 -c /home/clp/services/php-fpm/cli/php.ini /home/clp/htdocs/app/files/bin/clpctl $@"
+else
+  args=$(addslashes "$(printf ' "%q"' "$@")")
+  if echo "$args" | grep -q '\\n';then
+    echo "Invalid command";exit
+  elif echo "$args" | grep -q '\\r';then
+    echo "Invalid command";exit
+  fi
+  COMMAND="/usr/bin/php8.1 -c /home/clp/services/php-fpm/cli/php.ini /home/clp/htdocs/app/files/bin/clpctl $args"
+fi
+su -s /bin/bash -c "$COMMAND" clp

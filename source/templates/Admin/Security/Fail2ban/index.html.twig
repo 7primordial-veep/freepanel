@@ -1,0 +1,84 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Fail2ban{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'security'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Security{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="firewall-rules-container">
+      {{ include('Admin/Security/Partial/tab-container.html.twig', {'active': 'fail2ban'}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Service Status{% endtrans %}
+          <span class="badge {% if running %}bg-success{% else %}bg-danger{% endif %}">
+            {% if running %}{% trans %}Running{% endtrans %}{% else %}{% trans %}Not running{% endtrans %}{% endif %}
+          </span>
+        </div>
+        {% if not running %}
+        <div class="card-body">
+          <pre style="white-space:pre-wrap;">{{ raw }}</pre>
+        </div>
+        {% endif %}
+      </div>
+
+      {% for jail in jails %}
+        <div class="card card-table" style="margin-top:1rem;">
+          <div class="card-header d-flex justify-content-between">
+            <strong>{{ jail.name }}</strong>
+            <span>
+              {% trans %}Currently banned{% endtrans %}: {{ jail.currentlyBanned ?? 0 }}
+              &nbsp;|&nbsp;
+              {% trans %}Total banned{% endtrans %}: {{ jail.totalBanned ?? 0 }}
+              &nbsp;|&nbsp;
+              {% trans %}Currently failed{% endtrans %}: {{ jail.currentlyFailed ?? 0 }}
+            </span>
+          </div>
+          {% if jail.bannedIps|length %}
+            <div class="card-body card-body-no-padding">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>{% trans %}Banned IP{% endtrans %}</th>
+                    <th width="200" class="text-end">{% trans %}Actions{% endtrans %}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for ip in jail.bannedIps %}
+                  <tr>
+                    <td>{{ ip }}</td>
+                    <td class="text-end table-actions">
+                      <a class="delete"
+                         href="{{ path('clp_admin_fail2ban_unban', {'jail': jail.name, 'ip': ip, 'token': csrf_token('fail2ban-unban')}) }}"
+                         onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')">{% trans %}Unban{% endtrans %}</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="card-body">{% trans %}No banned IPs.{% endtrans %}</div>
+          {% endif %}
+        </div>
+      {% else %}
+        {% if running %}
+          <div class="card card-table" style="margin-top:1rem;">
+            <div class="card-body">{% trans %}No jails are active.{% endtrans %}</div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

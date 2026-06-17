@@ -1,0 +1,103 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Notifications{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/admin/notifications.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'notifications'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Notifications{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="notifications-page-container">
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      <div class="card card-table">
+          <div class="card-body card-body-no-padding">
+            {% if notifications|length %}
+              <table class="table table-notifications">
+                <thead>
+                  <tr>
+                    <th width="140">
+                      {% trans %}Severity{% endtrans %}
+                    </th>
+                    <th width="240">
+                      {% trans %}Date{% endtrans %}
+                    </th>
+                    <th>
+                      {% trans %}Message{% endtrans %}
+                    </th>
+                    <th width="200" class="text-end">
+                      {% trans %}Action{% endtrans %}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for notification in notifications %}
+                  {% set severity = '' %}
+                  {% if notification.severity == constant('App\\Entity\\Notification::SEVERITY_INFO') %}
+                    {% set severity = 'info' %}
+                  {% endif %}
+                  {% if notification.severity == constant('App\\Entity\\Notification::SEVERITY_WARNING') %}
+                    {% set severity = 'warning' %}
+                  {% endif %}
+                  {% if notification.severity == constant('App\\Entity\\Notification::SEVERITY_CRITICAL') %}
+                    {% set severity = 'critical' %}
+                  {% endif %}
+                  <tr>
+                    <td class="severity {% if notification.isRead == false %}unread-{{ severity }}{% endif %}">
+                      {% if severity == 'info' %}
+                        <span class="label-outline label-outline-green">{% trans %}Info{% endtrans %}</span>
+                      {% endif %}
+                      {% if severity == 'warning' %}
+                        <span class="label-outline label-outline-orange">{% trans %}Warning{% endtrans %}</span>
+                      {% endif %}
+                      {% if severity == 'critical' %}
+                        <span class="label-outline label-outline-red">{% trans %}Critical{% endtrans %}</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {{ notification.createdAt|date('M j, Y H:i:s', user.timezone) }}
+                    </td>
+                    <td class="message">
+                      <h4>{{ notification.subject }}</h4>
+                      <a href="javascript:void(0);" onclick="toggleElement('notification-message-{{ notification.id }}');">{% trans %}Show Message{% endtrans %}</a>
+                      <p id="notification-message-{{ notification.id }}" style="display:none;">
+                        {{ notification.message }}
+                      </p>
+                      {% if notification.url is not empty %}
+                        <a class="more-information" target="_blank" href="{{ notification.url }}">{% trans %}More Information{% endtrans %}</a>
+                      {% endif %}
+                    </td>
+                    <td class="text-end table-actions">
+                      {% if notification.isRead == false %}
+                        <a href="{{ path('clp_admin_notification_mark_as_read', {'id': notification.id, 'token': csrf_token('notification-mark-as-read')}) }}">{% trans %}Mark as Read{% endtrans %}</a>
+                      {% else %}
+                        <a href="{{ path('clp_admin_notification_mark_as_unread', {'id': notification.id, 'token': csrf_token('notification-mark-as-unread')}) }}">{% trans %}Mark as Unread{% endtrans %}</a>
+                      {% endif %}
+                      <a class="delete" href="{{ path('clp_admin_notification_delete', {'id': notification.id, 'token': csrf_token('notification-delete')}) }}" onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
+              <div class="card-body">
+                {% trans %}No notifications found.{% endtrans %}
+              </div>
+            {% endif %}
+         </div>
+       </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

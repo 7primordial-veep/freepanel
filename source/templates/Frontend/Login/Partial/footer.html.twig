@@ -1,0 +1,22 @@
+{% set currentLocale = app.request.locale %}
+{% set locales = app.request.attributes.get('locales') %}
+<div class="footer-container">
+  <div class="language-selector d-flex">
+    <label for="localeSelector">{% trans %}Language{% endtrans %}:</label>
+    <form name="localeSelector" action="{{ path('clp_change_locale') }}" method="post">
+      <select id="localeSelector" name="locale" class="form-select form-select-sm">
+      {% for key, locale in locales %}
+        <option {% if currentLocale == key %}selected{% endif %} value="{{ key }}">{{ locale|trans }}</option>
+      {% endfor %}
+      </select>
+   </form>
+  </div>
+</div>
+<script>
+jQuery(document).ready(function() {
+  jQuery('#localeSelector').on('change', function() {
+    document.forms['localeSelector'].submit();
+  });
+});
+</script>
+

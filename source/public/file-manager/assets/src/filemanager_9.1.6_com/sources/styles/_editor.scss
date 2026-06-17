@@ -1,0 +1,95 @@
+%filename {
+	float: left;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.webix_fmanager_editor_save .webix_icon_btn {
+	margin-left: -6px;
+
+	&.webix_fmanager_icon.fmi-circle {
+		color: #ffe834;
+		font-size: 14px;
+	}
+}
+
+/* text-overflow 'middle-ellipsis' */
+.webix_fmanager_editor_name .webix_el_box {
+	white-space: nowrap;
+
+	.filename {
+		@extend %filename;
+		max-width: calc(100% - 51px);
+	}
+}
+
+.webix_fmanager_editor_tab.webix_item_tab {
+	white-space: nowrap;
+	position: relative;
+	text-align: left;
+
+	.webix_icon {
+		position: absolute;
+		right: 12px;
+
+		&.fmi-circle {
+			color: #ffe834;
+		}
+
+		&.wxi-close {
+			visibility: hidden;
+		}
+	}
+
+	&.webix_selected .webix_icon {
+		&.wxi-close {
+			visibility: visible;
+		}
+
+		&.fmi-circle:hover {
+			color: inherit;
+			&:before {
+				font-family: "Webix Material Icons";
+				content: "\F011"; /* close */
+			}
+		}
+	}
+
+	.filename {
+		@extend %filename;
+		max-width: calc(100% - 98px);
+		margin-left: 12px;
+	}
+}
+
+/* tabbar more popup */
+.webix_gantt_editor_popup .webix_tab_list .webix_list_item {
+	&:hover {
+		background-color: #f4f5f9;
+	}
+
+	.tab_content {
+		position: relative;
+		white-space: nowrap;
+
+		.webix_icon {
+			position: absolute;
+			right: 0px;
+			top: 6px;
+			font-size: 20px;
+
+			&.fmi-circle {
+				color: #ffe834;
+			}
+
+			&.wxi-close {
+				visibility: hidden;
+			}
+		}
+
+		.filename {
+			@extend %filename;
+			max-width: calc(100% - 68px);
+		}
+	}
+}

@@ -1,0 +1,31 @@
+.webix_fmanager_progress .webix_win_head {
+	border-bottom: 1px solid transparent;
+}
+
+.webix_fmanager_progress_head {
+	box-shadow: inset 0 4px $mainColor;
+	background-color: $dataBackground;
+
+	.webix_template {
+		padding-top: 12px;
+		text-align: center;
+	}
+}
+
+.webix_template > div.webix_fmanager_progress_bar {
+	text-align: center;
+}
+
+.webix_fmanager_progress_counter {
+	font-weight: 500;
+}
+
+.webix_fmanager_progress_name {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.webix_fmanager_progress_cancel .webix_el_box {
+	padding: 2px 0;
+}

@@ -1,0 +1,7 @@
+<div class="card-body">
+  <div class="alert-container">
+    <div class="alert alert-danger" role="alert">
+      {% trans with {'%errorMessage%': errorMessage} %}An error has occurred, error message: %errorMessage%{% endtrans %}
+    </div>
+  </div>
+</div>

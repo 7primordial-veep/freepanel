@@ -1,0 +1,54 @@
+{% extends 'Admin/layout.html.twig' %}
+{% import 'Admin/Marketplace/Partial/icon.html.twig' as icon %}
+
+{% block pageTitle %}{% trans %}App Marketplace{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'marketplace'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="marketplace-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}App Marketplace{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+    {% if apps|length %}
+      <div class="row">
+        {% for marketplaceApp in apps %}
+          <div class="col-12 col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                  {{ icon.for_slug(marketplaceApp.slug) }}
+                  <h3 class="mb-0">{{ marketplaceApp.name }}</h3>
+                </div>
+                <p class="text-muted">{{ marketplaceApp.description }}</p>
+                <div class="mt-3">
+                  {% if marketplaceApp.status == 'available' %}
+                    <a class="btn btn-primary"
+                       href="{{ path('clp_admin_marketplace_install', {'slug': marketplaceApp.slug, 'token': csrf_token('marketplace-install')}) }}">
+                      {% trans %}Install{% endtrans %}
+                    </a>
+                  {% else %}
+                    <button class="btn btn-outline-secondary" disabled>{% trans %}Coming Soon{% endtrans %}</button>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="card">
+        <div class="card-body">
+          {% trans %}No apps available.{% endtrans %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

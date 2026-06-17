@@ -1,0 +1,28 @@
+.certificate-domains-container {
+  margin: 0px 0px 10px 0px;
+}
+
+.certificate-domain {
+  display: flex;
+  width: 350px;
+  margin: 0px 0px 10px 0px;
+}
+
+.certificate-domain .domain-action {
+  margin: 0px 0px 0px 10px;
+}
+
+.certificate-domain .domain-action button {
+  line-height: 2.0;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.card-certificate-form .card-form-buttons {
+  margin: 20px 0px 0px 0px;
+}
+
+.add-certificate-domain {
+  width: 300px;
+  border: 0px solid red;
+}

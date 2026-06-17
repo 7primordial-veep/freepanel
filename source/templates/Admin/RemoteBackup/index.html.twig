@@ -1,0 +1,44 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Backups{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'remote-backups'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Remote Backup{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="remote-backups-container">
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Settings{% endtrans %}
+        </div>
+        {{ form_start(form) }}
+        <div class="card-body card-body-no-padding">
+          <div class="card-form">
+            <div class="row">
+              <div class="col-12 {{ (form_errors(form.storageProvider) ? 'has-error' : '') }}">
+                {{ form_label(form.storageProvider, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.storageProvider) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col text-end">
+                {{ form_widget(form.submit) }}
+              </div>
+            </div>
+          </div>
+        </div>
+        {{ form_end(form) }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

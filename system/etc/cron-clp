@@ -1,0 +1,12 @@
+MAILTO=""
+5 0 * * * clp /usr/bin/sudo /etc/init.d/rsyslog restart &> /dev/null
+15 2 * * * clp /usr/bin/sudo /usr/bin/systemctl restart clp-agent &> /dev/null
+10 3 * * * clp /usr/bin/bash -c "/usr/bin/clpctl monitoring:data:clean" &> /dev/null
+15 3 * * * clp /usr/bin/bash -c "/usr/bin/clpctl db:backup --ignoreDatabases='db1,db2' --retentionPeriod=7" &> /dev/null
+15 4 * * * clp /home/clp/scripts/create_backup.sh &> /dev/null
+10 5 * * * clp /usr/bin/bash -c "/usr/bin/clpctl lets-encrypt:renew:custom-domain:certificate" &> /dev/null
+15 5 * * * clp /usr/bin/bash -c "/usr/bin/clpctl lets-encrypt:renew:certificates" &> /dev/null
+15 6 * * * clp /usr/bin/bash -c "/usr/bin/clpctl vhost-templates:import --delay=true" &> /dev/null
+20 6 * * * clp /usr/bin/bash -c "/usr/bin/clpctl cloudflare:update:ips --delay=true" &> /dev/null
+25 6 * * * clp /usr/bin/bash -c "/usr/bin/clpctl app:clean-up:sessions" &> /dev/null
+0 */8 * * * clp /usr/bin/bash -c "/usr/bin/clpctl announcement:check" &> /dev/null

@@ -1,0 +1,49 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}Google Compute Engine{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'gce'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>Google Compute Engine</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    {{ include('Admin/Gce/Partial/tab-container.html.twig', {'active': 'snapshots'}) }}
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+    {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+    <div class="gce-snapshots-container">
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {% trans %}Snapshots{% endtrans %}
+          <a href="{{ path('clp_admin_gce_snapshot_create') }}" class="btn btn-md btn-blue">{% trans %}Create Snapshot{% endtrans %}</a>
+        </div>
+        <div id="snapshots-container">
+          <div class="spinner-container m-3">
+            <img src="{{ asset('assets/images/spinner.gif') }}" alt="{% trans %}Loading{% endtrans %}"> {% trans %}Loading{% endtrans %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+jQuery(document).ready(function() {
+  jQuery.getJSON("{{path('clp_admin_gce_snapshots_load')}}", function() {})
+    .done(function(data) {
+      if (data.errorMessage) {
+        jQuery('#snapshots-container').html(data.errorMessage);
+      }
+      if (data.snapshotsHtml) {
+        jQuery('#snapshots-container').html(data.snapshotsHtml);
+      }
+   }
+  );
+});
+</script>
+{% endblock %}

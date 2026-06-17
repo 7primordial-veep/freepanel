@@ -1,0 +1,91 @@
+.log-selection-container .col {
+  margin-right: 20px;
+}
+
+.log-selection-container .btn-update {
+  padding: 2px 30px;
+}
+
+.log-messages-container {
+  margin: 25px 0px 0px 0px ;
+}
+
+.log-messages-container .log-messages-scrollable-container {
+  height: 800px;
+  overflow-y: scroll;
+}
+
+table.log-messages {
+  table-layout: fixed;
+}
+
+table.log-messages tr:first-child td {
+  border-top: 0px;
+}
+
+table.log-messages td {
+  padding: 6px 0px;
+}
+
+table.log-messages tr.log-message:hover {
+  background-color: #f6fafe;
+  cursor: pointer;
+}
+
+table.log-messages tr.log-message-active {
+  background-color: #f6fafe;
+}
+
+table.log-messages tr.log-message-information td {
+  padding: 15px 15px 25px 15px;
+}
+
+table.log-messages tr.log-message-border-green td {
+  border-top: 1px solid #73bf4c;
+}
+
+table.log-messages tr.log-message-border-red td {
+  border-top: 1px solid #e15650;
+}
+
+table.log-messages tr.log-message-border-yellow td {
+  border-top: 1px solid #eec300;
+}
+
+table.log-messages .status-bar-column {
+  width: 3px;
+  margin: 2px 0px 0px 6px;
+  height: 16px;
+}
+
+table.log-messages .status-bar-column-bg-green {
+  background: #73bf4c;
+}
+
+table.log-messages .status-bar-column-bg-red {
+  background: #e15650;
+}
+
+table.log-messages .status-bar-column-bg-yellow {
+  background: #eec300;
+}
+
+table.log-messages .status-bar-column-bg-grey {
+  background: #cccccc;
+}
+
+table.log-messages .status-bar-column-bg-black {
+  background: #000000;
+}
+
+table.log-messages td .log-message-full {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+table.log-messages tr.log-message-active .log-message-full {
+  overflow: hidden;
+  white-space: normal;
+  text-overflow: unset;
+}

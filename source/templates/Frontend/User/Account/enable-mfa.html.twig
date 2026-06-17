@@ -1,0 +1,65 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Enable Two-Factor Authentication{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/account.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="account-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Account{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="account-content-container">
+      {{ include('Frontend/User/Account/Partial/tab-container.html.twig', {'active': 'security'}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="card">
+        <div class="card-header">
+          {% trans %}Enable Two-Factor Authentication{% endtrans %}
+        </div>
+        <div class="card-body">
+          <div class="enable-mfa-container">
+            <h3>{% trans %}Connect your app{% endtrans %}</h3>
+            <p>
+              {% trans with {'%googleAuthenticatorLink%': '<a target="_blank" href="https://support.google.com/accounts/answer/1066447?hl=en">Google Authenticator</a>', '%duoLink%': '<a target="_blank" href="https://duo.com/product/trusted-users/two-factor-authentication/duo-mobile">Duo</a>'} %}Using an authenticator app like %googleAuthenticatorLink% or %duoLink%, scan the QR code. It will display a 6 digit code which you need to enter below.{% endtrans %}
+            </p>
+            <div class="qr-code-container">
+              <img width="220" height="220" src="{{ qr_code_data_uri(qrCodeLink) }}">
+              <div id="qr-code-trouble-scanning-code-text">{% trans %}Having trouble scanning the code?{% endtrans %} <a id="qr-code-trouble-scanning-code" href="javascript:void(0);">{% trans %}Try this instead{% endtrans %}</a></div>
+              <div id="qr-code-add-manually" style="display:none;">
+                {% trans with {'%userName%': user.userName, '%secret%': user.mfaSecret} %}Select manual entry on your app, and enter your user name: "%userName%" and the code: %secret%{% endtrans %}
+              </div>
+            </div>
+            <div class="mfa-code-form-container">
+              {{ form_start(form) }}
+                <div class="row g-3 align-items-center">
+                  <div class="col-auto {{ (form_errors(form.mfaCode) ? 'has-error' : '') }}">
+                    {{ form_widget(form.mfaCode) }}
+                  </div>
+                  <div class="col-auto">
+                    {{ form_widget(form.submit) }}
+                  </div>
+                </div>
+              {{ form_end(form) }}
+            </div>
+          </div>
+        </div>
+       </div>
+    </div>
+  </div>
+</div>
+<script>
+jQuery(document).ready(function() {
+  jQuery('#qr-code-trouble-scanning-code').on('click', function(){
+    jQuery('#qr-code-trouble-scanning-code-text').hide();
+    jQuery('#qr-code-add-manually').show();
+  });
+});
+</script>
+{% endblock %}

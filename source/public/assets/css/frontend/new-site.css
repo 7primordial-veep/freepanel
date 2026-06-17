@@ -1,0 +1,125 @@
+.new-site-container-fix {
+  width: 800px;
+}
+
+.new-site-container-fix .page-header .page-title {
+  width: 100%;
+  text-align: center;
+}
+
+.site-type-content-containers h2 {
+  margin: 0px 0px 30px 0px;
+  font-size: 28px;
+  text-align: center;
+}
+
+.site-type-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 20px 0px;
+}
+
+.site-type-container .application {
+  margin: 0px 30px 30px 5px;
+  width: 340px;
+  height: 230px;
+  border: 1px dotted #cccccc;
+  padding: 0px 15px 25px 15px;
+}
+
+.site-type-container .application:nth-child(2n),
+.site-type-container .application:nth-child(4n) {
+  margin: 0px 0px 30px 5px;
+}
+
+.application-image {
+  text-align: center;
+}
+
+.deploy-application-container {
+  text-align: center;
+}
+
+.new-site-inner-container {
+  padding: 0;
+}
+
+.site-progress-container {
+  margin: 0px 0px 40px 0px;
+  text-align: center;
+}
+
+.site-progress-container ul {
+  display: flex;
+  justify-content: center;
+}
+
+.site-progress-container ul li {
+  display: inline-block;
+  border-bottom: 1px solid #e2e2e2;
+  margin: 0;
+}
+
+.site-progress-container ul li.separator {
+  padding: 8px 0px 0px 0px;
+  line-height: 30px;
+  margin: 0;
+}
+
+.site-progress-container ul li a {
+  padding: 10px 18px;
+  display: inline-block;
+  color: #bbbbbb;
+}
+
+.site-progress-container ul li a:hover {
+  color: #0078d4;
+}
+
+.site-progress-container ul li a.active {
+  border-bottom: 2px solid #0078d4;
+  margin-bottom: -1px;
+  color: #0078d4;
+}
+
+.table-confirm thead th {
+  color: #9bacb6;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 10px 20px;
+}
+
+.table-confirm tr td {
+  padding: 6px 20px;
+}
+
+.table-confirm td.setting {
+  font-weight: 600;
+}
+
+.pre-install-container {
+  margin: 0px 0px 30px 0px;
+}
+
+.wordpress-installation-message {
+  margin: 15px 20px 0px 0px;
+  font-size: 14px;
+  color: #707070;
+}
+
+.site-credentials-text {
+  display: block;
+  margin: 0px 0px 15px 0px;
+}
+
+.check-out-docs a {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.check-out-docs a:hover {
+  color: #0078d4;
+  text-decoration: underline;
+}

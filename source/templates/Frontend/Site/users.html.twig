@@ -1,0 +1,111 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}SSH/FTP{% endtrans %}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/frontend/site.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'users', 'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="site-content">
+        <div class="card card-table">
+          <div class="card-header d-flex justify-content-between">
+            {% trans %}SSH Users{% endtrans %}
+            <a href="{{ path('clp_site_ssh_user_new', {'domainName': site.domainName}) }}" class="btn btn-md btn-blue">{% trans %}Add User{% endtrans %}</a>
+          </div>
+          {% if site.sshUsers|length %}
+            <div class="card-body card-body-no-padding">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th width="300">
+                      {% trans %}User Name{% endtrans %}
+                    </th>
+                    <th>
+                      {% trans %}Home Directory{% endtrans %}
+                    </th>
+                    <th width="100" class="text-end">
+                      {% trans %}Action{% endtrans %}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for sshUser in site.sshUsers %}
+                  <tr>
+                    <td>
+                      <a class="delete" href="{{ path('clp_site_ssh_user_edit', {'domainName': site.domainName, 'userName': sshUser.userName}) }}">{{ sshUser.userName }}</a>
+                    </td>
+                    <td>
+                      /home/{{ sshUser.userName }}/
+                    </td>
+                    <td class="text-start table-actions">
+                      <a class="delete" href="{{ path('clp_site_ssh_user_delete', {'domainName': site.domainName, 'userName': sshUser.userName, 'token': csrf_token('user-delete')}) }}" onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="card-body">
+              {% trans %}No users found.{% endtrans %}
+            </div>
+          {% endif %}
+        </div>
+        <div class="card card-table">
+          <div class="card-header d-flex justify-content-between">
+            {% trans %}FTP Users{% endtrans %}
+            <a href="{{ path('clp_site_ftp_user_new', {'domainName': site.domainName}) }}" class="btn btn-md btn-blue">{% trans %}Add User{% endtrans %}</a>
+          </div>
+          {% if site.ftpUsers|length %}
+            <div class="card-body card-body-no-padding">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th width="300">
+                      {% trans %}User Name{% endtrans %}
+                    </th>
+                    <th>
+                      {% trans %}Home Directory{% endtrans %}
+                    </th>
+                    <th width="100" class="text-end">
+                      {% trans %}Action{% endtrans %}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for ftpUser in site.ftpUsers %}
+                  <tr>
+                    <td>
+                      <a class="delete" href="{{ path('clp_site_ftp_user_edit', {'domainName': site.domainName, 'userName': ftpUser.userName}) }}">{{ ftpUser.userName }}</a>
+                    </td>
+                    <td>
+                      {{ ftpUser.homeDirectory }}
+                    </td>
+                    <td class="text-start table-actions">
+                      <a class="delete" href="{{ path('clp_site_ftp_user_delete', {'domainName': site.domainName, 'userName': ftpUser.userName, 'token': csrf_token('user-delete')}) }}" onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="card-body">
+              {% trans %}No users found.{% endtrans %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

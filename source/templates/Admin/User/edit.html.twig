@@ -1,0 +1,150 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{{ user.firstName }} {{ user.lastName }}{% endblock %}
+
+{%- block stylesheets -%}
+  {{ parent() }}
+  <link href="{{ asset('/assets/css/admin/user.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': 'users'}) }}
+{% endblock %}
+
+{% block body %}
+<div class="edit-user-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{{ user.firstName }} {{ user.lastName }}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="new-user-page-container">
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      {{ form_start(form) }}
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between">
+          {{ user.firstName }} {{ user.lastName }}
+        </div>
+        <div class="card-body card-body-no-padding">
+          <div class="card-form">
+            <div class="row">
+              <div class="col-6 {{ (form_errors(form.userName) ? 'has-error' : '') }}">
+                {{ form_label(form.userName, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.userName) }}
+              </div>
+              <div class="col-6 {{ (form_errors(form.email) ? 'has-error' : '') }}">
+                {{ form_label(form.email, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.email) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 {{ (form_errors(form.firstName) ? 'has-error' : '') }}">
+                {{ form_label(form.firstName, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.firstName) }}
+              </div>
+              <div class="col-6 {{ (form_errors(form.lastName) ? 'has-error' : '') }}">
+                {{ form_label(form.lastName, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.lastName) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 {{ (form_errors(form.plainPassword) ? 'has-error' : '') }}">
+                {{ form_label(form.plainPassword, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.plainPassword) }}
+                <a class="generate-new-password" data-input-element="admin_user_edit_plainPassword" href="javascript:void(0);">{% trans %}Generate new password{% endtrans %}</a>
+              </div>
+              <div class="col-6 {{ (form_errors(form.status) ? 'has-error' : '') }}">
+                {{ form_label(form.status, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.status) }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 {{ (form_errors(form.role) ? 'has-error' : '') }}">
+                {{ form_label(form.role, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.role) }}
+              </div>
+              <div class="col-6 {{ (form_errors(form.timezone) ? 'has-error' : '') }}">
+                {{ form_label(form.timezone, null, {'label_attr': {'class': 'col-form-label'}}) }}
+                {{ form_widget(form.timezone) }}
+              </div>
+            </div>
+            <div class="row" id="site-selection-container" {% if user.role != constant('App\\Entity\\User::ROLE_USER') %}style="display:none;"{% endif %}>
+              <div class="col-12">
+                <label id="sites-label" for="sites" class="form-label required">{% trans %}Sites{% endtrans %}</label>
+                {% if sites|length %}
+                  <div class="multi-input-checkbox-container">
+                    {% for site in sites %}
+                      <div class="form-check">
+                        <input class="form-check-input" name="sites[]" type="checkbox" value="{{ site.domainName }}" id="site-{{ site.id }}" {% if true == user.hasSite(site) %}checked{% endif %}>
+                        <label class="form-check-label" for="site-{{ site.id }}">{{ site.domainName }}</label>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="alert-container">
+                    <div class="alert alert-danger">
+                      {% trans %}No sites found.{% endtrans %}
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <a href="{{ path('clp_admin_user_delete', {'id': user.id, 'token': csrf_token('delete-user')}) }}" onclick="return confirm('{% trans %}Are you sure?{% endtrans %}')" class="btn btn-red btn-lg">{% trans %}Delete{% endtrans %}</a>
+              </div>
+              <div class="col text-end">
+                {{ form_widget(form.sites) }}
+                {{ form_widget(form.submit) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{ form_end(form) }}
+    </div>
+  </div>
+</div>
+<script>
+function getSelectedSites() {
+  let selectedSites = [];
+  jQuery('#site-selection-container .form-check-input').each(function(i) {
+    if (jQuery(this).is(':checked')) {
+      selectedSites.push(jQuery(this).val());
+    }
+  });
+  return selectedSites;
+}
+function uncheckSites() {
+  jQuery('#site-selection-container .form-check-input').each(function(i) {
+    jQuery(this).prop('checked', false);
+  });
+}
+jQuery(document).ready(function() {
+  function setPassword(inputElement) {
+    inputElement.val(generatePassword(20));
+  }
+  jQuery('.generate-new-password').on('click', function () {
+    let inputElementId = jQuery(this).attr('data-input-element');
+    let inputElement = jQuery('#' + inputElementId);
+    setPassword(inputElement);
+  });
+  jQuery('input.form-check-input').on('click', function () {
+    let selectedSites = getSelectedSites();
+    jQuery('#admin_user_edit_sites').val(selectedSites.join(','));
+  });
+  jQuery('#admin_user_edit_role').on('change', function () {
+    let role = jQuery(this).val();
+    if ((role == 'ROLE_ADMIN') || (role == 'ROLE_SITE_MANAGER')) {
+      jQuery('#site-selection-container').hide();
+      uncheckSites();
+      jQuery('#admin_user_edit_sites').val("");
+    } else {
+      jQuery('#site-selection-container').show();
+    }
+  });
+});
+</script>
+{% endblock %}
