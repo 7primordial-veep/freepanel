@@ -34,6 +34,12 @@
     <li {% if active == 'cron-jobs' %}class="active"{% endif %}>
       <a href="{{ path('clp_site_cron_jobs', {'domainName': site.domainName}) }}">{% trans %}Cron Jobs{% endtrans %}</a>
     </li>
+    <li {% if active == 'dns' %}class="active"{% endif %}>
+      <a href="{{ path('clp_site_dns', {'domainName': site.domainName}) }}">{% trans %}DNS{% endtrans %}</a>
+    </li>
+    <li {% if active == 'email' %}class="active"{% endif %}>
+      <a href="{{ path('clp_site_email', {'domainName': site.domainName}) }}">{% trans %}Email{% endtrans %}</a>
+    </li>
     <li {% if active == 'logs' %}class="active"{% endif %}>
       <a href="{{ path('clp_site_logs', {'domainName': site.domainName}) }}">{% trans %}Logs{% endtrans %}</a>
     </li>

@@ -32,6 +32,21 @@
     <li {% if active == 'cloudflare' %}class="active"{% endif %}>
       <a href="{{ path('clp_admin_cloudflare_settings') }}">{% trans %}Cloudflare{% endtrans %}</a>
     </li>
+    <li {% if active == 'marketplace' %}class="active"{% endif %}>
+      <a href="{{ path('clp_admin_marketplace') }}">{% trans %}Marketplace{% endtrans %}</a>
+    </li>
+    <li {% if active == 'mailcow' %}class="active"{% endif %}>
+      <a href="{{ path('clp_admin_mailcow') }}">{% trans %}Mailcow{% endtrans %}</a>
+    </li>
+    <li {% if active == 'malware-scan' %}class="active"{% endif %}>
+      <a href="{{ path('clp_admin_malware_scan') }}">{% trans %}Malware Scan{% endtrans %}</a>
+    </li>
+    <li {% if active == 'sites-bulk' %}class="active"{% endif %}>
+      <a href="{{ path('clp_admin_sites_bulk') }}">{% trans %}Bulk Site Ops{% endtrans %}</a>
+    </li>
+    <li {% if active == 'tools-headers' %}class="active"{% endif %}>
+      <a href="{{ path('clp_admin_tools_headers') }}">{% trans %}Headers Tester{% endtrans %}</a>
+    </li>
     <li {% if active == 'settings' %}class="active"{% endif %}>
       <a href="{{ path('clp_admin_settings') }}">{% trans %}Settings{% endtrans %}</a>
     </li>
