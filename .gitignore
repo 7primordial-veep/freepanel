@@ -23,6 +23,7 @@ AGENTS.md
 # GitHub project metadata (workflows, dependabot config) — not for this repo
 .github/
 
-# Local env files for tooling
-tools/.env
-.env
+# Local env files for tooling (path-anchored — source/.env is the Symfony app
+# default that install.sh ships, must stay tracked)
+/.env
+/tools/.env
