@@ -1,0 +1,44 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}CDN{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': active|default('cdn')}) }}
+{% endblock %}
+
+{% block body %}
+<div class="cdn-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}CDN{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+    <div class="settings-container">
+      <div class="card card-table">
+        <div class="card-header">{% trans %}BunnyCDN API Key{% endtrans %}</div>
+        <form action="{{ path('clp_admin_cdn_save') }}" method="POST">
+          <input type="hidden" name="_token" value="{{ csrf_token('cdn-save-settings') }}">
+          <div class="card-body card-body-no-padding">
+            <div class="card-form">
+              <div class="row">
+                <div class="col-12">
+                  <label class="col-form-label" for="bunny-api-key">{% trans %}API Key{% endtrans %}</label>
+                  <input id="bunny-api-key" type="password" name="apiKey" class="form-control" autocomplete="new-password" placeholder="{% if apiKeyConfigured %}{% trans %}(stored — leave blank to keep current){% endtrans %}{% else %}{% trans %}Paste your BunnyCDN API key{% endtrans %}{% endif %}">
+                  <div class="form-text">{% trans %}Generate an API key in your BunnyCDN account dashboard under Account Settings → API.{% endtrans %}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col text-end">
+                  <button type="submit" class="btn btn-blue btn-lg">{% trans %}Save{% endtrans %}</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -4,7 +4,9 @@ namespace App\Controller\Frontend;
 
 use App\Controller\Controller;
 use App\Entity\Manager\SiteManager;
+use App\Event\EventQueue;
 use App\Mail\MailcowClient;
+use App\Mail\MailDnsPublisher;
 use App\Service\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,15 +17,18 @@ class SiteEmailController extends Controller
 {
     private SiteManager $siteManager;
     private MailcowClient $mailcow;
+    private MailDnsPublisher $publisher;
 
     public function __construct(
         SiteManager $siteManager,
         MailcowClient $mailcow,
+        MailDnsPublisher $publisher,
         TranslatorInterface $t,
         Logger $l
     ) {
         $this->siteManager = $siteManager;
         $this->mailcow = $mailcow;
+        $this->publisher = $publisher;
         parent::__construct($t, $l);
     }
 
@@ -73,13 +78,51 @@ class SiteEmailController extends Controller
 
         $site = $this->resolveSite($request);
         $session = $request->getSession();
+        $domainName = $site->getDomainName();
+        $publishResult = null;
 
         try {
-            $this->mailcow->addDomain($site->getDomainName());
+            $this->mailcow->addDomain($domainName);
             $session->getFlashBag()->set(
                 'success',
-                $this->translator->trans('Domain registered in Mailcow. Add the SPF / DKIM / MX DNS records (see Mailcow admin).')
+                $this->translator->trans('Domain registered in Mailcow.')
             );
+
+            // After enabling in mailcow, try to publish DNS in Cloudflare.
+            // A failure here MUST NOT undo the mailcow enable -- surface as warning.
+            try {
+                $publishResult = $this->publisher->publishForDomain($domainName);
+                $this->flashPublishResult($session, $publishResult);
+            } catch (\Throwable $e) {
+                $this->logger->exception($e);
+                $publishResult = [
+                    'ok' => false,
+                    'created' => [],
+                    'skipped' => [],
+                    'errors' => [$e->getMessage()],
+                    'reason' => null,
+                ];
+                $session->getFlashBag()->set(
+                    'warning',
+                    $this->translator->trans(
+                        'Mail DNS auto-publish failed: %errorMessage%',
+                        ['%errorMessage%' => $e->getMessage()]
+                    )
+                );
+            }
+
+            $user = $this->getUser();
+            if (null !== $user) {
+                EventQueue::addEvent(
+                    EventQueue::EVENT_SITE_EMAIL_ENABLE,
+                    $user,
+                    [
+                        'domain' => $domainName,
+                        'publish' => $publishResult,
+                    ],
+                    $request
+                );
+            }
         } catch (\Exception $e) {
             $this->logger->exception($e);
             $session->getFlashBag()->set(
@@ -91,7 +134,7 @@ class SiteEmailController extends Controller
             );
         }
 
-        return $this->redirect($this->generateUrl('clp_site_email', ['domainName' => $site->getDomainName()]));
+        return $this->redirect($this->generateUrl('clp_site_email', ['domainName' => $domainName]));
     }
 
     public function addMailbox(Request $request): Response
@@ -194,6 +237,54 @@ class SiteEmailController extends Controller
         }
 
         return $this->redirect($this->generateUrl('clp_site_email', ['domainName' => $site->getDomainName()]));
+    }
+
+    /**
+     * Translate a publish-result array into flash messages.
+     */
+    private function flashPublishResult($session, array $publish): void
+    {
+        $created = $publish['created'] ?? [];
+        $skipped = $publish['skipped'] ?? [];
+        $errors  = $publish['errors']  ?? [];
+        $reason  = $publish['reason']  ?? null;
+
+        if (!empty($created)) {
+            $session->getFlashBag()->add(
+                'success',
+                $this->translator->trans(
+                    'Published mail DNS records: %records%',
+                    ['%records%' => implode(', ', $created)]
+                )
+            );
+        }
+        if (!empty($skipped)) {
+            $session->getFlashBag()->add(
+                'info',
+                $this->translator->trans(
+                    'Mail DNS records already present (skipped): %records%',
+                    ['%records%' => implode(', ', $skipped)]
+                )
+            );
+        }
+        if (!empty($errors)) {
+            $session->getFlashBag()->add(
+                'warning',
+                $this->translator->trans(
+                    'Mail DNS publish errors: %errors%',
+                    ['%errors%' => implode('; ', $errors)]
+                )
+            );
+        }
+        if (empty($created) && empty($skipped) && empty($errors) && null !== $reason) {
+            $session->getFlashBag()->add(
+                'info',
+                $this->translator->trans(
+                    'Mail DNS not auto-published: %reason% Add SPF / DKIM / MX records manually.',
+                    ['%reason%' => $reason]
+                )
+            );
+        }
     }
 
     /**

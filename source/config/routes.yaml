@@ -715,3 +715,52 @@ clp_site_email_delete:
   path: /site/{domainName}/email/delete
   controller: App\Controller\Frontend\SiteEmailController::deleteMailbox
   methods: POST
+
+# ---- Server health dashboard ----
+clp_admin_health:
+  path: /admin/health
+  controller: App\Controller\Admin\HealthController::index
+
+clp_admin_health_api:
+  path: /admin/health/metrics.json
+  controller: App\Controller\Admin\HealthController::apiMetrics
+  methods: GET
+
+# ---- Remote backup restore wizard ----
+clp_admin_remote_backup_restore:
+  path: /admin/remote-backup/restore
+  controller: App\Controller\Admin\RemoteBackupRestoreController::index
+
+clp_admin_remote_backup_restore_apply:
+  path: /admin/remote-backup/restore/apply
+  controller: App\Controller\Admin\RemoteBackupRestoreController::apply
+  methods: POST
+
+# ---- PHP-FPM pool tuning per site ----
+clp_site_php_fpm:
+  path: /site/{domainName}/php-fpm
+  controller: App\Controller\Frontend\SitePhpFpmPoolController::index
+
+# ---- CDN admin + per-site ----
+clp_admin_cdn:
+  path: /admin/cdn
+  controller: App\Controller\Admin\CdnController::settings
+
+clp_admin_cdn_save:
+  path: /admin/cdn/save
+  controller: App\Controller\Admin\CdnController::saveSettings
+  methods: POST
+
+clp_site_cdn:
+  path: /site/{domainName}/cdn
+  controller: App\Controller\Frontend\SiteCdnController::index
+
+clp_site_cdn_enable:
+  path: /site/{domainName}/cdn/enable
+  controller: App\Controller\Frontend\SiteCdnController::enable
+  methods: POST
+
+clp_site_cdn_disable:
+  path: /site/{domainName}/cdn/disable
+  controller: App\Controller\Frontend\SiteCdnController::disable
+  methods: POST

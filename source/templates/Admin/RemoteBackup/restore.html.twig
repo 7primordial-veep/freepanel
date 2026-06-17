@@ -1,0 +1,176 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Restore Backup{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': active|default('remote-backups')}) }}
+{% endblock %}
+
+{% block body %}
+<div class="remote-backups-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Restore from Remote Backup{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+
+    <div class="alert alert-danger">
+      <strong>{% trans %}WARNING{% endtrans %}:</strong>
+      {% trans %}This OVERWRITES the target site's files in its home directory. Make sure you have a fresh local backup before continuing.{% endtrans %}
+    </div>
+
+    {% if error is defined and error %}
+      <div class="alert alert-warning">
+        {{ error }}
+        {% if provider is empty or storageDirectory is empty %}
+          &nbsp;<a href="{{ path('clp_admin_remote_backup') }}">{% trans %}Configure Remote Backup first{% endtrans %}</a>
+        {% endif %}
+      </div>
+    {% else %}
+
+      <div class="card card-table">
+        <div class="card-header">
+          {% trans %}Browse Backups{% endtrans %}
+          <small class="text-muted ms-2">
+            <a href="{{ path('clp_admin_remote_backup_restore') }}">{% trans %}root{% endtrans %}</a>
+            {% if date %}
+              &nbsp;/&nbsp;<a href="{{ path('clp_admin_remote_backup_restore', {'date': date}) }}">{{ date }}</a>
+            {% endif %}
+            {% if date and time %}
+              &nbsp;/&nbsp;<a href="{{ path('clp_admin_remote_backup_restore', {'date': date, 'time': time}) }}">{{ time }}</a>
+            {% endif %}
+          </small>
+        </div>
+        <div class="card-body card-body-no-padding">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>
+                  {% if level == 'date' %}{% trans %}Date{% endtrans %}
+                  {% elseif level == 'time' %}{% trans %}Time{% endtrans %}
+                  {% else %}{% trans %}Site User{% endtrans %}{% endif %}
+                </th>
+                <th class="text-end">{% trans %}Action{% endtrans %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if level == 'site' %}
+                {% if siteObjects is defined and siteObjects|length > 0 %}
+                  {% for s in siteObjects %}
+                    <tr>
+                      <td>{{ s.name }}</td>
+                      <td class="text-end">
+                        <button type="button" class="btn btn-blue btn-sm"
+                                data-bs-toggle="modal" data-bs-target="#restoreModal"
+                                data-object-gz="{{ s.object_gz }}"
+                                data-object-tar="{{ s.object_tar }}"
+                                data-site-user="{{ s.name }}">
+                          {% trans %}Restore...{% endtrans %}
+                        </button>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr><td colspan="2" class="text-center text-muted">{% trans %}No site backups found at this path.{% endtrans %}</td></tr>
+                {% endif %}
+              {% else %}
+                {% if entries|length > 0 %}
+                  {% for entry in entries %}
+                    {% set name = entry.Name|default(entry.Path|default('')) %}
+                    {% if name %}
+                      <tr>
+                        <td>{{ name }}</td>
+                        <td class="text-end">
+                          {% if level == 'date' %}
+                            <a class="btn btn-blue btn-sm" href="{{ path('clp_admin_remote_backup_restore', {'date': name}) }}">{% trans %}Open{% endtrans %}</a>
+                          {% else %}
+                            <a class="btn btn-blue btn-sm" href="{{ path('clp_admin_remote_backup_restore', {'date': date, 'time': name}) }}">{% trans %}Open{% endtrans %}</a>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endif %}
+                  {% endfor %}
+                {% else %}
+                  <tr><td colspan="2" class="text-center text-muted">{% trans %}No entries.{% endtrans %}</td></tr>
+                {% endif %}
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal fade" id="restoreModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <form method="POST" action="{{ path('clp_admin_remote_backup_restore_apply') }}">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">{% trans %}Restore Backup{% endtrans %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="alert alert-danger">
+                  {% trans %}This will overwrite files in the target site's home directory. This cannot be undone.{% endtrans %}
+                </div>
+                <input type="hidden" name="_token" value="{{ csrf_token('remote-backup-restore') }}">
+                <input type="hidden" name="backup_object" id="restoreBackupObject" value="">
+
+                <div class="mb-3">
+                  <label class="form-label">{% trans %}Source backup{% endtrans %}</label>
+                  <div class="text-muted small" id="restoreSiteUser"></div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">{% trans %}Archive format{% endtrans %}</label>
+                  <select class="form-select" id="restoreArchiveFormat">
+                    <option value="gz" selected>backup.tar.gz</option>
+                    <option value="tar">backup.tar</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label" for="target_domain">{% trans %}Target site (must already exist){% endtrans %}</label>
+                  <select class="form-select" name="target_domain" id="target_domain" required>
+                    <option value="">-- {% trans %}select a site{% endtrans %} --</option>
+                    {% for site in sites %}
+                      <option value="{{ site.domainName }}">{{ site.domainName }} ({{ site.user }})</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+                <button type="submit" class="btn btn-blue">{% trans %}Restore Now (overwrites){% endtrans %}</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          var modal = document.getElementById('restoreModal');
+          if (!modal) return;
+          var objGz = '';
+          var objTar = '';
+          var hidden = document.getElementById('restoreBackupObject');
+          var fmt = document.getElementById('restoreArchiveFormat');
+          var siteEl = document.getElementById('restoreSiteUser');
+          modal.addEventListener('show.bs.modal', function (ev) {
+            var btn = ev.relatedTarget;
+            objGz = btn.getAttribute('data-object-gz') || '';
+            objTar = btn.getAttribute('data-object-tar') || '';
+            siteEl.textContent = btn.getAttribute('data-site-user') || '';
+            hidden.value = fmt.value === 'tar' ? objTar : objGz;
+          });
+          fmt.addEventListener('change', function () {
+            hidden.value = fmt.value === 'tar' ? objTar : objGz;
+          });
+        })();
+      </script>
+
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

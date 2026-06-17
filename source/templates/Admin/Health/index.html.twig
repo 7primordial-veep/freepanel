@@ -1,0 +1,183 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Server Health{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': active|default('health')}) }}
+{% endblock %}
+
+{% block javascript %}
+  {{ parent() }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="health-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Server Health{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+
+    <div class="card card-table">
+      <div class="card-header">{% trans %}Overview{% endtrans %}</div>
+      <div class="card-body card-body-no-padding">
+        <table class="table">
+          <tbody>
+            <tr><td style="width:30%">{% trans %}Hostname{% endtrans %}</td><td><span id="overview-hostname">{{ snapshot.hostname }}</span></td></tr>
+            <tr><td>{% trans %}Kernel{% endtrans %}</td><td><span id="overview-kernel">{{ snapshot.kernel }}</span></td></tr>
+            <tr><td>{% trans %}Uptime{% endtrans %}</td><td><span id="overview-uptime">{{ snapshot.uptime_seconds }}</span> {% trans %}seconds{% endtrans %}</td></tr>
+            <tr><td>{% trans %}Load Average (1 / 5 / 15){% endtrans %}</td><td><span id="overview-load1">{{ snapshot.cpu_load['1'] }}</span> / <span id="overview-load5">{{ snapshot.cpu_load['5'] }}</span> / <span id="overview-load15">{{ snapshot.cpu_load['15'] }}</span></td></tr>
+            <tr><td>{% trans %}CPU Cores{% endtrans %}</td><td><span id="overview-cpucount">{{ snapshot.cpu_count }}</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card card-table mt-3" id="memory-card">
+      <div class="card-header">{% trans %}Memory{% endtrans %}</div>
+      <div class="card-body">
+        <p class="mb-2">
+          <strong><span id="mem-used">{{ snapshot.memory.used_mb }}</span></strong> /
+          <span id="mem-total">{{ snapshot.memory.total_mb }}</span> MB
+          (<span id="mem-pct">{{ snapshot.memory.percent_used }}</span>%)
+        </p>
+        <div class="progress mb-3" style="height:10px;">
+          <div id="mem-bar" class="progress-bar bg-success" role="progressbar" style="width: {{ snapshot.memory.percent_used }}%" aria-valuenow="{{ snapshot.memory.percent_used }}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <canvas id="memChart" height="120"></canvas>
+      </div>
+    </div>
+
+    <div class="card card-table mt-3">
+      <div class="card-header">{% trans %}Disk{% endtrans %}</div>
+      <div class="card-body card-body-no-padding">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>{% trans %}Mount{% endtrans %}</th>
+              <th>{% trans %}Total (MB){% endtrans %}</th>
+              <th>{% trans %}Used (MB){% endtrans %}</th>
+              <th>{% trans %}Free (MB){% endtrans %}</th>
+              <th>{% trans %}%{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody id="disks-tbody">
+            {% for disk in snapshot.disks %}
+              {{ include('Admin/Health/_disk_row.html.twig', {'disk': disk}) }}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var API_URL = {{ path('clp_admin_health_api')|json_encode|raw }};
+  var MAX_SAMPLES = 60;
+  var memHistory = [{{ snapshot.memory.percent_used }}];
+  var memLabels = [new Date().toLocaleTimeString()];
+
+  var ctx = document.getElementById('memChart').getContext('2d');
+  var memChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: memLabels,
+      datasets: [{
+        label: 'Memory Used (%)',
+        data: memHistory,
+        borderColor: 'rgb(54, 162, 235)',
+        backgroundColor: 'rgba(54, 162, 235, 0.15)',
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      scales: {
+        y: { beginAtZero: true, max: 100, ticks: { callback: function(v){ return v + '%'; } } },
+        x: { ticks: { maxTicksLimit: 6 } }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  function setText(id, val) {
+    var el = document.getElementById(id);
+    if (el) { el.textContent = val; }
+  }
+
+  function renderDisks(disks) {
+    var tbody = document.getElementById('disks-tbody');
+    if (!tbody) return;
+    var html = '';
+    for (var i = 0; i < disks.length; i++) {
+      var d = disks[i];
+      html += '<tr>'
+        + '<td>' + escapeHtml(d.mount) + '</td>'
+        + '<td>' + d.total_mb + '</td>'
+        + '<td>' + d.used_mb + '</td>'
+        + '<td>' + d.free_mb + '</td>'
+        + '<td>' + d.percent_used + '%</td>'
+        + '</tr>';
+    }
+    tbody.innerHTML = html;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+
+  function memBarClass(pct) {
+    if (pct >= 90) return 'progress-bar bg-danger';
+    if (pct >= 75) return 'progress-bar bg-warning';
+    return 'progress-bar bg-success';
+  }
+
+  function poll() {
+    fetch(API_URL, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(snap) {
+        if (!snap) return;
+        setText('overview-hostname', snap.hostname);
+        setText('overview-kernel',   snap.kernel);
+        setText('overview-uptime',   snap.uptime_seconds);
+        setText('overview-load1',    snap.cpu_load['1']);
+        setText('overview-load5',    snap.cpu_load['5']);
+        setText('overview-load15',   snap.cpu_load['15']);
+        setText('overview-cpucount', snap.cpu_count);
+
+        setText('mem-used',  snap.memory.used_mb);
+        setText('mem-total', snap.memory.total_mb);
+        setText('mem-pct',   snap.memory.percent_used);
+        var bar = document.getElementById('mem-bar');
+        if (bar) {
+          bar.style.width = snap.memory.percent_used + '%';
+          bar.setAttribute('aria-valuenow', snap.memory.percent_used);
+          bar.className = memBarClass(snap.memory.percent_used);
+        }
+
+        memHistory.push(snap.memory.percent_used);
+        memLabels.push(new Date().toLocaleTimeString());
+        while (memHistory.length > MAX_SAMPLES) { memHistory.shift(); memLabels.shift(); }
+        memChart.update('none');
+
+        renderDisks(snap.disks || []);
+      })
+      .catch(function() { /* swallow transient errors */ });
+  }
+
+  setInterval(poll, 5000);
+})();
+</script>
+{% endblock %}

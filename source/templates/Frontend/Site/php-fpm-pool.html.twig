@@ -1,0 +1,56 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}PHP-FPM Pool{% endtrans %}{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'php-fpm', 'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="site-content">
+        <div class="card">
+          <div class="card-header">{% trans %}PHP-FPM Pool Tuning{% endtrans %}</div>
+          <div class="card-body">
+            <div class="alert alert-info">
+              <p>{% trans %}These settings control how PHP-FPM scales worker processes for this site. Bad values can OOM the box. Defaults: pm=dynamic, max_children=10, start_servers=2, min_spare_servers=1, max_spare_servers=3, max_requests=500.{% endtrans %}</p>
+            </div>
+
+            {{ form_start(form, {'attr': {'class': 'form'}}) }}
+              <div class="form-group">
+                {{ form_label(form.pm) }}
+                {{ form_widget(form.pm, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              <div class="form-group">
+                {{ form_label(form.pmMaxChildren) }}
+                {{ form_widget(form.pmMaxChildren, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              <div class="form-group">
+                {{ form_label(form.pmStartServers) }}
+                {{ form_widget(form.pmStartServers, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              <div class="form-group">
+                {{ form_label(form.pmMinSpareServers) }}
+                {{ form_widget(form.pmMinSpareServers, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              <div class="form-group">
+                {{ form_label(form.pmMaxSpareServers) }}
+                {{ form_widget(form.pmMaxSpareServers, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              <div class="form-group">
+                {{ form_label(form.pmMaxRequests) }}
+                {{ form_widget(form.pmMaxRequests, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              <div class="form-group">
+                {{ form_widget(form.submit, {'attr': {'class': 'btn btn-blue'}}) }}
+              </div>
+            {{ form_end(form) }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

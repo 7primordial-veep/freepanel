@@ -83,7 +83,30 @@ class MailcowClient
         $this->request('POST', '/api/v1/delete/mailbox', [$email]);
     }
 
-    private function request(string $method, string $path, ?array $json = null): array
+    /**
+     * Fetch the DKIM key record from Mailcow for the given domain.
+     * Returns null if Mailcow responds 404 (no key yet); throws on other failures.
+     */
+    public function getDkim(string $domain): ?array
+    {
+        return $this->request('GET', '/api/v1/get/dkim/' . rawurlencode($domain), null, true);
+    }
+
+    /**
+     * Generate a DKIM key in Mailcow for the given domain.
+     */
+    public function addDkim(string $domain, int $keySize = 2048): array
+    {
+        $payload = [
+            'domains' => $domain,
+            'dkim_selector' => 'dkim',
+            'key_size' => $keySize,
+        ];
+
+        return $this->request('POST', '/api/v1/add/dkim', $payload);
+    }
+
+    private function request(string $method, string $path, ?array $json = null, bool $nullOn404 = false): ?array
     {
         if (!$this->isConfigured()) {
             throw new RuntimeException('Mailcow API is not configured.');
@@ -131,6 +154,10 @@ class MailcowClient
 
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
+
+        if (404 === $status && $nullOn404) {
+            return null;
+        }
 
         if ($status >= 400) {
             throw new RuntimeException(sprintf('Mailcow API returned HTTP %d: %s', $status, $body));

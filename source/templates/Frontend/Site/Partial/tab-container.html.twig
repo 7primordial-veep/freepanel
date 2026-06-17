@@ -40,6 +40,14 @@
     <li {% if active == 'email' %}class="active"{% endif %}>
       <a href="{{ path('clp_site_email', {'domainName': site.domainName}) }}">{% trans %}Email{% endtrans %}</a>
     </li>
+    {% if (site.type == constant('App\\Entity\\Site::TYPE_PHP')) %}
+      <li {% if active == 'php-fpm' %}class="active"{% endif %}>
+        <a href="{{ path('clp_site_php_fpm', {'domainName': site.domainName}) }}">{% trans %}PHP-FPM{% endtrans %}</a>
+      </li>
+    {% endif %}
+    <li {% if active == 'cdn' %}class="active"{% endif %}>
+      <a href="{{ path('clp_site_cdn', {'domainName': site.domainName}) }}">{% trans %}CDN{% endtrans %}</a>
+    </li>
     <li {% if active == 'logs' %}class="active"{% endif %}>
       <a href="{{ path('clp_site_logs', {'domainName': site.domainName}) }}">{% trans %}Logs{% endtrans %}</a>
     </li>
