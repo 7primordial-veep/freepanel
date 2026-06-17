@@ -641,3 +641,77 @@ clp_site_docker_new:
 
 # ---- cgroup quotas ----
 # clp_site_resource_quota route already exists in routes.yaml — no additions required.
+
+# ---- DNS records (per-site) ----
+clp_site_dns:
+  path: /site/{domainName}/dns
+  controller: App\Controller\Frontend\SiteDnsController::index
+
+clp_site_dns_add:
+  path: /site/{domainName}/dns/add
+  controller: App\Controller\Frontend\SiteDnsController::add
+  methods: POST
+
+clp_site_dns_delete:
+  path: /site/{domainName}/dns/delete
+  controller: App\Controller\Frontend\SiteDnsController::delete
+  methods: POST
+
+# ---- Bulk site operations ----
+clp_admin_sites_bulk:
+  path: /admin/sites/bulk
+  controller: App\Controller\Admin\SitesBulkController::index
+
+clp_admin_sites_bulk_apply:
+  path: /admin/sites/bulk/apply
+  controller: App\Controller\Admin\SitesBulkController::apply
+  methods: POST
+
+# ---- Headers tester ----
+clp_admin_tools_headers:
+  path: /admin/tools/headers-tester
+  controller: App\Controller\Admin\HeadersTestController::index
+
+clp_admin_tools_headers_probe:
+  path: /admin/tools/headers-tester/probe
+  controller: App\Controller\Admin\HeadersTestController::probe
+  methods: POST
+
+# ---- Mailcow ----
+clp_admin_mailcow:
+  path: /admin/mailcow
+  controller: App\Controller\Admin\MailcowController::index
+
+clp_admin_mailcow_install:
+  path: /admin/mailcow/install
+  controller: App\Controller\Admin\MailcowController::install
+  methods: POST
+
+clp_admin_mailcow_settings:
+  path: /admin/mailcow/settings
+  controller: App\Controller\Admin\MailcowController::settings
+
+clp_admin_mailcow_save_settings:
+  path: /admin/mailcow/settings/save
+  controller: App\Controller\Admin\MailcowController::saveSettings
+  methods: POST
+
+# ---- Per-site email (Mailcow-backed) ----
+clp_site_email:
+  path: /site/{domainName}/email
+  controller: App\Controller\Frontend\SiteEmailController::index
+
+clp_site_email_enable:
+  path: /site/{domainName}/email/enable
+  controller: App\Controller\Frontend\SiteEmailController::enable
+  methods: POST
+
+clp_site_email_add:
+  path: /site/{domainName}/email/add
+  controller: App\Controller\Frontend\SiteEmailController::addMailbox
+  methods: POST
+
+clp_site_email_delete:
+  path: /site/{domainName}/email/delete
+  controller: App\Controller\Frontend\SiteEmailController::deleteMailbox
+  methods: POST

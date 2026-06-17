@@ -17,7 +17,10 @@ use App\Service\Crypto;
  *
  * Minimum-viable surface:
  *   - listZones() / findZoneForDomain()
- *   - addDnsRecord(zoneId, type, name, content, proxied=true)
+ *   - addDnsRecord(zoneId, type, name, content, proxied=true, ttl=1)
+ *   - listDnsRecords(zoneId, perPage=100)
+ *   - updateDnsRecord(zoneId, recordId, type, name, content, ttl=null, proxied=null)
+ *   - deleteDnsRecord(zoneId, recordId)
  *   - purgeCache(zoneId, hosts=null)  // null = purge_everything
  *   - setSecurityLevel(zoneId, level) // off|essentially_off|low|medium|high|under_attack
  */
@@ -99,7 +102,36 @@ class Client
             "ttl" => $ttl,
             "proxied" => $proxied,
         ];
-        return $this->request("POST", sprintf("zones/%s/dns_records", rawurlencode($zoneId)), $payload);
+        $response = $this->request("POST", sprintf("zones/%s/dns_records", rawurlencode($zoneId)), $payload);
+        return $response["result"] ?? $response;
+    }
+
+    public function listDnsRecords(string $zoneId, int $perPage = 100): array
+    {
+        $response = $this->request("GET", sprintf("zones/%s/dns_records?per_page=%d", rawurlencode($zoneId), $perPage));
+        return $response["result"] ?? [];
+    }
+
+    public function updateDnsRecord(string $zoneId, string $recordId, string $type, string $name, string $content, ?int $ttl = null, ?bool $proxied = null): array
+    {
+        $payload = [
+            "type" => $type,
+            "name" => $name,
+            "content" => $content,
+        ];
+        if (null !== $ttl) {
+            $payload["ttl"] = $ttl;
+        }
+        if (null !== $proxied) {
+            $payload["proxied"] = $proxied;
+        }
+        $response = $this->request("PUT", sprintf("zones/%s/dns_records/%s", rawurlencode($zoneId), rawurlencode($recordId)), $payload);
+        return $response["result"] ?? [];
+    }
+
+    public function deleteDnsRecord(string $zoneId, string $recordId): void
+    {
+        $this->request("DELETE", sprintf("zones/%s/dns_records/%s", rawurlencode($zoneId), rawurlencode($recordId)));
     }
 
     public function purgeCache(string $zoneId, ?array $hosts = null): array

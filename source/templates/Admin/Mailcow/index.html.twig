@@ -1,0 +1,98 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Mailcow{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': active|default('mailcow')}) }}
+{% endblock %}
+
+{% block body %}
+<div class="page-container">
+  <div class="page-header">
+    <h1>{% trans %}Mailcow{% endtrans %}</h1>
+    <p class="text-muted">{% trans %}Install and manage your Mailcow mail server.{% endtrans %}</p>
+  </div>
+
+  {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <strong>{% trans %}Status{% endtrans %}</strong>
+    </div>
+    <div class="card-body">
+      <table class="table table-borderless mb-0">
+        <tbody>
+          <tr>
+            <td style="width: 240px;">{% trans %}Installed{% endtrans %}</td>
+            <td>
+              {% if installed %}
+                <span class="badge badge-success">{% trans %}Yes{% endtrans %}</span>
+              {% else %}
+                <span class="badge badge-danger">{% trans %}No{% endtrans %}</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td>{% trans %}Running{% endtrans %}</td>
+            <td>
+              {% if running %}
+                <span class="badge badge-success">{% trans %}Yes{% endtrans %}</span>
+              {% else %}
+                <span class="badge badge-danger">{% trans %}No{% endtrans %}</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td>{% trans %}API Configured{% endtrans %}</td>
+            <td>
+              {% if clientConfigured %}
+                <span class="badge badge-success">{% trans %}Yes{% endtrans %}</span>
+              {% else %}
+                <span class="badge badge-danger">{% trans %}No{% endtrans %}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% if installed and mailHostname %}
+          <tr>
+            <td>{% trans %}Manage URL{% endtrans %}</td>
+            <td>
+              <a href="https://{{ mailHostname }}" target="_blank" rel="noopener">https://{{ mailHostname }}</a>
+            </td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if not installed %}
+  <div class="card mb-4">
+    <div class="card-header">
+      <strong>{% trans %}Install Mailcow{% endtrans %}</strong>
+    </div>
+    <div class="card-body">
+      <p>{% trans %}Provide the hostname under which Mailcow will be reachable (must resolve to this server).{% endtrans %}</p>
+      <form method="post" action="{{ path('clp_admin_mailcow_install') }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('mailcow-install') }}">
+        <div class="form-group">
+          <label for="mailHostname">{% trans %}Mail Hostname{% endtrans %}</label>
+          <input type="text" id="mailHostname" name="mailHostname" class="form-control" placeholder="mail.example.com" required>
+        </div>
+        <button type="submit" class="btn btn-primary">{% trans %}Install Mailcow{% endtrans %}</button>
+      </form>
+      <p class="text-muted mt-3 mb-0"><small>{% trans %}Installation can take several minutes. The page will return once the docker images are pulled and started.{% endtrans %}</small></p>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="card">
+    <div class="card-header">
+      <strong>{% trans %}API Settings{% endtrans %}</strong>
+    </div>
+    <div class="card-body">
+      <p>{% trans %}Configure the Mailcow API endpoint and key to manage domains and mailboxes from CloudPanel.{% endtrans %}</p>
+      <a href="{{ path('clp_admin_mailcow_settings') }}" class="btn btn-secondary">{% trans %}Open Settings{% endtrans %}</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

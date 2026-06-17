@@ -1,0 +1,73 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Bulk Site Operations{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': active|default('sites-bulk')}) }}
+{% endblock %}
+
+{% block body %}
+<div class="page-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}Bulk Site Operations{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+
+    <form method="post" action="{{ path('clp_admin_sites_bulk_apply') }}">
+      <input type="hidden" name="_token" value="{{ csrf_token('sites-bulk-apply') }}">
+
+      <div class="card card-table">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>{% trans %}Select sites and an action to apply in bulk{% endtrans %}</span>
+        </div>
+        <div class="card-body card-body-no-padding">
+          <div class="card-form">
+            <div class="row">
+              <div class="col-8">
+                <label class="col-form-label" for="action">{% trans %}Action{% endtrans %}</label>
+                <select id="action" name="action" class="form-control" required>
+                  <option value="malware_scan">{% trans %}Run Malware Scan{% endtrans %}</option>
+                  <option value="clear_cache">{% trans %}Clear Cache{% endtrans %}</option>
+                  <option value="reload_nginx">{% trans %}Reload Nginx{% endtrans %}</option>
+                  <option value="renew_cert">{% trans %}Renew Certificate{% endtrans %}</option>
+                </select>
+              </div>
+              <div class="col-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-blue btn-lg">{% trans %}Apply{% endtrans %}</button>
+              </div>
+            </div>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width:40px;">
+                  <input type="checkbox" id="select-all" onclick="document.querySelectorAll('input[name=\'siteIds[]\']').forEach(function(c){c.checked=this.checked;}.bind(this));">
+                </th>
+                <th>{% trans %}Domain{% endtrans %}</th>
+                <th>{% trans %}User{% endtrans %}</th>
+                <th>{% trans %}Type{% endtrans %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for site in sites %}
+                <tr>
+                  <td><input type="checkbox" name="siteIds[]" value="{{ site.id }}"></td>
+                  <td>{{ site.domainName }}</td>
+                  <td>{{ site.user }}</td>
+                  <td>{{ site.type|default('-') }}</td>
+                </tr>
+              {% else %}
+                <tr><td colspan="4" class="text-center text-muted">{% trans %}No sites available.{% endtrans %}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

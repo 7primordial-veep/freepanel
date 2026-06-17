@@ -1,0 +1,139 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}DNS Records{% endtrans %}{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'dns', 'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="site-content">
+        <h1>{% trans %}DNS Records{% endtrans %}</h1>
+
+        {% if cfNotConfigured %}
+          <div class="alert alert-warning">
+            {% trans %}Cloudflare is not configured. Configure the Cloudflare API token in{% endtrans %}
+            <a href="/admin/cloudflare/settings">/admin/cloudflare/settings</a>
+            {% trans %}first.{% endtrans %}
+          </div>
+        {% elseif zone is null %}
+          <div class="alert alert-warning">
+            {% trans %}No Cloudflare zone matches this site's domain.{% endtrans %}
+          </div>
+        {% else %}
+          <p class="text-muted">
+            {% trans %}Zone:{% endtrans %} <strong>{{ zone.name }}</strong>
+          </p>
+
+          <div class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>{% trans %}Type{% endtrans %}</th>
+                  <th>{% trans %}Name{% endtrans %}</th>
+                  <th>{% trans %}Content{% endtrans %}</th>
+                  <th>{% trans %}TTL{% endtrans %}</th>
+                  <th>{% trans %}Proxied{% endtrans %}</th>
+                  <th class="text-right">{% trans %}Actions{% endtrans %}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if records is empty %}
+                  <tr>
+                    <td colspan="6" class="text-center text-muted">
+                      {% trans %}No DNS records found.{% endtrans %}
+                    </td>
+                  </tr>
+                {% else %}
+                  {% for record in records %}
+                    <tr>
+                      <td>{{ record.type }}</td>
+                      <td>{{ record.name }}</td>
+                      <td><code>{{ record.content }}</code></td>
+                      <td>{{ record.ttl == 1 ? 'Auto' : record.ttl }}</td>
+                      <td>
+                        {% if record.proxied is defined and record.proxied %}
+                          <span class="label label-warning">{% trans %}Proxied{% endtrans %}</span>
+                        {% else %}
+                          <span class="label label-default">{% trans %}DNS only{% endtrans %}</span>
+                        {% endif %}
+                      </td>
+                      <td class="text-right">
+                        <form method="POST" action="{{ path('clp_site_dns_delete', {'domainName': site.domainName}) }}" style="display:inline" onsubmit="return confirm('{% trans %}Delete this DNS record?{% endtrans %}');">
+                          <input type="hidden" name="_token" value="{{ csrf_token('site-dns-delete') }}">
+                          <input type="hidden" name="recordId" value="{{ record.id }}">
+                          <button type="submit" class="btn btn-xs btn-danger">{% trans %}Delete{% endtrans %}</button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+
+          <h2>{% trans %}Add DNS Record{% endtrans %}</h2>
+          <form method="POST" action="{{ path('clp_site_dns_add', {'domainName': site.domainName}) }}" class="form-horizontal">
+            <input type="hidden" name="_token" value="{{ csrf_token('site-dns-add') }}">
+
+            <div class="form-group">
+              <label for="dns-type" class="col-sm-2 control-label">{% trans %}Type{% endtrans %}</label>
+              <div class="col-sm-3">
+                <select id="dns-type" name="type" class="form-control" required>
+                  <option value="A">A</option>
+                  <option value="AAAA">AAAA</option>
+                  <option value="CNAME">CNAME</option>
+                  <option value="MX">MX</option>
+                  <option value="TXT">TXT</option>
+                  <option value="SRV">SRV</option>
+                  <option value="NS">NS</option>
+                  <option value="CAA">CAA</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="dns-name" class="col-sm-2 control-label">{% trans %}Name{% endtrans %}</label>
+              <div class="col-sm-6">
+                <input id="dns-name" type="text" name="name" class="form-control" placeholder="@ or sub.{{ zone.name }}" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="dns-content" class="col-sm-2 control-label">{% trans %}Content{% endtrans %}</label>
+              <div class="col-sm-6">
+                <input id="dns-content" type="text" name="content" class="form-control" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="dns-ttl" class="col-sm-2 control-label">{% trans %}TTL{% endtrans %}</label>
+              <div class="col-sm-3">
+                <input id="dns-ttl" type="number" name="ttl" class="form-control" value="1" min="1">
+                <p class="help-block">{% trans %}1 = Auto.{% endtrans %}</p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-6">
+                <label class="checkbox-inline">
+                  <input type="checkbox" name="proxied" value="1"> {% trans %}Proxied (A / AAAA / CNAME only){% endtrans %}
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-6">
+                <button type="submit" class="btn btn-blue btn-lg">{% trans %}Add Record{% endtrans %}</button>
+              </div>
+            </div>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

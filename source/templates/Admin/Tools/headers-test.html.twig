@@ -1,0 +1,118 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}HTTP Headers Tester{% endtrans %}{% endblock %}
+
+{% block sidebar -%}
+  {{ include('Admin/Partial/sidebar.html.twig', {'active': active|default('tools-headers')}) }}
+{% endblock %}
+
+{% block body %}
+<div class="notifications-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{% trans %}HTTP Headers Tester{% endtrans %}</h1>
+    </div>
+  </div>
+  <div class="page-content">
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+    <div class="settings-container">
+      <div class="card card-table">
+        <div class="card-header">{% trans %}Probe a URL{% endtrans %}</div>
+        <form action="{{ path('clp_admin_tools_headers_probe') }}" method="POST">
+          <input type="hidden" name="_token" value="{{ csrf_token('headers-test-probe') }}">
+          <div class="card-body card-body-no-padding">
+            <div class="card-form">
+              <div class="row">
+                <div class="col-12">
+                  <label class="col-form-label">{% trans %}URL{% endtrans %}</label>
+                  <input type="text" name="url" class="form-control" value="{{ url }}" placeholder="https://example.com" required>
+                  <div class="form-text">{% trans %}Negotiates HTTP/3 then HTTP/2 then HTTP/1.1. TLS verification is disabled so self-signed test boxes work.{% endtrans %}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer text-end">
+            <button type="submit" class="btn btn-primary">{% trans %}Probe{% endtrans %}</button>
+          </div>
+        </form>
+      </div>
+
+      {% if result is not null %}
+        <div class="card card-table mt-3">
+          <div class="card-header">{% trans %}Result{% endtrans %}</div>
+          <div class="card-body">
+            <dl class="row mb-0">
+              <dt class="col-sm-2">{% trans %}URL{% endtrans %}</dt>
+              <dd class="col-sm-10"><code>{{ result.url }}</code></dd>
+              <dt class="col-sm-2">{% trans %}Protocol{% endtrans %}</dt>
+              <dd class="col-sm-10">{{ result.protocol ?: '-' }}</dd>
+              <dt class="col-sm-2">{% trans %}Status{% endtrans %}</dt>
+              <dd class="col-sm-10">{{ result.status is not null ? result.status : '-' }}</dd>
+            </dl>
+          </div>
+        </div>
+
+        {% if result.error %}
+          <div class="alert alert-danger mt-3">
+            <strong>{% trans %}Error{% endtrans %}:</strong> {{ result.error }}
+          </div>
+        {% else %}
+          <div class="card card-table mt-3">
+            <div class="card-header">{% trans %}Response Headers{% endtrans %}</div>
+            <div class="card-body card-body-no-padding">
+              <table class="table table-striped mb-0">
+                <thead>
+                  <tr>
+                    <th style="width: 30%;">{% trans %}Header{% endtrans %}</th>
+                    <th>{% trans %}Value{% endtrans %}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for name, value in result.headers %}
+                    <tr>
+                      <td><code>{{ name }}</code></td>
+                      <td style="word-break: break-all;">{{ value }}</td>
+                    </tr>
+                  {% else %}
+                    <tr><td colspan="2" class="text-muted">{% trans %}No headers returned.{% endtrans %}</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card card-table mt-3">
+            <div class="card-header">{% trans %}Security Checklist{% endtrans %}</div>
+            <div class="card-body card-body-no-padding">
+              <table class="table table-striped mb-0">
+                <thead>
+                  <tr>
+                    <th style="width: 5%;">&nbsp;</th>
+                    <th style="width: 35%;">{% trans %}Check{% endtrans %}</th>
+                    <th>{% trans %}Value{% endtrans %}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in result.securityChecklist %}
+                    <tr>
+                      <td>
+                        {% if item.present %}
+                          <span style="color: #198754; font-weight: bold;">&#10004;</span>
+                        {% else %}
+                          <span style="color: #dc3545; font-weight: bold;">&#10006;</span>
+                        {% endif %}
+                      </td>
+                      <td>{{ item.name }}</td>
+                      <td style="word-break: break-all;">{{ item.value ?: '-' }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

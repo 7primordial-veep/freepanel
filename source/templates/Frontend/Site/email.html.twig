@@ -1,0 +1,89 @@
+{% extends 'Frontend/layout.html.twig' %}
+
+{% block pageTitle %}{% trans %}Email{% endtrans %}{% endblock %}
+
+{% block body %}
+<div class="container-fluid container-limited-width">
+  <div class="site-container">
+    {{ include('Frontend/Site/Partial/site-info.html.twig', {'site': site}) }}
+    <div class="site-content-container">
+      {{ include('Frontend/Site/Partial/tab-container.html.twig', {'active': 'email', 'site': site}) }}
+      {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+      {{ include('Partial/form-errors.html.twig', { 'formErrors': formErrors }) }}
+      <div class="site-content">
+        {% if mailcowNotConfigured %}
+          <div class="callout callout-warning">
+            <p>{% trans %}Mailcow not configured. An admin needs to set the API URL/key in Admin → Mailcow → Settings.{% endtrans %}</p>
+          </div>
+        {% elseif not domainEnabled %}
+          <div class="callout callout-info">
+            <p>{% trans %}Email is not yet enabled for this domain.{% endtrans %}</p>
+          </div>
+          <form action="{{ path('clp_site_email_enable', {'domainName': site.domainName}) }}" method="post">
+            <input type="hidden" name="_token" value="{{ csrf_token('site-email-enable') }}">
+            <button type="submit" class="btn btn-primary">{% trans %}Enable email for this domain{% endtrans %}</button>
+          </form>
+        {% else %}
+          <h2>{% trans %}Mailboxes{% endtrans %}</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>{% trans %}Email{% endtrans %}</th>
+                <th>{% trans %}Name{% endtrans %}</th>
+                <th>{% trans %}Quota (MB){% endtrans %}</th>
+                <th>{% trans %}Actions{% endtrans %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if mailboxes is empty %}
+                <tr>
+                  <td colspan="4">{% trans %}No mailboxes yet.{% endtrans %}</td>
+                </tr>
+              {% else %}
+                {% for mb in mailboxes %}
+                  {% set mbEmail = mb.username|default(mb.address|default(mb.email|default(''))) %}
+                  {% set mbName = mb.name|default(mb.displayName|default('')) %}
+                  {% set mbQuota = mb.quota|default(mb.quota_mb|default('')) %}
+                  <tr>
+                    <td>{{ mbEmail }}</td>
+                    <td>{{ mbName }}</td>
+                    <td>{{ mbQuota }}</td>
+                    <td>
+                      <form action="{{ path('clp_site_email_delete', {'domainName': site.domainName}) }}" method="post" onsubmit="return confirm('{{ 'Delete this mailbox?'|trans|e('js') }}');" style="display:inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('site-email-delete') }}">
+                        <input type="hidden" name="email" value="{{ mbEmail }}">
+                        <button type="submit" class="btn btn-danger btn-sm">{% trans %}Delete{% endtrans %}</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% endif %}
+            </tbody>
+          </table>
+
+          <h2>{% trans %}Add mailbox{% endtrans %}</h2>
+          <form action="{{ path('clp_site_email_add', {'domainName': site.domainName}) }}" method="post" class="form">
+            <input type="hidden" name="_token" value="{{ csrf_token('site-email-add') }}">
+            <div class="form-group">
+              <label for="local_part">{% trans %}Local part{% endtrans %}</label>
+              <div class="input-group">
+                <input type="text" id="local_part" name="local_part" class="form-control" required pattern="[A-Za-z0-9._\-]{1,64}" maxlength="64">
+                <span class="input-group-addon">@{{ site.domainName }}</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="password">{% trans %}Password{% endtrans %}</label>
+              <input type="password" id="password" name="password" class="form-control" required minlength="8">
+            </div>
+            <div class="form-group">
+              <label for="quota">{% trans %}Quota (MB){% endtrans %}</label>
+              <input type="number" id="quota" name="quota" class="form-control" value="1024" min="1">
+            </div>
+            <button type="submit" class="btn btn-primary">{% trans %}Add mailbox{% endtrans %}</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
