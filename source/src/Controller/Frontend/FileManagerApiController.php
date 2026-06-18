@@ -10,6 +10,7 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Controller\Controller;
 use App\Entity\Manager\SiteManager as SiteEntityManager;
+use App\Entity\User as UserEntity;
 use App\Service\Logger;
 use App\System\CommandExecutor;
 use App\System\Command\SudoTeeCommand;
@@ -239,18 +240,11 @@ class FileManagerApiController extends Controller
             return $this->jsonError('Site not found', Response::HTTP_NOT_FOUND);
         }
         $user = $this->getUser();
-        // Authorization: panel admins or the owning site user.
         if ($user === null) {
             return $this->jsonError('Unauthorized', Response::HTTP_UNAUTHORIZED);
         }
-        // ponytail: we only check ownership via username match; admin role bypass should be revisited.
-        $owner = $siteEntity->getUser();
-        if ($owner !== null && method_exists($user, 'getRoles')) {
-            $roles = $user->getRoles();
-            $isAdmin = in_array('ROLE_ADMIN', $roles, true);
-            if (!$isAdmin && $user->getUserIdentifier() !== $owner) {
-                return $this->jsonError('Forbidden', Response::HTTP_FORBIDDEN);
-            }
+        if (UserEntity::ROLE_USER == $user->getRole() && false === $user->hasSite($siteEntity)) {
+            return $this->jsonError('Forbidden', Response::HTTP_FORBIDDEN);
         }
         $siteUser = $siteEntity->getUser();
         if ($siteUser === null || $siteUser === '') {
@@ -295,7 +289,10 @@ class FileManagerApiController extends Controller
     {
         if ($name === '' || $name[0] === '.') {
             // Allow common dotfiles by name.
-            $allowedDot = ['.env', '.htaccess', '.gitignore', '.editorconfig'];
+            // .htaccess intentionally omitted — it can re-route PHP execution,
+            // enable arbitrary handlers, or unset security headers (RCE primitive).
+            // Edit .htaccess over SFTP/SSH.
+            $allowedDot = ['.env', '.gitignore', '.editorconfig'];
             return in_array($name, $allowedDot, true);
         }
         $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));

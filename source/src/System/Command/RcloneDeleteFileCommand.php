@@ -39,11 +39,6 @@ class RcloneDeleteFileCommand extends Command
         $this->addFlag('--config', $configFile);
     }
 
-    public function setGoogleDriveEmail(string $email) : void
-    {
-        $this->addFlag('--drive-impersonate', $email);
-    }
-
     public function addFlag(string $flag, string $value) : void
     {
         $this->flags[] = ['flag' => $flag, 'value' => $value];

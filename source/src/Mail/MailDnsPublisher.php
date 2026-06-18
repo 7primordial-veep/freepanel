@@ -86,7 +86,16 @@ class MailDnsPublisher
         $records[] = ['type' => 'MX',  'name' => $domain,                          'content' => $mailHost,                                                              'proxied' => false, 'priority' => 10];
         $records[] = ['type' => 'TXT', 'name' => $domain,                          'content' => 'v=spf1 mx -all',                                                       'proxied' => false];
         if ('' !== $dkimPub) {
-            $records[] = ['type' => 'TXT', 'name' => 'dkim._domainkey.' . $domain, 'content' => 'v=DKIM1; k=rsa; p=' . $dkimPub,                                       'proxied' => false];
+            if (1 === preg_match('/^[A-Za-z0-9+\/=]+$/', $dkimPub)) {
+                $records[] = ['type' => 'TXT', 'name' => 'dkim._domainkey.' . $domain, 'content' => 'v=DKIM1; k=rsa; p=' . $dkimPub,                                       'proxied' => false];
+            } else {
+                $result['errors'][] = 'DKIM pubkey contains invalid characters; skipping DKIM TXT record.';
+                if (null !== $this->logger) {
+                    $this->logger->warning('MailDnsPublisher rejected DKIM pubkey', [
+                        'domain' => $domain,
+                    ]);
+                }
+            }
         }
         $records[] = ['type' => 'TXT', 'name' => '_dmarc.' . $domain,              'content' => 'v=DMARC1; p=quarantine; rua=mailto:postmaster@' . $domain,             'proxied' => false];
 
@@ -105,7 +114,7 @@ class MailDnsPublisher
                 continue;
             }
             try {
-                $this->cloudflare->addDnsRecord($zoneId, $rec['type'], $rec['name'], $rec['content'], $rec['proxied'], 1);
+                $this->cloudflare->addDnsRecord($zoneId, $rec['type'], $rec['name'], $rec['content'], $rec['proxied'], 1, $rec['priority'] ?? null);
                 $result['created'][] = sprintf('%s %s', $rec['type'], $rec['name']);
             } catch (\Throwable $e) {
                 $result['errors'][] = sprintf('%s %s failed: %s', $rec['type'], $rec['name'], $e->getMessage());

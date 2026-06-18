@@ -7,7 +7,6 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Range;
@@ -25,7 +24,6 @@ class SitePhpFpmPoolType extends AbstractType
                     'static'   => 'static',
                     'ondemand' => 'ondemand',
                 ],
-                'data'        => 'dynamic',
                 'constraints' => [
                     new NotBlank(),
                     new Choice(['choices' => ['dynamic', 'static', 'ondemand']]),
@@ -34,35 +32,30 @@ class SitePhpFpmPoolType extends AbstractType
             ->add('pmMaxChildren', IntegerType::class, [
                 'label'       => 'pm.max_children',
                 'required'    => true,
-                'data'        => 10,
                 'attr'        => ['min' => 1, 'max' => 200],
                 'constraints' => [new NotBlank(), new Range(['min' => 1, 'max' => 200])],
             ])
             ->add('pmStartServers', IntegerType::class, [
                 'label'       => 'pm.start_servers',
                 'required'    => true,
-                'data'        => 2,
                 'attr'        => ['min' => 1, 'max' => 50],
                 'constraints' => [new NotBlank(), new Range(['min' => 1, 'max' => 50])],
             ])
             ->add('pmMinSpareServers', IntegerType::class, [
                 'label'       => 'pm.min_spare_servers',
                 'required'    => true,
-                'data'        => 1,
                 'attr'        => ['min' => 1, 'max' => 50],
                 'constraints' => [new NotBlank(), new Range(['min' => 1, 'max' => 50])],
             ])
             ->add('pmMaxSpareServers', IntegerType::class, [
                 'label'       => 'pm.max_spare_servers',
                 'required'    => true,
-                'data'        => 3,
                 'attr'        => ['min' => 1, 'max' => 50],
                 'constraints' => [new NotBlank(), new Range(['min' => 1, 'max' => 50])],
             ])
             ->add('pmMaxRequests', IntegerType::class, [
                 'label'       => 'pm.max_requests',
                 'required'    => true,
-                'data'        => 500,
                 'attr'        => ['min' => 0, 'max' => 100000],
                 'constraints' => [new NotBlank(), new Range(['min' => 0, 'max' => 100000])],
             ])
@@ -70,12 +63,5 @@ class SitePhpFpmPoolType extends AbstractType
                 'label' => 'Save',
                 'attr'  => ['class' => 'btn btn-blue'],
             ]);
-    }
-
-    public function configureOptions(OptionsResolver $resolver) : void
-    {
-        $resolver->setDefaults([
-            'data_class' => null,
-        ]);
     }
 }

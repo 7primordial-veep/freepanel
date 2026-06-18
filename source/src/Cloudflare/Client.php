@@ -17,9 +17,8 @@ use App\Service\Crypto;
  *
  * Minimum-viable surface:
  *   - listZones() / findZoneForDomain()
- *   - addDnsRecord(zoneId, type, name, content, proxied=true, ttl=1)
+ *   - addDnsRecord(zoneId, type, name, content, proxied=true, ttl=1, priority=null)
  *   - listDnsRecords(zoneId, perPage=100)
- *   - updateDnsRecord(zoneId, recordId, type, name, content, ttl=null, proxied=null)
  *   - deleteDnsRecord(zoneId, recordId)
  *   - purgeCache(zoneId, hosts=null)  // null = purge_everything
  *   - setSecurityLevel(zoneId, level) // off|essentially_off|low|medium|high|under_attack
@@ -74,6 +73,30 @@ class Client
     public function findZoneForDomain(string $domainName): ?array
     {
         $domainName = strtolower(trim($domainName));
+        if ('' === $domainName) {
+            return null;
+        }
+
+        // Walk candidate apex domains from shortest (2 labels) to longest.
+        // e.g. foo.bar.example.co.uk -> [example.co.uk, bar.example.co.uk, foo.bar.example.co.uk]
+        // The first zones?name=<candidate> hit wins. Avoids the 50-zone pagination cap.
+        $labels = explode('.', $domainName);
+        $count = count($labels);
+        for ($take = 2; $take <= $count; $take++) {
+            $candidate = implode('.', array_slice($labels, $count - $take));
+            try {
+                $response = $this->request("GET", "zones?name=" . rawurlencode($candidate));
+            } catch (\RuntimeException $e) {
+                // Network/API hiccup on one candidate shouldn't abort the search.
+                continue;
+            }
+            $result = $response["result"] ?? [];
+            if (false === empty($result) && is_array($result[0] ?? null)) {
+                return $result[0];
+            }
+        }
+
+        // Fallback: list+match (rare edge cases like vanity TLDs not matched by exact-name lookup).
         $zones = $this->listZones();
         $best = null;
         $bestLen = 0;
@@ -93,7 +116,7 @@ class Client
         return $best;
     }
 
-    public function addDnsRecord(string $zoneId, string $type, string $name, string $content, bool $proxied = true, int $ttl = 1): array
+    public function addDnsRecord(string $zoneId, string $type, string $name, string $content, bool $proxied = true, int $ttl = 1, ?int $priority = null): array
     {
         $payload = [
             "type" => $type,
@@ -102,6 +125,9 @@ class Client
             "ttl" => $ttl,
             "proxied" => $proxied,
         ];
+        if (null !== $priority) {
+            $payload["priority"] = $priority;
+        }
         $response = $this->request("POST", sprintf("zones/%s/dns_records", rawurlencode($zoneId)), $payload);
         return $response["result"] ?? $response;
     }
@@ -109,23 +135,6 @@ class Client
     public function listDnsRecords(string $zoneId, int $perPage = 100): array
     {
         $response = $this->request("GET", sprintf("zones/%s/dns_records?per_page=%d", rawurlencode($zoneId), $perPage));
-        return $response["result"] ?? [];
-    }
-
-    public function updateDnsRecord(string $zoneId, string $recordId, string $type, string $name, string $content, ?int $ttl = null, ?bool $proxied = null): array
-    {
-        $payload = [
-            "type" => $type,
-            "name" => $name,
-            "content" => $content,
-        ];
-        if (null !== $ttl) {
-            $payload["ttl"] = $ttl;
-        }
-        if (null !== $proxied) {
-            $payload["proxied"] = $proxied;
-        }
-        $response = $this->request("PUT", sprintf("zones/%s/dns_records/%s", rawurlencode($zoneId), rawurlencode($recordId)), $payload);
         return $response["result"] ?? [];
     }
 

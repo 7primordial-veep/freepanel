@@ -35,13 +35,10 @@ class PoolConfigWriter
             'pm.max_requests'      => (string) (int) $settings['pmMaxRequests'],
         ];
 
-        foreach ($directives as $key => $value) {
-            $cmd = new WritePhpFpmPoolDirectiveCommand();
-            $cmd->setPath($poolPath);
-            $cmd->setDirective((string) $key);
-            $cmd->setValue((string) $value);
-            $this->exec->execute($cmd, 30);
-        }
+        $cmd = new WritePhpFpmPoolDirectiveCommand();
+        $cmd->setPath($poolPath);
+        $cmd->setDirectives($directives);
+        $this->exec->execute($cmd, 30);
 
         $restart = new ServiceRestartCommand();
         $restart->setServiceName('php' . $phpVersion . '-fpm');

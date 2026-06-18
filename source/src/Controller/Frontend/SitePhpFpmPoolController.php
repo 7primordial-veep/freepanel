@@ -5,6 +5,7 @@ namespace App\Controller\Frontend;
 use App\Controller\Controller;
 use App\Entity\Manager\SiteManager;
 use App\Entity\Site;
+use App\Entity\User as UserEntity;
 use App\Event\EventQueue;
 use App\Form\SitePhpFpmPoolType;
 use App\Service\Logger;
@@ -115,10 +116,7 @@ class SitePhpFpmPoolController extends Controller
         if (null === $user) {
             throw $this->createAccessDeniedException();
         }
-        $owner = $site->getUser();
-        $roles = method_exists($user, 'getRoles') ? $user->getRoles() : [];
-        $isAdmin = in_array('ROLE_ADMIN', $roles, true);
-        if (!$isAdmin && (null === $owner || $user->getUserIdentifier() !== $owner)) {
+        if (UserEntity::ROLE_USER == $user->getRole() && false === $user->hasSite($site)) {
             throw $this->createAccessDeniedException();
         }
 

@@ -60,12 +60,8 @@ class MailcowController extends Controller
             return $this->redirect($this->generateUrl('clp_admin_mailcow'));
         }
 
-        $user = $this->getUser();
-        if ($user === null || !in_array('ROLE_ADMIN', (array) $user->getRoles(), true)) {
-            $request->getSession()->getFlashBag()->set('danger', $this->translator->trans('Access denied.'));
-
-            return $this->redirect($this->generateUrl('clp_admin_mailcow'));
-        }
+        // The /admin/* firewall already enforces ROLE_ADMIN (see config/packages/security.yaml).
+        // No in-controller role check needed here.
 
         $mailHostname = trim((string) $request->request->get('mailHostname', ''));
 

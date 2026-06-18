@@ -4,15 +4,6 @@ namespace App\Tool;
 
 class HttpHeadersProbe
 {
-    private const SECURITY_HEADERS = [
-        ['name' => 'Strict-Transport-Security', 'key' => 'strict-transport-security'],
-        ['name' => 'Content-Security-Policy', 'key' => 'content-security-policy'],
-        ['name' => 'X-Frame-Options / CSP frame-ancestors', 'key' => '__frame_options__'],
-        ['name' => 'X-Content-Type-Options: nosniff', 'key' => '__nosniff__'],
-        ['name' => 'Referrer-Policy', 'key' => 'referrer-policy'],
-        ['name' => 'Permissions-Policy', 'key' => 'permissions-policy'],
-    ];
-
     public function probe(string $url): array
     {
         $url = trim($url);
@@ -263,7 +254,6 @@ class HttpHeadersProbe
     {
         switch ($version) {
             case 30:
-                return 'HTTP/3';
             case 31:
                 return 'HTTP/3';
             case 3:

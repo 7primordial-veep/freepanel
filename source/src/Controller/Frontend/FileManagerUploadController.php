@@ -10,6 +10,7 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Controller\Controller;
 use App\Entity\Manager\SiteManager as SiteEntityManager;
+use App\Entity\User as UserEntity;
 use App\Service\Logger;
 use App\System\CommandExecutor;
 use App\System\Command\SudoTeeCommand;
@@ -36,10 +37,8 @@ class FileManagerUploadController extends Controller
       if ($site === null) return new JsonResponse(['error'=>'Site not found'], Response::HTTP_NOT_FOUND);
       $user = $this->getUser();
       if ($user === null) return new JsonResponse(['error'=>'Unauthorized'], Response::HTTP_UNAUTHORIZED);
-      $owner = $site->getUser();
-      if ($owner !== null && method_exists($user, 'getRoles')) {
-        $isAdmin = in_array('ROLE_ADMIN', $user->getRoles(), true);
-        if (!$isAdmin && $user->getUserIdentifier() !== $owner) return new JsonResponse(['error'=>'Forbidden'], Response::HTTP_FORBIDDEN);
+      if (UserEntity::ROLE_USER == $user->getRole() && false === $user->hasSite($site)) {
+        return new JsonResponse(['error'=>'Forbidden'], Response::HTTP_FORBIDDEN);
       }
       $siteUser = $site->getUser();
       if (empty($siteUser)) return new JsonResponse(['error'=>'Site user missing'], Response::HTTP_CONFLICT);

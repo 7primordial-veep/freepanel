@@ -36,15 +36,9 @@ class RestoreExtractCommand extends Command
 
     public function isSuccessful(): bool
     {
-        $out = strtolower((string) $this->getOutput());
-        if ('' === trim($out)) {
-            return true;
-        }
-        foreach (['error', 'denied', 'cannot'] as $k) {
-            if (false !== strpos($out, $k)) {
-                return false;
-            }
-        }
+        // Rely on exit code via CommandExecutor (throws on non-zero).
+        // tar prints benign warnings to stderr/stdout ("Removing leading '/'",
+        // "Cannot stat" for excluded paths) that must not be treated as errors.
         return true;
     }
 }

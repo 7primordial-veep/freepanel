@@ -430,6 +430,7 @@ clp_admin_malware_scan_view:
 clp_admin_malware_scan_delete:
   path: /admin/security/malware-scan/delete/{id}
   controller: App\Controller\Admin\MalwareScanController::delete
+  methods: POST
 
 clp_admin_services:
   path: /admin/services

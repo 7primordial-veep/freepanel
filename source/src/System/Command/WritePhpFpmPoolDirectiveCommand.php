@@ -47,17 +47,35 @@ class WritePhpFpmPoolDirectiveCommand extends Command
             throw new \RuntimeException('invalid directive value');
         }
 
+        $pathArg      = escapeshellarg($this->path);
+        $directiveArg = escapeshellarg($this->directive);
+        $valueArg     = escapeshellarg($this->value);
+
         $sedExpr = sprintf(
             's|^[[:space:]]*%s[[:space:]]*=.*|%s = %s|',
-            preg_quote($this->directive, '|'),
+            $this->directive,
             $this->directive,
             $this->value
         );
+        $sedExprArg = escapeshellarg($sedExpr);
+
+        $grepExpr = sprintf('^[[:space:]]*%s[[:space:]]*=', $this->directive);
+        $grepExprArg = escapeshellarg($grepExpr);
+
+        $script = sprintf(
+            'if grep -qE %s %s; then sed -i -E %s %s; else printf "\n%%s = %%s\n" %s %s >> %s; fi',
+            $grepExprArg,
+            $pathArg,
+            $sedExprArg,
+            $pathArg,
+            $directiveArg,
+            $valueArg,
+            $pathArg
+        );
 
         $this->command = sprintf(
-            '/usr/bin/sudo /bin/sed -i -E %s %s 2>&1',
-            escapeshellarg($sedExpr),
-            escapeshellarg($this->path)
+            '/usr/bin/sudo -n /bin/sh -c %s 2>&1',
+            escapeshellarg($script)
         );
 
         return $this->command;

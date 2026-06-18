@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Controller\Controller;
 use App\Entity\Manager\SiteManager as SiteEntityManager;
+use App\Entity\User as UserEntity;
 use App\Service\Logger;
 
 class FileManagerDownloadController extends Controller
@@ -34,13 +35,8 @@ class FileManagerDownloadController extends Controller
         if ($user === null) {
             return new Response('Unauthorized', 401);
         }
-
-        $owner = $site->getUser();
-        if ($owner !== null && method_exists($user, 'getRoles')) {
-            $isAdmin = in_array('ROLE_ADMIN', $user->getRoles(), true);
-            if (!$isAdmin && $user->getUserIdentifier() !== $owner) {
-                return new Response('Forbidden', 403);
-            }
+        if (UserEntity::ROLE_USER == $user->getRole() && false === $user->hasSite($site)) {
+            return new Response('Forbidden', 403);
         }
 
         $siteUser = $site->getUser();

@@ -15,7 +15,7 @@ class SystemMetrics
             'memory'         => $this->memory(),
             'disks'          => $this->disks(),
             'uptime_seconds' => $this->uptime(),
-            'hostname'       => function_exists('gethostname') ? (string) @gethostname() : '',
+            'hostname'       => (string) @gethostname(),
             'kernel'         => php_uname('r'),
         ];
     }

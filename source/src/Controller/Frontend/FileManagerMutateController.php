@@ -10,6 +10,7 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Controller\Controller;
 use App\Entity\Manager\SiteManager as SiteEntityManager;
+use App\Entity\User as UserEntity;
 use App\Service\Logger;
 use App\System\CommandExecutor;
 use App\System\Command\SudoMkdirCommand;
@@ -131,14 +132,8 @@ class FileManagerMutateController extends Controller
         if ($user === null) {
             return $this->jsonError('Unauthorized', Response::HTTP_UNAUTHORIZED);
         }
-
-        $owner = $siteEntity->getUser();
-        if ($owner !== null && method_exists($user, 'getRoles')) {
-            $roles   = $user->getRoles();
-            $isAdmin = in_array('ROLE_ADMIN', $roles, true);
-            if (!$isAdmin && $user->getUserIdentifier() !== $owner) {
-                return $this->jsonError('Forbidden', Response::HTTP_FORBIDDEN);
-            }
+        if (UserEntity::ROLE_USER == $user->getRole() && false === $user->hasSite($siteEntity)) {
+            return $this->jsonError('Forbidden', Response::HTTP_FORBIDDEN);
         }
 
         $siteUser = $siteEntity->getUser();
