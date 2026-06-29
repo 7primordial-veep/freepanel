@@ -121,36 +121,25 @@ class SiteDockerSettingsController extends Controller
     }
 
     /**
-     * Parse multi-line KEY=VALUE input (comma-separated per line) into an associative array.
+     * Parse KEY=VALUE input (comma- or newline-separated) into an associative array.
      *
      * @return array<string,string>
      */
     private function parseEnvRaw(string $raw): array
     {
         $env = [];
-        if ('' === trim($raw)) {
-            return $env;
-        }
-        $lines = preg_split('/\r\n|\r|\n/', $raw) ?: [];
-        foreach ($lines as $line) {
-            $line = trim($line);
-            if ('' === $line) {
+        $pairs = array_filter(array_map('trim', preg_split('/[\r\n,]+/', $raw) ?: []), 'strlen');
+        foreach ($pairs as $pair) {
+            if (false === strpos($pair, '=')) {
                 continue;
             }
-            $pairs = explode(',', $line);
-            foreach ($pairs as $pair) {
-                $pair = trim($pair);
-                if ('' === $pair || false === strpos($pair, '=')) {
-                    continue;
-                }
-                [$k, $v] = explode('=', $pair, 2);
-                $k = trim($k);
-                $v = trim($v);
-                if ('' === $k) {
-                    continue;
-                }
-                $env[$k] = $v;
+            [$k, $v] = explode('=', $pair, 2);
+            $k = trim($k);
+            $v = trim($v);
+            if ('' === $k) {
+                continue;
             }
+            $env[$k] = $v;
         }
         return $env;
     }
@@ -251,14 +240,7 @@ class SiteDockerSettingsController extends Controller
      */
     private function envArrayToRaw(array $env): string
     {
-        if (empty($env)) {
-            return '';
-        }
-        $pairs = [];
-        foreach ($env as $k => $v) {
-            $pairs[] = sprintf('%s=%s', $k, $v);
-        }
-        return implode(',', $pairs);
+        return implode(',', array_map(static fn($k, $v) => $k . '=' . $v, array_keys($env), $env));
     }
 
     /**
@@ -266,16 +248,6 @@ class SiteDockerSettingsController extends Controller
      */
     private function volumesArrayToRaw(array $volumes): string
     {
-        if (empty($volumes)) {
-            return '';
-        }
-        $lines = [];
-        foreach ($volumes as $vol) {
-            if (empty($vol['host']) || empty($vol['container'])) {
-                continue;
-            }
-            $lines[] = sprintf('%s:%s', $vol['host'], $vol['container']);
-        }
-        return implode("\n", $lines);
+        return implode("\n", array_map(static fn($v) => $v['host'] . ':' . $v['container'], $volumes));
     }
 }

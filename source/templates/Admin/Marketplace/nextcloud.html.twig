@@ -7,49 +7,17 @@
 {% endblock %}
 
 {% block body %}
-<div class="marketplace-container">
-  <div class="page-header">
-    <div class="page-title">
-      <h1>{% trans %}Install Nextcloud{% endtrans %}</h1>
-    </div>
-  </div>
-  <div class="page-content">
-    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+{% set commands %}wget https://download.nextcloud.com/server/releases/latest.tar.bz2 -O /tmp/nc.tar.bz2
+sudo -u {user} tar -xjf /tmp/nc.tar.bz2 -C /home/{user}/htdocs --strip-components=1
+sudo -u {user} php -d memory_limit=512M /home/{user}/htdocs/occ maintenance:install --database=sqlite --admin-user=admin --admin-pass=changeme
+rm -f /tmp/nc.tar.bz2{% endset %}
 
-    <div class="alert alert-warning">
-      <strong>{% trans %}Security warning{% endtrans %}:</strong>
-      {% trans %}The default admin password below is 'changeme'. Log in and change the admin password immediately after installation.{% endtrans %}
-    </div>
+{% set warning %}<strong>{{ 'Security warning'|trans }}:</strong> {{ "The default admin password below is 'changeme'. Log in and change the admin password immediately after installation."|trans }}{% endset %}
 
-    {% if sites is defined and sites|length %}
-      {% for site in sites %}
-        {% set siteUser = site.user %}
-        {% set siteDomain = site.domainName %}
-        <div class="card mb-4">
-          <div class="card-header">
-            <strong>{{ siteDomain }}</strong>
-            <span class="text-muted">({% trans %}system user{% endtrans %}: <code>{{ siteUser }}</code>)</span>
-          </div>
-          <div class="card-body">
-            <p class="text-muted">{% trans %}Run the following as root on the server to install the latest Nextcloud release into this site:{% endtrans %}</p>
-<pre><code>wget https://download.nextcloud.com/server/releases/latest.tar.bz2 -O /tmp/nc.tar.bz2
-sudo -u {{ siteUser }} tar -xjf /tmp/nc.tar.bz2 -C /home/{{ siteUser }}/htdocs --strip-components=1
-sudo -u {{ siteUser }} php -d memory_limit=512M /home/{{ siteUser }}/htdocs/occ maintenance:install --database=sqlite --admin-user=admin --admin-pass=changeme
-rm -f /tmp/nc.tar.bz2</code></pre>
-          </div>
-        </div>
-      {% endfor %}
-    {% else %}
-      <div class="card">
-        <div class="card-body">
-          {% trans %}No sites available. Create a PHP site first, then come back to install Nextcloud into it.{% endtrans %}
-        </div>
-      </div>
-    {% endif %}
-
-    <p>
-      <a class="btn btn-outline-secondary" href="{{ path('clp_admin_marketplace') }}">{% trans %}Back to Marketplace{% endtrans %}</a>
-    </p>
-  </div>
-</div>
+{{ include('Admin/Marketplace/Partial/install-card.html.twig', {
+  'title': 'Install Nextcloud'|trans,
+  'warning': warning,
+  'commands': commands,
+  'sites': sites
+}) }}
 {% endblock %}

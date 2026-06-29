@@ -12,9 +12,4 @@ class MarketplaceAppRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, MarketplaceApp::class);
     }
-
-    public function findOneBySlug(string $slug): ?MarketplaceApp
-    {
-        return $this->findOneBy(['slug' => $slug]);
-    }
 }

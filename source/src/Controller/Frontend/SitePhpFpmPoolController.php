@@ -3,9 +3,9 @@
 namespace App\Controller\Frontend;
 
 use App\Controller\Controller;
+use App\Controller\Frontend\SiteAccessTrait;
 use App\Entity\Manager\SiteManager;
 use App\Entity\Site;
-use App\Entity\User as UserEntity;
 use App\Event\EventQueue;
 use App\Form\SitePhpFpmPoolType;
 use App\Service\Logger;
@@ -16,6 +16,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SitePhpFpmPoolController extends Controller
 {
+    use SiteAccessTrait;
+
     private SiteManager $siteManager;
     private PoolConfigWriter $writer;
 
@@ -112,13 +114,7 @@ class SitePhpFpmPoolController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $user = $this->getUser();
-        if (null === $user) {
-            throw $this->createAccessDeniedException();
-        }
-        if (UserEntity::ROLE_USER == $user->getRole() && false === $user->hasSite($site)) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyUnlessSiteOwnerOrAdmin($site);
 
         return $site;
     }

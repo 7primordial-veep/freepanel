@@ -19,30 +19,12 @@
             </div>
 
             {{ form_start(form, {'attr': {'class': 'form'}}) }}
-              <div class="form-group">
-                {{ form_label(form.pm) }}
-                {{ form_widget(form.pm, {'attr': {'class': 'form-control'}}) }}
-              </div>
-              <div class="form-group">
-                {{ form_label(form.pmMaxChildren) }}
-                {{ form_widget(form.pmMaxChildren, {'attr': {'class': 'form-control'}}) }}
-              </div>
-              <div class="form-group">
-                {{ form_label(form.pmStartServers) }}
-                {{ form_widget(form.pmStartServers, {'attr': {'class': 'form-control'}}) }}
-              </div>
-              <div class="form-group">
-                {{ form_label(form.pmMinSpareServers) }}
-                {{ form_widget(form.pmMinSpareServers, {'attr': {'class': 'form-control'}}) }}
-              </div>
-              <div class="form-group">
-                {{ form_label(form.pmMaxSpareServers) }}
-                {{ form_widget(form.pmMaxSpareServers, {'attr': {'class': 'form-control'}}) }}
-              </div>
-              <div class="form-group">
-                {{ form_label(form.pmMaxRequests) }}
-                {{ form_widget(form.pmMaxRequests, {'attr': {'class': 'form-control'}}) }}
-              </div>
+              {% for fieldName in ['pm', 'pmMaxChildren', 'pmStartServers', 'pmMinSpareServers', 'pmMaxSpareServers', 'pmMaxRequests'] %}
+                <div class="form-group">
+                  {{ form_label(attribute(form, fieldName)) }}
+                  {{ form_widget(attribute(form, fieldName), {'attr': {'class': 'form-control'}}) }}
+                </div>
+              {% endfor %}
               <div class="form-group">
                 {{ form_widget(form.submit, {'attr': {'class': 'btn btn-blue'}}) }}
               </div>

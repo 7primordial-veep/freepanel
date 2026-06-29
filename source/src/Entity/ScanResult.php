@@ -8,7 +8,6 @@ use App\Entity\Site;
 
 /**
  * @ORM\Table(name="scan_result")
- * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass=ScanResultRepository::class)
  */
 class ScanResult
@@ -89,14 +88,4 @@ class ScanResult
 
     public function getFinishedAt(): ?\DateTime { return $this->finishedAt; }
     public function setFinishedAt(?\DateTime $dt): void { $this->finishedAt = $dt; }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function prePersist(): void
-    {
-        if (null === $this->startedAt) {
-            $this->startedAt = new \DateTime('now');
-        }
-    }
 }

@@ -7,45 +7,13 @@
 {% endblock %}
 
 {% block body %}
-<div class="marketplace-container">
-  <div class="page-header">
-    <div class="page-title">
-      <h1>{% trans %}Install Ghost{% endtrans %}</h1>
-    </div>
-    <div class="page-actions">
-      <a class="btn btn-outline-secondary" href="{{ path('clp_admin_marketplace') }}">{% trans %}Back to Marketplace{% endtrans %}</a>
-    </div>
-  </div>
-  <div class="page-content">
-    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+{% set commands %}cd /home/{user}/htdocs/
+sudo -u {user} npx ghost install local --no-prompt --no-stack --db=sqlite3 --no-setup-nginx --no-setup-ssl --no-setup-systemd --dir /home/{user}/htdocs/{% endset %}
 
-    <div class="card mb-4">
-      <div class="card-body">
-        <p>{% trans %}Run the commands below as root on this server to install Ghost into one of your existing sites. Pick the site that matches the domain you want Ghost to serve.{% endtrans %}</p>
-      </div>
-    </div>
-
-    {% if sites|length %}
-      {% for site in sites %}
-        {% set siteUser = site.user %}
-        {% if siteUser %}
-          <div class="card mb-3">
-            <div class="card-body">
-              <h3 class="mb-1">{{ site.domainName }}</h3>
-              <p class="text-muted mb-3">{% trans %}System user:{% endtrans %} <code>{{ siteUser }}</code></p>
-              <pre class="bg-light p-3" style="white-space:pre-wrap;"><code>cd /home/{{ siteUser }}/htdocs/
-sudo -u {{ siteUser }} npx ghost install local --no-prompt --no-stack --db=sqlite3 --no-setup-nginx --no-setup-ssl --no-setup-systemd --dir /home/{{ siteUser }}/htdocs/</code></pre>
-            </div>
-          </div>
-        {% endif %}
-      {% endfor %}
-    {% else %}
-      <div class="card">
-        <div class="card-body">
-          {% trans %}No sites available. Create a Node.js site first, then return here.{% endtrans %}
-        </div>
-      </div>
-    {% endif %}
-  </div>
-</div>
+{{ include('Admin/Marketplace/Partial/install-card.html.twig', {
+  'title': 'Install Ghost'|trans,
+  'warning': null,
+  'commands': commands,
+  'sites': sites
+}) }}
 {% endblock %}

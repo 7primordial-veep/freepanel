@@ -5,6 +5,7 @@ namespace App\Site\ResourceQuota;
 use App\Entity\Site;
 use App\System\CommandExecutor;
 use App\System\Command\AppendProjectsLineCommand;
+use App\System\Command\DfTargetCommand;
 use App\System\Command\XfsQuotaCommand;
 use Psr\Log\LoggerInterface;
 
@@ -122,14 +123,25 @@ class XfsProjectQuotaApplier
 
     /**
      * Walk up until we find a mount point. df is the cheapest reliable way
-     * but it lives outside php's tree, so fall back to /home if df is missing.
+     * but it lives outside php's tree, so fall back to /home on any failure.
      */
     private function resolveMountPoint(string $path) : string
     {
-        $out = @shell_exec(sprintf('/bin/df --output=target %s 2>/dev/null | tail -1', escapeshellarg($path)));
-        $mount = trim((string) $out);
-        if ('' !== $mount && '/' === $mount[0]) {
-            return $mount;
+        try {
+            $df = new DfTargetCommand();
+            $df->setPath($path);
+            $this->commandExecutor->execute($df, 10);
+            $mount = $df->getMountPoint();
+            if (null !== $mount) {
+                return $mount;
+            }
+        } catch (\Throwable $e) {
+            if (null !== $this->logger) {
+                $this->logger->warning(
+                    'XfsProjectQuotaApplier: resolveMountPoint failed',
+                    ['path' => $path, 'error' => $e->getMessage()]
+                );
+            }
         }
         return '/home';
     }

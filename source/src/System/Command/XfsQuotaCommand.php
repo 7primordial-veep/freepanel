@@ -14,11 +14,6 @@ class XfsQuotaCommand extends Command
         $this->expressions = $expressions;
     }
 
-    public function addExpression(string $expression) : void
-    {
-        $this->expressions[] = $expression;
-    }
-
     public function setMountPoint(string $mountPoint) : void
     {
         $this->mountPoint = $mountPoint;

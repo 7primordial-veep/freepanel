@@ -16,7 +16,7 @@ class MarketplaceAppManager extends BaseManager
 
     public function findOneBySlug(string $slug): ?MarketplaceApp
     {
-        return $this->repository->findOneBySlug($slug);
+        return $this->repository->findOneBy(['slug' => $slug]);
     }
 
     /**

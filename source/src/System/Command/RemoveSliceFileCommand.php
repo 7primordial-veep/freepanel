@@ -3,6 +3,7 @@
 namespace App\System\Command;
 
 use App\System\Command;
+use App\System\Command\Util\SystemdUnitName;
 
 class RemoveSliceFileCommand extends Command
 {
@@ -21,7 +22,7 @@ class RemoveSliceFileCommand extends Command
         if (null === $this->fileName) {
             throw new \RuntimeException('RemoveSliceFileCommand: fileName must be set.');
         }
-        $this->assertSafeName($this->fileName);
+        SystemdUnitName::assertSafe($this->fileName);
         $path = '/etc/systemd/system/' . $this->fileName;
         $this->command = sprintf('/usr/bin/sudo /bin/rm -f %s', escapeshellarg($path));
         return $this->command;
@@ -37,24 +38,5 @@ class RemoveSliceFileCommand extends Command
             return false;
         }
         return true;
-    }
-
-    private function assertSafeName(string $name) : void
-    {
-        if ('' === $name) {
-            throw new \RuntimeException('RemoveSliceFileCommand: empty file name.');
-        }
-        if ('/' === $name[0]) {
-            throw new \RuntimeException('RemoveSliceFileCommand: absolute paths rejected.');
-        }
-        if (false !== strpos($name, '..')) {
-            throw new \RuntimeException('RemoveSliceFileCommand: ".." not allowed in file name.');
-        }
-        if (false !== strpos($name, '/') && 1 !== substr_count($name, '/')) {
-            throw new \RuntimeException('RemoveSliceFileCommand: only single-level drop-in subdir allowed.');
-        }
-        if (!preg_match('#^[A-Za-z0-9._@-]+(?:/[A-Za-z0-9._@-]+)?$#', $name)) {
-            throw new \RuntimeException('RemoveSliceFileCommand: invalid characters in file name.');
-        }
     }
 }

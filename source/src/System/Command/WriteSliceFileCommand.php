@@ -3,6 +3,7 @@
 namespace App\System\Command;
 
 use App\System\Command;
+use App\System\Command\Util\SystemdUnitName;
 
 class WriteSliceFileCommand extends Command
 {
@@ -27,7 +28,7 @@ class WriteSliceFileCommand extends Command
         if (null === $this->fileName || null === $this->content) {
             throw new \RuntimeException('WriteSliceFileCommand: fileName and content must be set.');
         }
-        $this->assertSafeName($this->fileName);
+        SystemdUnitName::assertSafe($this->fileName);
         $path = '/etc/systemd/system/' . $this->fileName;
         $dir = dirname($path);
         $this->command = sprintf(
@@ -50,25 +51,5 @@ class WriteSliceFileCommand extends Command
             return false;
         }
         return true;
-    }
-
-    private function assertSafeName(string $name) : void
-    {
-        if ('' === $name) {
-            throw new \RuntimeException('WriteSliceFileCommand: empty file name.');
-        }
-        if ('/' === $name[0]) {
-            throw new \RuntimeException('WriteSliceFileCommand: absolute paths rejected.');
-        }
-        if (false !== strpos($name, '..')) {
-            throw new \RuntimeException('WriteSliceFileCommand: ".." not allowed in file name.');
-        }
-        // Allow at most one level of "<unit>.<type>.d/<file>.conf" for drop-ins.
-        if (false !== strpos($name, '/') && 1 !== substr_count($name, '/')) {
-            throw new \RuntimeException('WriteSliceFileCommand: only single-level drop-in subdir allowed.');
-        }
-        if (!preg_match('#^[A-Za-z0-9._@-]+(?:/[A-Za-z0-9._@-]+)?$#', $name)) {
-            throw new \RuntimeException('WriteSliceFileCommand: invalid characters in file name.');
-        }
     }
 }

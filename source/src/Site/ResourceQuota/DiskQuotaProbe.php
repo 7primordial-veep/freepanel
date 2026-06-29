@@ -18,10 +18,10 @@ use Psr\Log\LoggerInterface;
  */
 class DiskQuotaProbe
 {
-    private ?CommandExecutor $commandExecutor;
+    private CommandExecutor $commandExecutor;
     private ?LoggerInterface $logger;
 
-    public function __construct(?CommandExecutor $commandExecutor = null, ?LoggerInterface $logger = null)
+    public function __construct(CommandExecutor $commandExecutor, ?LoggerInterface $logger = null)
     {
         $this->commandExecutor = $commandExecutor;
         $this->logger = $logger;
@@ -68,16 +68,6 @@ class DiskQuotaProbe
         }
         $directory = sprintf('/home/%s/htdocs', $user);
         if (false === is_dir($directory)) {
-            return 0;
-        }
-        if (null === $this->commandExecutor) {
-            // No executor wired — fall back to a direct du call but still
-            // escape the path.
-            $command = sprintf('/usr/bin/du -sm %s 2>/dev/null', escapeshellarg($directory));
-            $output = (string) @shell_exec($command);
-            if (1 === preg_match('/^\s*(\d+)\s/m', $output, $matches)) {
-                return (int) $matches[1];
-            }
             return 0;
         }
         $du = new DuCommand();

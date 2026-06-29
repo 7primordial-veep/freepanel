@@ -9,7 +9,6 @@ class DockerRunCommand extends Command
     private string $containerName;
     private string $image;
     private int $hostPort;
-    private int $containerPort = 80;
     /** @var array<string,string> */
     private array $env = [];
     /** @var array<int,array{host:string,container:string}> */
@@ -28,11 +27,6 @@ class DockerRunCommand extends Command
     public function setHostPort(int $port): void
     {
         $this->hostPort = $port;
-    }
-
-    public function setContainerPort(int $port): void
-    {
-        $this->containerPort = $port;
     }
 
     public function setEnv(array $env): void
@@ -54,7 +48,7 @@ class DockerRunCommand extends Command
             '/usr/bin/docker run -d',
             '--restart unless-stopped',
             sprintf('--name %s', escapeshellarg($this->containerName)),
-            sprintf('-p 127.0.0.1:%d:%d', $this->hostPort, $this->containerPort),
+            sprintf('-p 127.0.0.1:%d:80', $this->hostPort),
         ];
         foreach ($this->env as $k => $v) {
             $parts[] = sprintf('-e %s', escapeshellarg($k . '=' . $v));

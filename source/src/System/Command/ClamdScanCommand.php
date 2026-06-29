@@ -10,10 +10,8 @@ class ClamdScanCommand extends Command
     private ?string $logFile = null;
 
     public function setPath(string $path): void { $this->path = $path; }
-    public function getPath(): ?string { return $this->path; }
 
     public function setLogFile(string $logFile): void { $this->logFile = $logFile; }
-    public function getLogFile(): ?string { return $this->logFile; }
 
     public function getCommand(): string
     {

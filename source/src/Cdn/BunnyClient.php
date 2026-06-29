@@ -12,12 +12,12 @@ class BunnyClient
     private const API_BASE = 'https://api.bunny.net';
 
     private ConfigManager $config;
-    private ?HttpClient $http;
+    private HttpClient $http;
 
     public function __construct(ConfigManager $config, ?HttpClient $http = null)
     {
         $this->config = $config;
-        $this->http = $http;
+        $this->http = $http ?? new HttpClient(['timeout' => 15, 'http_errors' => false]);
     }
 
     public function isConfigured(): bool
@@ -72,7 +72,6 @@ class BunnyClient
             throw new \RuntimeException('Bunny API key not configured.');
         }
 
-        $http = $this->http ?? new HttpClient(['timeout' => 15, 'http_errors' => false]);
         $opts = [
             'headers' => [
                 'AccessKey' => $apiKey,
@@ -85,7 +84,7 @@ class BunnyClient
         }
 
         try {
-            $resp = $http->request($method, self::API_BASE . $path, $opts);
+            $resp = $this->http->request($method, self::API_BASE . $path, $opts);
         } catch (GuzzleException $e) {
             throw new \RuntimeException('Bunny API request failed: ' . $e->getMessage(), 0, $e);
         }

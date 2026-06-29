@@ -250,33 +250,25 @@ class SiteEmailController extends Controller
         $errors  = $publish['errors']  ?? [];
         $reason  = $publish['reason']  ?? null;
 
-        if (!empty($created)) {
+        $listFlashes = [
+            ['values' => $created, 'level' => 'success', 'message' => 'Published mail DNS records: %records%',                 'placeholder' => '%records%', 'glue' => ', '],
+            ['values' => $skipped, 'level' => 'info',    'message' => 'Mail DNS records already present (skipped): %records%', 'placeholder' => '%records%', 'glue' => ', '],
+            ['values' => $errors,  'level' => 'warning', 'message' => 'Mail DNS publish errors: %errors%',                     'placeholder' => '%errors%',  'glue' => '; '],
+        ];
+
+        foreach ($listFlashes as $flash) {
+            if (empty($flash['values'])) {
+                continue;
+            }
             $session->getFlashBag()->add(
-                'success',
+                $flash['level'],
                 $this->translator->trans(
-                    'Published mail DNS records: %records%',
-                    ['%records%' => implode(', ', $created)]
+                    $flash['message'],
+                    [$flash['placeholder'] => implode($flash['glue'], $flash['values'])]
                 )
             );
         }
-        if (!empty($skipped)) {
-            $session->getFlashBag()->add(
-                'info',
-                $this->translator->trans(
-                    'Mail DNS records already present (skipped): %records%',
-                    ['%records%' => implode(', ', $skipped)]
-                )
-            );
-        }
-        if (!empty($errors)) {
-            $session->getFlashBag()->add(
-                'warning',
-                $this->translator->trans(
-                    'Mail DNS publish errors: %errors%',
-                    ['%errors%' => implode('; ', $errors)]
-                )
-            );
-        }
+
         if (empty($created) && empty($skipped) && empty($errors) && null !== $reason) {
             $session->getFlashBag()->add(
                 'info',

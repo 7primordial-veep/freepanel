@@ -65,7 +65,6 @@
                         <button type="button" class="btn btn-blue btn-sm"
                                 data-bs-toggle="modal" data-bs-target="#restoreModal"
                                 data-object-gz="{{ s.object_gz }}"
-                                data-object-tar="{{ s.object_tar }}"
                                 data-site-user="{{ s.name }}">
                           {% trans %}Restore...{% endtrans %}
                         </button>
@@ -122,14 +121,6 @@
                 </div>
 
                 <div class="mb-3">
-                  <label class="form-label">{% trans %}Archive format{% endtrans %}</label>
-                  <select class="form-select" id="restoreArchiveFormat">
-                    <option value="gz" selected>backup.tar.gz</option>
-                    <option value="tar">backup.tar</option>
-                  </select>
-                </div>
-
-                <div class="mb-3">
                   <label class="form-label" for="target_domain">{% trans %}Target site (must already exist){% endtrans %}</label>
                   <select class="form-select" name="target_domain" id="target_domain" required>
                     <option value="">-- {% trans %}select a site{% endtrans %} --</option>
@@ -152,20 +143,12 @@
         (function () {
           var modal = document.getElementById('restoreModal');
           if (!modal) return;
-          var objGz = '';
-          var objTar = '';
           var hidden = document.getElementById('restoreBackupObject');
-          var fmt = document.getElementById('restoreArchiveFormat');
           var siteEl = document.getElementById('restoreSiteUser');
           modal.addEventListener('show.bs.modal', function (ev) {
             var btn = ev.relatedTarget;
-            objGz = btn.getAttribute('data-object-gz') || '';
-            objTar = btn.getAttribute('data-object-tar') || '';
+            hidden.value = btn.getAttribute('data-object-gz') || '';
             siteEl.textContent = btn.getAttribute('data-site-user') || '';
-            hidden.value = fmt.value === 'tar' ? objTar : objGz;
-          });
-          fmt.addEventListener('change', function () {
-            hidden.value = fmt.value === 'tar' ? objTar : objGz;
           });
         })();
       </script>

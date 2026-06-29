@@ -29,17 +29,7 @@ class MarketplaceController extends Controller
 
     public function index(Request $request): Response
     {
-        // Lazy seed so a fresh DB shows the catalog even if the install-hook didn't run.
         $apps = $this->marketplaceAppManager->findAllOrdered();
-        if (0 === count($apps)) {
-            try {
-                $this->marketplaceAppManager->seedDefaults();
-                $apps = $this->marketplaceAppManager->findAllOrdered();
-            } catch (\Exception $e) {
-                $this->logger->exception($e);
-            }
-        }
-
         $user = $this->getUser();
         return $this->render('Admin/Marketplace/index.html.twig', [
             'user' => $user,

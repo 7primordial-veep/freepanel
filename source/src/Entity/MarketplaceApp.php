@@ -15,7 +15,6 @@ class MarketplaceApp
     public const TYPE_WORDPRESS = 'wordpress';
     public const TYPE_GHOST = 'ghost';
     public const TYPE_NEXTCLOUD = 'nextcloud';
-    public const TYPE_GENERIC_PHP = 'generic-php';
 
     public const STATUS_AVAILABLE = 'available';
     public const STATUS_COMING_SOON = 'coming-soon';
@@ -50,12 +49,7 @@ class MarketplaceApp
     /**
      * @ORM\Column(type="string", length=32, nullable=false)
      */
-    private $type = self::TYPE_GENERIC_PHP;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $installerCommand;
+    private $type;
 
     /**
      * @ORM\Column(type="string", length=32, nullable=false)
@@ -78,8 +72,6 @@ class MarketplaceApp
     public function setIconPath(?string $iconPath): void { $this->iconPath = $iconPath; }
     public function getType(): ?string { return $this->type; }
     public function setType(string $type): void { $this->type = $type; }
-    public function getInstallerCommand(): ?string { return $this->installerCommand; }
-    public function setInstallerCommand(?string $installerCommand): void { $this->installerCommand = $installerCommand; }
     public function getStatus(): ?string { return $this->status; }
     public function setStatus(string $status): void { $this->status = $status; }
     public function getCreatedAt(): ?\DateTime { return $this->createdAt; }

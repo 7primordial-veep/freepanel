@@ -22,11 +22,6 @@ class TarStreamUploadCommand extends Command
         $this->sources = $sources;
     }
 
-    public function getSources() : array
-    {
-        return $this->sources;
-    }
-
     public function setExcludes(array $excludes) : void
     {
         $this->excludes = $excludes;
@@ -45,11 +40,6 @@ class TarStreamUploadCommand extends Command
     public function setDestinationObject(string $object) : void
     {
         $this->destinationObject = $object;
-    }
-
-    public function getDestinationObject() : ?string
-    {
-        return $this->destinationObject;
     }
 
     public function getCommand() : string

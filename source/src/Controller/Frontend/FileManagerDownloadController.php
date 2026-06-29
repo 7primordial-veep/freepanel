@@ -8,12 +8,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Controller\Controller;
+use App\Controller\Frontend\SiteAccessTrait;
 use App\Entity\Manager\SiteManager as SiteEntityManager;
-use App\Entity\User as UserEntity;
 use App\Service\Logger;
 
 class FileManagerDownloadController extends Controller
 {
+    use SiteAccessTrait;
+
     private const MAX_DOWNLOAD_BYTES = 268435456; // 256 MiB
 
     private SiteEntityManager $siteEntityManager;
@@ -27,16 +29,9 @@ class FileManagerDownloadController extends Controller
     public function downloadAction(Request $request): Response
     {
         $site = $this->siteEntityManager->findOneByDomainName((string)$request->get('domainName'));
-        if ($site === null) {
-            return new Response('Site not found', 404);
-        }
-
-        $user = $this->getUser();
-        if ($user === null) {
-            return new Response('Unauthorized', 401);
-        }
-        if (UserEntity::ROLE_USER == $user->getRole() && false === $user->hasSite($site)) {
-            return new Response('Forbidden', 403);
+        $denied = $this->denySiteAccessAsJson($site);
+        if ($denied !== null) {
+            return $denied;
         }
 
         $siteUser = $site->getUser();

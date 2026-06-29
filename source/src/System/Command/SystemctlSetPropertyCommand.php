@@ -8,7 +8,6 @@ class SystemctlSetPropertyCommand extends Command
 {
     private ?string $unit = null;
     private array $properties = [];
-    private bool $runtime = false;
 
     public function getCommand() : string
     {
@@ -22,10 +21,8 @@ class SystemctlSetPropertyCommand extends Command
             foreach ($properties as $key => $value) {
                 $args[] = escapeshellarg(sprintf('%s=%s', $key, (string) $value));
             }
-            $runtimeFlag = true === $this->runtime ? ' --runtime' : '';
             $this->command = sprintf(
-                "/usr/bin/sudo /bin/systemctl set-property%s %s %s",
-                $runtimeFlag,
+                '/usr/bin/sudo /bin/systemctl set-property %s %s',
                 escapeshellarg($unit),
                 implode(' ', $args)
             );
@@ -43,8 +40,6 @@ class SystemctlSetPropertyCommand extends Command
 
     public function setUnit(string $unit) : void { $this->unit = $unit; }
     public function getUnit() : ?string { return $this->unit; }
-    public function setProperty(string $key, string $value) : void { $this->properties[$key] = $value; }
     public function setProperties(array $properties) : void { $this->properties = $properties; }
     public function getProperties() : array { return $this->properties; }
-    public function setRuntime(bool $flag) : void { $this->runtime = $flag; }
 }

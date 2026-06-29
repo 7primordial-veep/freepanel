@@ -1,0 +1,49 @@
+{#
+  Shared chrome for Marketplace installer pages.
+
+  Vars:
+    title    (string)        Heading shown in the page header. Translate in the caller.
+    warning  (string|null)   Optional HTML rendered inside an alert-warning above the cards.
+    commands (string)        Shell commands shown per site. Use {user} and {domain} as
+                             placeholders; they are replaced per iteration.
+    sites    (iterable)      Sites the installer can target (must expose .user + .domainName).
+#}
+<div class="marketplace-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{{ title }}</h1>
+    </div>
+    <div class="page-actions">
+      <a class="btn btn-outline-secondary" href="{{ path('clp_admin_marketplace') }}">{% trans %}Back to Marketplace{% endtrans %}</a>
+    </div>
+  </div>
+  <div class="page-content">
+    {{ include('Partial/flash-messages.html.twig', { 'flashBagMessages': app.session.flashbag.all }) }}
+
+    {% if warning is defined and warning %}
+      <div class="alert alert-warning">{{ warning|raw }}</div>
+    {% endif %}
+
+    {% if sites is defined and sites|length %}
+      {% for site in sites %}
+        {% set siteUser = site.user %}
+        {% set siteDomain = site.domainName %}
+        {% if siteUser %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <h3 class="mb-1">{{ siteDomain }}</h3>
+              <p class="text-muted mb-3">{% trans %}System user:{% endtrans %} <code>{{ siteUser }}</code></p>
+              <pre class="bg-light p-3" style="white-space:pre-wrap;"><code>{{ commands|replace({'{user}': siteUser, '{domain}': siteDomain})|trim }}</code></pre>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <div class="card">
+        <div class="card-body">
+          {% trans %}No sites available. Create a site first, then return here.{% endtrans %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>

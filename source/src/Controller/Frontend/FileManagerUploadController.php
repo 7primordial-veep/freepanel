@@ -9,14 +9,16 @@ use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Controller\Controller;
+use App\Controller\Frontend\SiteAccessTrait;
 use App\Entity\Manager\SiteManager as SiteEntityManager;
-use App\Entity\User as UserEntity;
 use App\Service\Logger;
 use App\System\CommandExecutor;
 use App\System\Command\SudoTeeCommand;
 
 class FileManagerUploadController extends Controller
 {
+    use SiteAccessTrait;
+
     private const MAX_UPLOAD_BYTES = 16777216; // 16 MiB
     private SiteEntityManager $siteEntityManager;
     private CsrfTokenManagerInterface $csrfTokenManager;
@@ -34,11 +36,9 @@ class FileManagerUploadController extends Controller
         return new JsonResponse(['error'=>'Invalid CSRF token'], Response::HTTP_FORBIDDEN);
       }
       $site = $this->siteEntityManager->findOneByDomainName((string)$request->get('domainName'));
-      if ($site === null) return new JsonResponse(['error'=>'Site not found'], Response::HTTP_NOT_FOUND);
-      $user = $this->getUser();
-      if ($user === null) return new JsonResponse(['error'=>'Unauthorized'], Response::HTTP_UNAUTHORIZED);
-      if (UserEntity::ROLE_USER == $user->getRole() && false === $user->hasSite($site)) {
-        return new JsonResponse(['error'=>'Forbidden'], Response::HTTP_FORBIDDEN);
+      $denied = $this->denySiteAccessAsJson($site);
+      if ($denied !== null) {
+        return $denied;
       }
       $siteUser = $site->getUser();
       if (empty($siteUser)) return new JsonResponse(['error'=>'Site user missing'], Response::HTTP_CONFLICT);
